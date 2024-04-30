@@ -1,0 +1,34 @@
+{
+    "title": "Example Template",
+    "description": "This is an example template",
+    "thumbnail": "thumbnail.png",
+    "skus": [
+        "consumption",
+        "standard"
+    ],
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        },
+        {
+            "type": "description",
+            "file": "description.md"
+        }
+    ],
+    "images": [],
+    "parameters": [
+        {
+            "name": "param1",
+            "type": "string",
+            "default": "default value",
+            "description": "This is a parameter",
+            "required": true
+        }
+    ],
+    "connections": [
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azurevm"
+        }
+    ]
+}
