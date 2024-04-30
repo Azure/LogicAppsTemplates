@@ -6,6 +6,10 @@
         "consumption",
         "standard"
     ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
     "artifacts": [
         {
             "type": "workflow",
