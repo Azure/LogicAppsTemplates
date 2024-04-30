@@ -1,0 +1,1 @@
+This is an example of what will show on the gallery page description of the template.
