@@ -28,6 +28,13 @@
             "default": "default value",
             "description": "This is a parameter",
             "required": true
+        },
+        {
+            "name": "boolExample",
+            "type": "boolean",
+            "default": "true",
+            "description": "This is a boolean for boolean example"
+            "required": false
         }
     ],
     "connections": [
