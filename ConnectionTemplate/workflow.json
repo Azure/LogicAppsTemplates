@@ -1,0 +1,120 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Scope_-_catch_block": {
+            "actions": {
+                "Error_Handling_workflow": {
+                    "inputs": {
+                        "host": {
+                            "workflow": {
+                                "id": "sampletest"
+                            }
+                        }
+                    },
+                    "type": "Workflow"
+                }
+            },
+            "runAfter": {
+                "Scope_-_try_block": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Scope"
+        },
+        "Scope_-_try_block": {
+            "actions": {
+                "Azure_Open_AI_-_Get_multiple_embeddings": {
+                    "inputs": {
+                        "parameters": {
+                            "deploymentId": "@parameters('DeploymentIdentifier_#workflowname#')",
+                            "input": []
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "openai_#template#asdfghjkl",
+                            "operationId": "getArrayEmbeddings",
+                            "serviceProviderId": "/serviceProviders/openai"
+                        }
+                    },
+                    "runAfter": {
+                        "Chunk_and_Tokenize": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Chunk_and_Tokenize": {
+                    "inputs": {
+                        "method": "@parameters('TokenizeMethod_#workflowname#'",
+                        "uri": "https://www.bing.com"
+                    },
+                    "runAfter": {
+                        "Get_Sales_Records_from_SQL": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "runtimeConfiguration": {
+                        "contentTransfer": {
+                            "transferMode": "Chunked"
+                        }
+                    },
+                    "type": "Http"
+                },
+                "Get_Sales_Records_from_SQL": {
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "referenceName": "sql_#template#asdfghjkl"
+                            }
+                        },
+                        "method": "get",
+                        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[SalesLT].[SalesOrderDetail]'))}/items"
+                    },
+                    "type": "ApiConnection"
+                },
+                "Index_multiple_documents": {
+                    "inputs": {
+                        "parameters": {
+                            "documents": [
+                                []
+                            ],
+                            "indexName": "@parameters('IndexName_#workflowname#')"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "azureaisearch_#template#asdfghjkl",
+                            "operationId": "indexDocuments",
+                            "serviceProviderId": "/serviceProviders/azureaisearch"
+                        }
+                    },
+                    "runAfter": {
+                        "Azure_Open_AI_-_Get_multiple_embeddings": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Response": {
+                    "inputs": {
+                        "statusCode": 200
+                    },
+                    "kind": "Http",
+                    "runAfter": {
+                        "Index_multiple_documents": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "Response"
+                }
+            },
+            "runAfter": {},
+            "type": "Scope"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "kind": "Http",
+            "type": "Request"
+        }
+    }
+}
