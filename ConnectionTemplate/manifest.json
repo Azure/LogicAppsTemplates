@@ -33,7 +33,7 @@
             "required": true
         },
         {
-            "name": "IndexName_$#workflowname#$",
+            "name": "IndexName_#workflowname#",
             "displayName": "Index Name",
             "type": "string",
             "description": "Azure AI Search - Provide the Index Name for the vector embeddings",
