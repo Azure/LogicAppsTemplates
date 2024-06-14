@@ -1,7 +1,6 @@
 {
-    "title": "Example Template",
-    "description": "This is an example template",
-    "thumbnail": "thumbnail.png",
+    "title": "Only Parameters Template - Test template with only parameters",
+    "description": "This is an example template where only parameters need to be authored by user",
     "skus": [
         "consumption",
         "standard"
@@ -10,38 +9,35 @@
         "stateful",
         "stateless"
     ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request"
+    },
     "artifacts": [
         {
             "type": "workflow",
             "file": "workflow.json"
-        },
-        {
-            "type": "description",
-            "file": "description.md"
         }
     ],
     "images": [],
     "parameters": [
         {
             "name": "param1",
+            "displayName": "Parameter 1",
             "type": "string",
             "default": "default value",
             "description": "This is a parameter",
-            "displayName": "Parameter 1",
             "required": true
         },
         {
             "name": "boolExample",
+            "displayName": "Boolean Example",
             "type": "boolean",
             "default": "true",
             "description": "This is a boolean for boolean example",
-            "displayName": "Boolean Example",
             "required": false
         }
     ],
-    "connections": [
-        {
-            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azurevm"
-        }
-    ]
+    "connections": {}
 }
