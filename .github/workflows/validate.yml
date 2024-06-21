@@ -1,0 +1,28 @@
+name: 'Validate Manifests'
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  base-coverage:
+    runs-on: ubuntu-latest   
+    steps:
+        - name: 'Checkout Github Action'
+          uses: actions/checkout@master
+
+        - name: Set up Node.js 
+          uses: actions/setup-node@v1
+          with:
+            node-version: 20.x  
+
+        - uses: pnpm/action-setup@v3
+          with:
+            version: 9.1.3
+            run_install: |
+              - recursive: true
+                args: [--frozen-lockfile, --strict-peer-dependencies]   
+
+        - name: Run Tests
+          run: pnpm run test

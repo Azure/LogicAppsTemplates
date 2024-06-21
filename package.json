@@ -1,0 +1,22 @@
+{
+  "name": "logicappstemplates",
+  "version": "1.0.0",
+  "description": "> This repo has been populated by an initial template to help get you started. Please > make sure to update the content to build a great experience for community-building.",
+  "type": "module",
+  "scripts": {
+    "test": "tsx validate_templates.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.14.7",
+    "tsx": "^4.15.7",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "zod": "^3.23.8",
+    "zod-validation-error": "^3.3.0"
+  }
+}
