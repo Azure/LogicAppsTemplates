@@ -8,7 +8,8 @@
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
-        "Trigger": "Request"
+        "Trigger": "Request",
+        "Industry": "IT"
     },
     "tags": [ "Function: AI" ],
     "kinds": [
