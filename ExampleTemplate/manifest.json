@@ -21,7 +21,10 @@
             "file": "workflow.json"
         }
     ],
-    "images": {},
+    "images": {
+        "light": "snapshot_light.png",
+        "dark": "snapshot_dark.png"
+    },
     "parameters": [
         {
             "name": "param1",
