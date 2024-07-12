@@ -23,8 +23,8 @@
         }
     ],
     "images": {
-        "light": "snapshot_light.png",
-        "dark": "snapshot_dark.png"
+        "light": "snapshot_light",
+        "dark": "snapshot_dark"
     },
     "parameters": [],
     "connections": {
