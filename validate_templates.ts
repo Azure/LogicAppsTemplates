@@ -13,6 +13,7 @@ const manifestSchema = z.object({
         Type: z.union([z.literal('Workflow'), z.literal('Workflow')]),
         Trigger: z.union([z.literal('Request'), z.literal('Recurrence')])
     }),
+    details_description: z.string().optional(),
     tags: z.array(z.string()).optional(),
     kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
     artifacts: z.array(z.object({ type: z.string(), file: z.string() })),
