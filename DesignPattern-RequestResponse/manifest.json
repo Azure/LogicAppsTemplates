@@ -1,0 +1,43 @@
+{
+    "title": "Request Response over HTTP",
+    "description": "Receive a message over HTTP, perform some other work of your choosing, and then return a response",
+    "prerequisites": "Before you can use this template, you need to configure the Azure AI Services, including Azure Open AI and Azure AI Search. To follow the detailed steps to configure them please review the article here: [https://aka.ms/ai-setup](https://aka.ms/ai-setup)",
+    "tags": [
+        "HTTP"
+
+    ],
+    "skus": [
+        "consumption",
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "workflow": "workflow.png"
+    },
+    "parameters": [
+    ],
+    "connections": {
+
+    },
+    "featuredOperations": [
+        {
+            "kind": "Http",
+            "type": "Request"
+        }
+    ]
+
+}
