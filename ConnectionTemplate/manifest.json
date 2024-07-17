@@ -30,21 +30,21 @@
         {
             "name": "DeploymentIdentifier_#workflowname#",
             "displayName": "Deployment Identifier",
-            "type": "string",
+            "type": "String",
             "description": "Azure Open AI - Provide the deployment model for the action Get multiple embeddings.",
             "required": true
         },
         {
-            "name": "IndexName_$#workflowname#$",
+            "name": "IndexName_#workflowname#",
             "displayName": "Index Name",
-            "type": "string",
+            "type": "String",
             "description": "Azure AI Search - Provide the Index Name for the vector embeddings",
             "required": true
         },
         {
             "name": "TokenizeMethod_#workflowname#",
             "displayName": "Tokenize Method",
-            "type": "string",
+            "type": "String",
             "description": "SQL - Provide the connection string to the SQL database",
             "required": true,
             "allowedValues": [

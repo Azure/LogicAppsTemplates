@@ -29,7 +29,7 @@
         {
             "name": "param1",
             "displayName": "Parameter 1",
-            "type": "string",
+            "type": "String",
             "default": "default value",
             "description": "This is a parameter",
             "required": true
@@ -37,7 +37,7 @@
         {
             "name": "boolExample",
             "displayName": "Boolean Example",
-            "type": "boolean",
+            "type": "Bool",
             "default": "true",
             "description": "This is a boolean for boolean example",
             "required": false
