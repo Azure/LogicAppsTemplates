@@ -12,7 +12,7 @@ const manifestSchema = z.object({
         By: z.string(),
         Type: z.union([z.literal('Workflow'), z.literal('Other')]),
         Trigger: z.union([z.literal('Request'), z.literal('Recurrence')]),
-        Categories: z.union([z.literal('Design Patterns'), z.literal('Generative AI'), z.literal('B2B'), z.literal('EDI'), z.literal('Approval')])
+        Categories: z.union([z.literal('Design Patterns'), z.literal('Generative AI'), z.literal('B2B'), z.literal('EDI'), z.literal('Approval')]).optional()
     }),
     details_description: z.string().optional(),
     tags: z.array(z.string()).optional(),
