@@ -10,8 +10,9 @@ const manifestSchema = z.object({
     skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
     details: z.object({
         By: z.string(),
-        Type: z.union([z.literal('Workflow'), z.literal('Workflow')]),
-        Trigger: z.union([z.literal('Request'), z.literal('Recurrence')])
+        Type: z.union([z.literal('Workflow'), z.literal('Other')]),
+        Trigger: z.union([z.literal('Request'), z.literal('Recurrence')]),
+        Categories: z.union([z.literal('Design Patterns'), z.literal('Generative AI'), z.literal('B2B'), z.literal('EDI'), z.literal('Approval')])
     }),
     details_description: z.string().optional(),
     tags: z.array(z.string()).optional(),
@@ -22,7 +23,7 @@ const manifestSchema = z.object({
         z.object({
             name: z.string().regex(/^\S*$/),
             displayName: z.string(),
-            type: z.union([z.literal('string'), z.literal('boolean'), z.literal('array')]),
+            type: z.union([z.literal('String'), z.literal('Bool'), z.literal('Array'), z.literal('Float'), z.literal('Int'), z.literal('Object')]),
             description: z.string(),
             required: z.boolean(),
             allowedValues: z.array(

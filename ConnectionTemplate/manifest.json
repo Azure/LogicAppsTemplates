@@ -9,7 +9,7 @@
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
-        "Industry": "IT"
+        "Categories": "Design Patterns"
     },
     "tags": [ "Function: AI" ],
     "kinds": [

@@ -44,7 +44,7 @@
                 },
                 "Chunk_and_Tokenize": {
                     "inputs": {
-                        "method": "@parameters('TokenizeMethod_#workflowname#'",
+                        "method": "@parameters('TokenizeMethod_#workflowname#')",
                         "uri": "https://www.bing.com"
                     },
                     "runAfter": {

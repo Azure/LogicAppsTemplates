@@ -27,7 +27,7 @@
     },
     "parameters": [
         {
-            "name": "param1",
+            "name": "param1_#workflowname#",
             "displayName": "Parameter 1",
             "type": "String",
             "default": "default value",
@@ -35,7 +35,7 @@
             "required": true
         },
         {
-            "name": "boolExample",
+            "name": "boolExample_#workflowname#",
             "displayName": "Boolean Example",
             "type": "Bool",
             "default": "true",
