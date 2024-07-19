@@ -21,7 +21,7 @@
                 "type": "ServiceProvider"
             },
             "Compensation_Logic": {
-                "inputs": "Replace this with your compensation / exception handling logic",
+                "inputs": "Replace this item with your compensation / exception handling logic",
                 "runAfter": {
                     "Scope": [
                         "FAILED",
@@ -53,7 +53,7 @@
             "Scope": {
                 "actions": {
                     "Business_Logic": {
-                        "inputs": "Remove this item and include your business logic",
+                        "inputs": "Replace this item with your business logic",
                         "type": "Compose"
                     }
                 },
