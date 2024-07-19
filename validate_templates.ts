@@ -12,9 +12,9 @@ const manifestSchema = z.object({
         By: z.string(),
         Type: z.union([z.literal('Workflow'), z.literal('Other')]),
         Trigger: z.union([z.literal('Request'), z.literal('Recurrence')]),
-        Categories: z.union([z.literal('Design Patterns'), z.literal('Generative AI'), z.literal('B2B'), z.literal('EDI'), z.literal('Approval')]).optional()
+        Category: z.string().optional()
     }),
-    details_description: z.string().optional(),
+    detailsDescription: z.string().optional(),
     tags: z.array(z.string()).optional(),
     kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
     artifacts: z.array(z.object({ type: z.string(), file: z.string() })),
