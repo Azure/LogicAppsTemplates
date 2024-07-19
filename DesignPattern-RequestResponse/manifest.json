@@ -18,7 +18,7 @@
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
-        "Category": "Design Patterns , HTTP"
+        "Category": "Design Patterns"
     },
     "artifacts": [
         {
@@ -27,7 +27,8 @@
         }
     ],
     "images": {
-        "workflow": "workflow.png"
+        "light": "workflow_light",
+        "dark": "workflow_dark"
     },
     "parameters": [
     ],
