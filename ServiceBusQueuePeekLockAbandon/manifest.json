@@ -12,7 +12,7 @@
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
-        "Trigger": "Service Bus"
+        "Trigger": "Event"
     },
     "artifacts": [
         {
