@@ -13,7 +13,7 @@
         "stateful",
         "stateless"
     ],
-    "details_description": "This template serves the starting point for building synchronous Request Response patterns using Logic Apps. Learn more about these capabilites here -  https://learn.microsoft.com/azure/connectors/connectors-native-reqres?tabs=consumption ",
+    "detailsDescription": "This template serves the starting point for building synchronous Request Response patterns using Logic Apps. Learn more about these capabilites here -  https://learn.microsoft.com/azure/connectors/connectors-native-reqres?tabs=consumption ",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
