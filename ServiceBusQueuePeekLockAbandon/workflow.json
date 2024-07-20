@@ -5,7 +5,7 @@
                 "inputs": {
                     "parameters": {
                         "lockToken": "@triggerBody()?['lockToken']",
-                        "queueName": "@parameters('queueName')"
+                        "queueName": "@parameters('queueName_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "serviceBus",
@@ -35,7 +35,7 @@
                 "inputs": {
                     "parameters": {
                         "lockToken": "@triggerBody()?['lockToken']",
-                        "queueName": "@parameters('queueName')"
+                        "queueName": "@parameters('queueName_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "serviceBus",
@@ -67,8 +67,8 @@
             "When_messages_are_available_in_a_queue_(peek-lock)": {
                 "inputs": {
                     "parameters": {
-                        "maxMessageBatchSize": "@parameters('messageBatchSize')",
-                        "queueName": "@parameters('queueName')"
+                        "maxMessageBatchSize": "@parameters('messageBatchSize_#workflowname#')",
+                        "queueName": "@parameters('queueName_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "serviceBus",
