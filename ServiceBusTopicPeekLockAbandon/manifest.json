@@ -26,7 +26,7 @@
     },
     "parameters": [
         {
-            "name": "topicName",
+            "name": "topicName_#workflowname#",
             "displayName": "Topic Name",
             "type": "String",
             "default": "This is the name of the topic from which the message will be fetched.",
@@ -34,7 +34,7 @@
             "required": true
         },
         {
-            "name": "subscriptionName",
+            "name": "subscriptionName_#workflowname#",
             "displayName": "Subscription Name",
             "type": "String",
             "default": "This is the name of the subscription from which the message will be fetched.",
@@ -42,7 +42,7 @@
             "required": true
         },        
         {
-            "name": "messageBatchSize",
+            "name": "messageBatchSize_#workflowname#",
             "displayName": "Message Batch Size",
             "type": "Int",
             "default": "50",
