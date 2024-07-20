@@ -5,8 +5,8 @@
             "inputs": {
                 "parameters": {
                     "lockToken": "@triggerBody()?['lockToken']",
-                    "subscriptionName": "@parameters('subscriptionName')",
-                    "topicName": "@parameters('topicName')"
+                    "subscriptionName": "@parameters('subscriptionName_#workflowname#')",
+                    "topicName": "@parameters('topicName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
                     "connectionName": "serviceBus",
@@ -36,8 +36,8 @@
             "inputs": {
                 "parameters": {
                     "lockToken": "@triggerBody()?['lockToken']",
-                    "subscriptionName": "@parameters('subscriptionName')",
-                    "topicName": "@parameters('topicName')"
+                    "subscriptionName": "@parameters('subscriptionName_#workflowname#')",
+                    "topicName": "@parameters('topicName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
                     "connectionName": "serviceBus",
@@ -69,9 +69,9 @@
         "When_messages_are_available_in_a_topic_subscription_(peek-lock)": {
             "inputs": {
                 "parameters": {
-                    "maxMessageBatchSize": "@parameters('messageBatchSize')",
-                    "subscriptionName": "@parameters('subscriptionName')",
-                    "topicName": "@parameters('topicName')"
+                    "maxMessageBatchSize": "@parameters('messageBatchSize_#workflowname#')",
+                    "subscriptionName": "@parameters('subscriptionName_#workflowname#')",
+                    "topicName": "@parameters('topicName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
                     "connectionName": "serviceBus",
