@@ -1,0 +1,23 @@
+{
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Response": {
+                "description": "Return response back to the caller. Body and Headers are optional",
+                "inputs": {
+                    "statusCode": 200
+                },
+                "kind": "Http",
+                "runAfter": {},
+                "type": "Response"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "description": "Request Trigger to create a REST endpoint for this workflow",
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    }

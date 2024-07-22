@@ -1,0 +1,107 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Chunk_text": {
+            "inputs": {
+                "EncodingModel": "cl100k_base",
+                "PageOverlapLength": 0,
+                "TokenSize": 5000,
+                "chunkingStrategy": "TokenSize",
+                "text": "@body('Parse_a_document')?['text']"
+            },
+            "runAfter": {
+                "Parse_a_document": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ChunkText"
+        },
+        "Get_multiple_embeddings": {
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier')",
+                    "input": "@body('Chunk_text')?['value']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai-1",
+                    "operationId": "getArrayEmbeddings",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {
+                "Chunk_text": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "HTTP": {
+            "inputs": {
+                "method": "GET",
+                "uri": "@parameters('HTTP_Endpoint_For_Document')"
+            },
+            "runAfter": {},
+            "runtimeConfiguration": {
+                "contentTransfer": {
+                    "transferMode": "Chunked"
+                }
+            },
+            "type": "Http"
+        },
+        "Index_multiple_documents": {
+            "inputs": {
+                "parameters": {
+                    "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
+                    "indexName": "@parameters('AISearch_Index_Name')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "azureaisearch-1",
+                    "operationId": "indexDocuments",
+                    "serviceProviderId": "/serviceProviders/azureaisearch"
+                }
+            },
+            "runAfter": {
+                "Select_embeddings_and_map_to_AI_Search_schema": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Parse_a_document": {
+            "inputs": {
+                "content": "@body('HTTP')"
+            },
+            "runAfter": {
+                "HTTP": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ParseDocument"
+        },
+        "Select_embeddings_and_map_to_AI_Search_schema": {
+            "inputs": {
+                "from": "@range(0, length(body('Chunk_text')['value']))",
+                "select": {
+                    "content": "@body('Chunk_text')['value'][item()]",
+                    "documentName": "@parameters('AISearch_Schema_DocumentName')",
+                    "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                    "id": "@concat(parameters('AISearch_Schema_ID'), item())"
+                }
+            },
+            "runAfter": {
+                "Get_multiple_embeddings": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Select"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "kind": "Http",
+            "type": "Request"
+        }
+    }
+}

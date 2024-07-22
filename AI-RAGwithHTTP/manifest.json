@@ -1,0 +1,86 @@
+{
+    "title": "RAG-Based Workflow for Document Ingestion and Indexing Using Azure OpenAI and Azure AI Search",
+    "description": "This template is based on RAG (Retrieval-augmented generation) pattern for document processing and indexing using Azure Open AI and Azure AI Search. Triggered by an HTTP request, the workflow fetches a document from a specified endpoint, parses the content, and chunks the text based on token size. Each chunk is then processed to generate embeddings via an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search, and finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis.",
+    "prerequisites": "Before you use this template, you need to configure Azure OpenAI instance with embedding model. You also need to configure AI Search instance as your vector store, with an index and the appropriate schema. We recommend to follow [this](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo) sample on GitHub to review these prerequisites in more details ",
+    "tags": [
+        "RAG-Document-Ingestion"
+    ],
+    "skus": [
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "detailsDescription": "This template is built upon AI building blocks in Logic Apps such as Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built in actions to document parsing and chunking. [Learn more] (https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI, RAG"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow_light",
+        "dark": "workflow_dark"
+    },
+    "parameters": [
+        {
+            "name": "AISearch_Index_Name",
+            "displayName": "AISearch Index Name",
+            "type": "String",
+            "description": "Provide the Index name you want to use to map OpenAI embeddings",
+            "required": true
+        },
+        {
+            "name": "AISearch_Schema_DocumentName",
+            "displayName": "AISearch Schema DocumentName",
+            "type": "String",
+            "description": "Provide the Document Name for the content that is vectorized and stored in Azure AI Search vector store",
+            "required": true
+        },
+        {
+            "name": "AISearch_Schema_ID",
+            "displayName": "AISearch Schema ID",
+            "type": "String",
+            "description": "Provide a string that will be used as a prefix for the vector embeddings",
+            "required": true
+        },
+        {
+            "name": "HTTP_Endpoint_For_Document",
+            "displayName": "HTTP Endpoint For Document",
+            "type": "String",
+            "description": "Provide the HTTP endpoint from which you want get your document",
+            "required": true
+        },
+        {
+            "name": "OpenAI_TextEmbedding_Deployment_Identifier",
+            "displayName": "OpenAI Text Embedding Deployment Identifier",
+            "type": "String",
+            "description": "Provide the Azure OpenAI deployment model you want to use to generate embeddings",
+            "required": true
+        }
+        
+    ],
+    "connections": {
+        "AISearch": {
+            "connectorId": "/serviceProviders/azureaisearch",
+            "kind": "inapp"
+        },
+        "OpenAI": {
+            "connectorId": "/serviceProviders/openai",
+            "kind": "inapp"
+        }
+    },
+    "featuredOperations": [
+        {
+            "type": "ChunkText"
+        }
+    ]
+
+}
