@@ -11,7 +11,7 @@ const manifestSchema = z.object({
     details: z.object({
         By: z.string(),
         Type: z.union([z.literal('Workflow'), z.literal('Other')]),
-        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event']),
+        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event')]),
         Category: z.string().optional()
     }),
     detailsDescription: z.string().optional(),
