@@ -6,7 +6,7 @@ import { fromError } from 'zod-validation-error';
 const manifestSchema = z.object({
     title: z.string(),
     description: z.string(),
-    prerequisites: z.string(),
+    prerequisites: z.string().optional(),
     skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
     details: z.object({
         By: z.string(),
