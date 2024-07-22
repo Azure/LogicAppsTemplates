@@ -1,5 +1,8 @@
 [
-    "ExampleTemplate",
+    "AI-RAGwithHTTP",
+    "ConnectionOnlyTemplate",
     "ConnectionTemplate",
-    "ConnectionOnlyTemplate"
+    "DesignPattern-RequestResponse",
+    "ServiceBusQueuePeekLockAbandon",
+    "ServiceBusTopicPeekLockAbandon"
 ]
