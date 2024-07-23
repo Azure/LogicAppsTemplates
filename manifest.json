@@ -4,5 +4,6 @@
     "ConnectionTemplate",
     "DesignPattern-RequestResponse",
     "ServiceBusQueuePeekLockAbandon",
-    "ServiceBusTopicPeekLockAbandon"
+    "ServiceBusTopicPeekLockAbandon",
+    "IBMMQQueueBrowseLockAbort"
 ]
