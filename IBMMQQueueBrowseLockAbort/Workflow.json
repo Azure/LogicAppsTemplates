@@ -1,0 +1,95 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Abort_the_message_in_a_queue": {
+            "inputs": {
+                "parameters": {
+                    "completeAction": "Abort",
+                    "connectionId": "@triggerBody()?['OriginalConnectionId']",
+                    "messageId": "@triggerBody()?['messageId']",
+                    "queueName": "@triggerBody()?['originalQueueName']",
+                    "uniqueId": "@triggerBody()?['uniqueId']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "mq",
+                    "operationId": "completeMessage",
+                    "serviceProviderId": "/serviceProviders/mq"
+                }
+            },
+            "runAfter": {
+                "Compensation_Logic": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Compensation_Logic": {
+            "inputs": "Replace this with your compensation / exception handling logic",
+            "runAfter": {
+                "Scope": [
+                    "TIMEDOUT",
+                    "SKIPPED",
+                    "FAILED"
+                ]
+            },
+            "type": "Compose"
+        },
+        "Complete_the_message_in_a_queue": {
+            "inputs": {
+                "parameters": {
+                    "completeAction": "Commit",
+                    "connectionId": "@triggerBody()?['OriginalConnectionId']",
+                    "messageId": "@triggerBody()?['messageId']",
+                    "queueName": "@triggerBody()?['originalQueueName']",
+                    "uniqueId": "@triggerBody()?['uniqueId']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "mq",
+                    "operationId": "completeMessage",
+                    "serviceProviderId": "/serviceProviders/mq"
+                }
+            },
+            "runAfter": {
+                "Scope": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Scope": {
+            "actions": {
+                "Business_logic": {
+                    "inputs": "Remove this item and include your business logic",
+                    "type": "Compose"
+                }
+            },
+            "runAfter": {},
+            "type": "Scope"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_one_or_more_messages_are_received_from_a_queue_(browse-lock)": {
+            "inputs": {
+                "parameters": {
+                    "getMessageOptions": {
+                        "browseLockedTimeoutInSeconds": "@parameters('timeoutInterval_#workflowname#')",
+                        "maximumMessagesInBatch": "@parameters('maxMessageCount_#workflowname#')",
+                        "pollingIntervalInSeconds": "@parameters('pollingInterval_#workflowname#')",
+                        "waitIntervalInSeconds": "@parameters('waitInterval_#workflowname#')"
+                    },
+                    "includeInfo": true,
+                    "queueName": "@parameters('queueName_#workflowname#')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "mq",
+                    "operationId": "pollBrowseMessages",
+                    "serviceProviderId": "/serviceProviders/mq"
+                }
+            },
+            "splitOn": "@triggerOutputs()?['body']?['messages']",
+            "type": "ServiceProvider"
+        }
+    }
+}

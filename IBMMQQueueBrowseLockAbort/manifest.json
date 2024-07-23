@@ -1,0 +1,75 @@
+{
+    "title": "IBM MQ Browse Lock Pattern - get message from a queue",
+    "description": "Get new message from a IBM MQ queue and lock it for processing. The message will be deleted from the queue after the processing is completed. This pattern is useful when you want to ensure that the message is processed only once and not lost in case of a failure during processing. For more information about using this connector, see [Connect to an IBM MQ server from a workflow in Azure Logic Apps](https://learn.microsoft.com/azure/connectors/connectors-create-api-mq)",
+    "prerequisites": "Before you can use this template, you need to use the state preservation feature and enable VNET integration. For more information about the state preservation feature see [Enable stateful mode for stateless built-in connectors in Azure Logic Apps](https://learn.microsoft.com/azure/connectors/enable-stateful-affinity-built-in-connectors)",
+    "skus": [
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Event"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "snapshot_light",
+        "dark": "snapshot_dark"
+    },
+    "parameters": [
+        {
+            "name": "queueName_#workflowname#",
+            "displayName": "Queue Name",
+            "type": "String",
+            "default": "This is the name of the IBM MQ queue from which the message will be read.",
+                "description": "This is a parameter",
+            "required": true
+        },
+        {
+            "name": "maxMessageCount_#workflowname#",
+            "displayName": "Max message count",
+            "type": "Int",
+            "default": "200",
+            "description": "The maximum number of messages per received batch. We recommend this value to be of 200.",
+            "required": false
+        },
+        {
+            "name": "waitInterval_#workflowname#",
+            "displayName": "Wait interval",
+            "type": "Int",
+            "default": "15",
+            "description": "The wait period in seconds before IBM MQ returns from a GET call without a message. We recommend this value to be between 15 and 30.",
+            "required": false
+        },
+        {
+            "name": "timeoutInterval_#workflowname#",
+            "displayName": "Timeout interval",
+            "type": "Int",
+            "default": "5",
+            "description": "The timeout period in seconds before browse-locked messages are aborted. The default is 1800 seconds.",
+            "required": false
+        },
+        {
+            "name": "pollingInterval_#workflowname#",
+            "displayName": "Polling interval",
+            "type": "Int",
+            "default": "1",
+            "description": "The polling trigger interval in seconds. To optimize resources and response time, set the Wait interval to a value between 15-30 secs and the Polling interval to 1 second. This will minimize network exchanges during slow periods while allowing a quick response time during high load periods.​",
+            "required": false
+        }
+    ],
+    "connections": {
+        "mq": {
+            "connectorId": "/serviceProviders/mq",
+            "kind": "inapp"
+        }
+    }
+}
