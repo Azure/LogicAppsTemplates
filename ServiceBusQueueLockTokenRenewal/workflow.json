@@ -1,0 +1,158 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Abandon_the_message_in_a_queue": {
+            "inputs": {
+                "parameters": {
+                    "lockToken": "@triggerBody()?['lockToken']",
+                    "queueName": "@parameters('queueName_#workflowname#')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "serviceBus_#workflowname#",
+                    "operationId": "abandonQueueMessageV2",
+                    "serviceProviderId": "/serviceProviders/serviceBus"
+                }
+            },
+            "runAfter": {
+                "Compensation_Logic": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Compensation_Logic": {
+            "inputs": "Replace this with your compensation / exception handling logic",
+            "runAfter": {
+                "Scope": [
+                    "FAILED",
+                    "SKIPPED",
+                    "TIMEDOUT"
+                ]
+            },
+            "type": "Compose"
+        },
+        "Complete_the_message_in_a_queue": {
+            "inputs": {
+                "parameters": {
+                    "lockToken": "@triggerBody()?['lockToken']",
+                    "queueName": "@parameters('queueName_#workflowname#')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "serviceBus_#workflowname#",
+                    "operationId": "completeQueueMessageV2",
+                    "serviceProviderId": "/serviceProviders/serviceBus"
+                }
+            },
+            "runAfter": {
+                "Scope": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Initialize_Process_Complete_Flag": {
+            "inputs": {
+                "variables": [
+                    {
+                        "name": "processCompleted",
+                        "type": "boolean",
+                        "value": false
+                    }
+                ]
+            },
+            "runAfter": {},
+            "type": "InitializeVariable"
+        },
+        "Scope": {
+            "actions": {
+                "Business_Logic_Scope": {
+                    "actions": {
+                        "Business_Logic": {
+                            "inputs": "Remove this item and include your business logic",
+                            "type": "Compose"
+                        }
+                    },
+                    "type": "Scope"
+                },
+                "Process_Finished": {
+                    "inputs": {
+                        "name": "processCompleted",
+                        "value": true
+                    },
+                    "runAfter": {
+                        "Business_Logic_Scope": [
+                            "SUCCEEDED",
+                            "TIMEDOUT",
+                            "SKIPPED",
+                            "FAILED"
+                        ]
+                    },
+                    "type": "SetVariable"
+                },
+                "Until": {
+                    "actions": {
+                        "Renew_lock_on_a_message_in_queue": {
+                            "inputs": {
+                                "parameters": {
+                                    "lockToken": "@triggerBody()?['lockToken']",
+                                    "queueName": "@parameters('queueName_#workflowname#')"
+                                },
+                                "serviceProviderConfiguration": {
+                                    "connectionName": "serviceBus_#workflowname#",
+                                    "operationId": "renewLockQueueMessageV2",
+                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                }
+                            },
+                            "type": "ServiceProvider"
+                        },
+                        "Wait_for_Process_to_Complete": {
+                            "inputs": {
+                                "interval": {
+                                    "count": "@parameters('delayInMinutes_#workflowname#')",
+                                    "unit": "Minute"
+                                }
+                            },
+                            "runAfter": {
+                                "Renew_lock_on_a_message_in_queue": [
+                                    "SUCCEEDED"
+                                ]
+                            },
+                            "type": "Wait"
+                        }
+                    },
+                    "expression": "@equals(variables('processCompleted'),true)",
+                    "limit": {
+                        "count": 60,
+                        "timeout": "PT1H"
+                    },
+                    "type": "Until"
+                }
+            },
+            "runAfter": {
+                "Initialize_Process_Complete_Flag": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Scope"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_messages_are_available_in_a_queue_(peek-lock)": {
+            "inputs": {
+                "parameters": {
+                    "maxMessageBatchSize": "@parameters('messageBatchSize_#workflowname#')",
+                    "queueName": "@parameters('queueName_#workflowname#')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "serviceBus_#workflowname#",
+                    "operationId": "peekLockQueueMessagesV2",
+                    "serviceProviderId": "/serviceProviders/serviceBus"
+                }
+            },
+            "splitOn": "@triggerOutputs()?['body']",
+            "type": "ServiceProvider"
+        }
+    }
+}
