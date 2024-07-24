@@ -1,5 +1,5 @@
 {
-    "title": "Service Bus Peek Lock Pattern - Renew lock token",
+    "title": "Service Bus Peek Lock Pattern - get message from a queue with token renewal",
     "description": "Get new message from a Service Bus queue and lock it for processing, renewing the lock token until processing is completed. The message will be deleted from the queue after the processing is completed. This pattern is useful when you want to ensure that the message is processed only once and not lost in case of a failure during processing.",
     "prerequisites": "Before you can use this template, you need to configure a Service Bus namespace and create a queue. For more information about Service Bus see [Create a new queue on Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-quickstart-portal)",
     "skus": [
