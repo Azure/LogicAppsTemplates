@@ -87,9 +87,7 @@ for (const folderName of manifestNamesList) {
         throw '';
     }
 
-    const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/, {
-        message: "String must match the pattern: anything [anything] (anything) anything",
-      });
+    const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
       const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.prerequisites ?? "");
       const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.detailsDescription ?? "");
       
