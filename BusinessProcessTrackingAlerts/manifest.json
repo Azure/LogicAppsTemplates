@@ -93,10 +93,18 @@
             "kind": "shared"
         }
     },
-    "featuredOperations": [
+   "featuredOperations": [
         {
-            "type": "XSLT,Table"
+            "type": "XSLT"
+        },
+        {
+            "type": "Table"
+        },
+        {
+            "type":"Recurrence"
+
         }
+
     ]
 
 }
