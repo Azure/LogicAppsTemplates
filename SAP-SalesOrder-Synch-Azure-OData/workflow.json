@@ -1,0 +1,319 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Condition_too_many_values": {
+                "actions": {
+                    "Terminate": {
+                        "inputs": {
+                            "runError": {
+                                "code": "500",
+                                "message": "Loop limit hit (@{add(div(variables('totalCountOfSAPSalesOrders'),variables('odataTopValue')),1)} needed, current:@{parameters('loopLimit_#workflowname#')})! Adjust $top (@{variables('odataTopValue')}) or raise loop limit (max 5000!)"
+                            },
+                            "runStatus": "Failed"
+                        },
+                        "type": "Terminate"
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Create_CSV_table": {
+                            "inputs": {
+                                "format": "CSV",
+                                "from": "@variables('resultset')"
+                            },
+                            "runAfter": {
+                                "Until": [
+                                    "SUCCEEDED",
+                                    "TIMEDOUT",
+                                    "SKIPPED"
+                                ]
+                            },
+                            "type": "Table"
+                        },
+                        "Set_sanity_check": {
+                            "inputs": {
+                                "name": "AmountOfWrittenValues",
+                                "value": "@length(variables('resultset'))"
+                            },
+                            "runAfter": {
+                                "Upload_blob_to_storage_container": [
+                                    "SUCCEEDED"
+                                ]
+                            },
+                            "type": "SetVariable"
+                        },
+                        "Until": {
+                            "actions": {
+                                "For_each": {
+                                    "actions": {
+                                        "Append_to_array_variable": {
+                                            "inputs": {
+                                                "name": "resultset",
+                                                "value": {
+                                                    "last-change-dateTime": "@{item()?['LastChangeDateTime']}",
+                                                    "net-amount": "@{item()['TotalNetAmount']} @{item()['TransactionCurrency']}",
+                                                    "order-id": "@item()['SalesOrder']",
+                                                    "purchase-order-by-customer": "@{item()['PurchaseOrderByCustomer']}",
+                                                    "sales-organization": "@{item()['SalesOrganization']}"
+                                                }
+                                            },
+                                            "type": "AppendToArrayVariable"
+                                        }
+                                    },
+                                    "foreach": "@body('Query_SAP_Sales_Orders')",
+                                    "runAfter": {
+                                        "Query_SAP_Sales_Orders": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "foreach"
+                                },
+                                "Increment_skip_counter": {
+                                    "inputs": {
+                                        "name": "odataSkipCounter",
+                                        "value": "@variables('odataTopValue')"
+                                    },
+                                    "runAfter": {
+                                        "Set_current_resultset_length": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "IncrementVariable"
+                                },
+                                "Query_SAP_Sales_Orders": {
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "referenceName": "sapodata"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "path": "/getentitydata",
+                                        "queries": {
+                                            "entity": "SalesOrder",
+                                            "filter": "LastChangeDateTime gt @{variables('dateFilterWindow')}",
+                                            "select": "SalesOrder,TotalNetAmount,TransactionCurrency,SalesOrganization,LastChangeDateTime,PurchaseOrderByCustomer",
+                                            "skip": "@variables('odataSkipCounter')",
+                                            "top": "@variables('odataTopValue')"
+                                        }
+                                    },
+                                    "type": "ApiConnection"
+                                },
+                                "Set_current_resultset_length": {
+                                    "inputs": {
+                                        "name": "currentResultSetLength",
+                                        "value": "@length(body('Query_SAP_Sales_Orders'))"
+                                    },
+                                    "runAfter": {
+                                        "For_each": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "SetVariable"
+                                }
+                            },
+                            "expression": "@less(variables('currentResultSetLength'),variables('odataTopValue'))",
+                            "limit": {
+                                "count": "@parameters('loopLimit_#workflowname#')",
+                                "timeout": "PT1H"
+                            },
+                            "type": "Until"
+                        },
+                        "Upload_blob_to_storage_container": {
+                            "inputs": {
+                                "parameters": {
+                                    "blobName": "@parameters('azure-blob-name_#workflowname#')",
+                                    "containerName": "@parameters('azure-container-name_#workflowname#')",
+                                    "content": "@body('Create_CSV_table')",
+                                    "overrideIfExists": "true"
+                                },
+                                "serviceProviderConfiguration": {
+                                    "connectionName": "AzureBlob",
+                                    "operationId": "uploadBlob",
+                                    "serviceProviderId": "/serviceProviders/AzureBlob"
+                                }
+                            },
+                            "runAfter": {
+                                "Create_CSV_table": [
+                                    "SUCCEEDED"
+                                ]
+                            },
+                            "type": "ServiceProvider"
+                        }
+                    }
+                },
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                "@add(div(variables('totalCountOfSAPSalesOrders'),variables('odataTopValue')),1)",
+                                "@parameters('loopLimit_#workflowname#')"
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_sanity_check": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "If"
+            },
+            "Get_total_count_of_SAP_Sales_Orders": {
+                "inputs": {
+                    "headers": {
+                        "APIKey": "@{parameters('odata-api-key_#workflowname#')}",
+                        "Accept": "application/json"
+                    },
+                    "method": "GET",
+                    "queries": {
+                        "$count": "true",
+                        "$filter": "LastChangeDateTime gt @{variables('dateFilterWindow')}",
+                        "$format": "json",
+                        "$select": "SalesOrder",
+                        "$top": "1"
+                    },
+                    "uri": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata4/sap/api_salesorder/srvd_a2x/sap/salesorder/0001/SalesOrder"
+                },
+                "runAfter": {
+                    "Initialize_LastChanged_Filter": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
+            },
+            "Initialize_LastChanged_Filter": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "dateFilterWindow",
+                            "type": "string",
+                            "value": "@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-ddTHH:mm:ssZ')}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_resultset_list": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Initialize_current_result_length": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "currentResultSetLength",
+                            "type": "integer",
+                            "value": -1
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_odata_skip_counter": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Initialize_odata_skip_counter": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "odataSkipCounter",
+                            "type": "integer",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_odata_top": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Initialize_odata_top": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "odataTopValue",
+                            "type": "integer",
+                            "value": "@parameters('odataTopDefault_#workflowname#')"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            },
+            "Initialize_resultset_list": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "resultset",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_current_result_length": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Initialize_sanity_check": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "AmountOfWrittenValues",
+                            "type": "integer",
+                            "value": -1
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_total_count_of_SAP_Sales_Orders": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Initialize_total_count_of_SAP_Sales_Orders": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "totalCountOfSAPSalesOrders",
+                            "type": "integer",
+                            "value": "@body('Get_total_count_of_SAP_Sales_Orders')?['@odata.count']"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Get_total_count_of_SAP_Sales_Orders": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "InitializeVariable"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "Recurrence": {
+                "recurrence": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "type": "Recurrence"
+            }
+        }
+    },
+    "kind": "Stateful"
+}
