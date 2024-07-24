@@ -17,7 +17,7 @@
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
-        "Category": "AI, RAG"
+        "Category": "Generative AI,RAG"
     },
     "artifacts": [
         {
