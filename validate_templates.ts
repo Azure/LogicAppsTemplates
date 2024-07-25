@@ -32,9 +32,11 @@ const manifestSchema = z.object({
     }),
     parameters: z.array(
         z.object({
-            name: z.string().regex(/^\S*$/),
+            name: z.string().regex(/^\S*_#workflowname#$/, {
+                message: 'parameters "name" field must end with _#workflowname#'
+            }),
             displayName: z.string().regex(/^[A-Z].*$/, {
-                message: 'Parameters "displayName" field must start with the first letter capitalized'
+                message: 'parameters "displayName" field must start with the first letter capitalized'
             }),
             type: z.union([z.literal('String'), z.literal('Bool'), z.literal('Array'), z.literal('Float'), z.literal('Int'), z.literal('Object')]),
             description: z.string(),
@@ -44,12 +46,16 @@ const manifestSchema = z.object({
             ).optional()
         })
     ),
-    connections: z.record(z.string(), z.object({
-        connectorId: z.string().regex(/^\/.*/, {
-            message: 'Connections "connectorId" field must start with a forward slash'
-        }),
-        kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')]),
-    }))
+    connections: z.record(
+        z.string().regex(/^\S*_#workflowname#$/, {
+            message: 'connections "name" field must end with _#workflowname#'
+        }), 
+        z.object({
+            connectorId: z.string().regex(/^\/.*/, {
+                message: 'Connections "connectorId" field must start with a forward slash'
+            }),
+            kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')]),
+        }))
 })
 
 program.parse();
@@ -68,6 +74,7 @@ const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: s
     }
 }
 
+const workflowIdentifier = "_#workflowname#";
 const allowedCategories = ["Design Patterns", "Generative AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
 
 // Check all folders listed in manifest.json exist (case sensitive check)
@@ -113,6 +120,38 @@ for (const folderName of manifestNamesList) {
     const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
     checkFilesExistCaseSensitive(fileNamesInFolder, folderName, manifestFile.artifacts.map((artifact) => artifact.file));
     checkFilesExistCaseSensitive(fileNamesInFolder, folderName, [`${manifestFile.images.light}.png`, `${manifestFile.images.dark}.png`]);
+
+    const workflowFilePath = manifestFile.artifacts.find((artifact) => artifact.type === "workflow")?.file;
+    
+    if (!workflowFilePath) {
+        console.error(`Template "${folderName}" Failed Validation: workflow file not found`);
+        throw '';
+    }
+    const workflowFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFilePath}`), {
+        encoding: 'utf-8'
+    }));
+
+    for (const parameter of manifestFile.parameters) {
+        const parameterNameWoIdentifier = parameter.name.replace(workflowIdentifier, "");
+        const invalidParameterPattern = new RegExp(`@parameters\\('\\s*${parameterNameWoIdentifier}\\s*'\\)`);
+        const parameterResult = invalidParameterPattern.test(JSON.stringify(workflowFile));
+
+        if (parameterResult) {
+            console.error(`Workflow "${folderName}" Failed Validation: workflow parameter ${`@parameters(${parameterNameWoIdentifier})`} does not contain identifier "${workflowIdentifier}"`);
+            throw '';
+        }
+    }
+
+    for (const connectionKey of Object.keys(manifestFile.connections)) {
+        const connectionKeyWoIdentifier = connectionKey.replace(workflowIdentifier, "");
+        const invalidConnectionPattern = new RegExp(`"connectionName":\\s*"${connectionKeyWoIdentifier}"`);
+        const connectionResult = invalidConnectionPattern.test(JSON.stringify(workflowFile));
+
+        if (connectionResult) {
+            console.error(`Workflow "${folderName}" Failed Validation: workflow connection ${`"connectionName": "${connectionKeyWoIdentifier}"`} does not contain identifier "${workflowIdentifier}"`);
+            throw '';
+        }
+    }
 }
 
 console.log("Test Passed");

@@ -67,7 +67,7 @@
         }
     ],
     "connections": {
-        "mq": {
+        "mq_#workflowname#": {
             "connectorId": "/serviceProviders/mq",
             "kind": "inapp"
         }
