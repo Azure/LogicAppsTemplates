@@ -51,7 +51,7 @@
         }
     ],
     "connections": {
-        "serviceBus": {
+        "serviceBus_#workflowname#": {
             "connectorId": "/serviceProviders/serviceBus",
             "kind": "inapp"
         }

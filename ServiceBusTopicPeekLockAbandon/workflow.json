@@ -9,7 +9,7 @@
                     "topicName": "@parameters('topicName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "serviceBus",
+                    "connectionName": "serviceBus_#workflowname#",
                     "operationId": "abandonTopicMessageV2",
                     "serviceProviderId": "/serviceProviders/serviceBus"
                 }
@@ -40,7 +40,7 @@
                     "topicName": "@parameters('topicName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "serviceBus",
+                    "connectionName": "serviceBus_#workflowname#",
                     "operationId": "completeTopicMessageV2",
                     "serviceProviderId": "/serviceProviders/serviceBus"
                 }
@@ -74,7 +74,7 @@
                     "topicName": "@parameters('topicName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "serviceBus",
+                    "connectionName": "serviceBus_#workflowname#",
                     "operationId": "peekLockTopicMessagesV2",
                     "serviceProviderId": "/serviceProviders/serviceBus"
                 }
