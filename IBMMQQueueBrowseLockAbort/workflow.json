@@ -11,7 +11,7 @@
                     "uniqueId": "@triggerBody()?['uniqueId']"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "mq",
+                    "connectionName": "mq_#workflowname#",
                     "operationId": "completeMessage",
                     "serviceProviderId": "/serviceProviders/mq"
                 }
@@ -44,7 +44,7 @@
                     "uniqueId": "@triggerBody()?['uniqueId']"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "mq",
+                    "connectionName": "mq_#workflowname#",
                     "operationId": "completeMessage",
                     "serviceProviderId": "/serviceProviders/mq"
                 }
@@ -83,7 +83,7 @@
                     "queueName": "@parameters('queueName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "mq",
+                    "connectionName": "mq_#workflowname#",
                     "operationId": "pollBrowseMessages",
                     "serviceProviderId": "/serviceProviders/mq"
                 }
