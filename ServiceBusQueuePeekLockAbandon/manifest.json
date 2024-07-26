@@ -21,8 +21,8 @@
         }
     ],
     "images": {
-        "light": "snapshot_light",
-        "dark": "snapshot_dark"
+        "light": "snapshot-light",
+        "dark": "snapshot-dark"
     },
     "parameters": [
         {
@@ -43,7 +43,7 @@
         }
     ],
     "connections": {
-        "serviceBus": {
+        "serviceBus_#workflowname#": {
             "connectorId": "/serviceProviders/serviceBus",
             "kind": "inapp"
         }
