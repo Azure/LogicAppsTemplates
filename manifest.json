@@ -3,6 +3,7 @@
     "ConnectionOnlyTemplate",
     "ConnectionTemplate",
     "DesignPattern-RequestResponse",
+    "SAP-BAPI-GoodsMovementCreate",
     "ServiceBusQueuePeekLockAbandon",
     "ServiceBusTopicPeekLockAbandon",
     "IBMMQQueueBrowseLockAbort"
