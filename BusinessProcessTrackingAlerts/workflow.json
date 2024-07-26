@@ -7,7 +7,7 @@
                 "inputs": {
                     "body": {
                         "messageBody": "<p>An error has occurred within the ProcessBPTAlerts workflow. Here are the details:</p><br><p>@{result('Scope-Try')}</p>",
-                        "recipient": "@parameters('Teams-Recipient')"
+                        "recipient": "@parameters('Teams-Recipient_#workflowname#')"
                     },
                     "host": {
                         "connection": {
@@ -89,7 +89,7 @@
                                     "body": {
                                         "isAlert": true,
                                         "messageBody": "<p><u><b><strong style=\"color: rgb(74, 144, 226);\">A Business Process Stage has failed with the following details:</strong></b></u></p><br><p><b><strong style=\"color: rgb(74, 144, 226);\">Business Process Name:</strong></b> @{item()['metadata']['businessProcessName']}</p><p><b><strong>Ticket Number:</strong></b> @{item()['correlationId']}</p><p><b><strong>Stage Name: </strong></b>@{item()['eventName']}</p><p><b><strong>Time Stamp:</strong></b> @{replace(substring(item()['eventTimestamp'],0,19),'T',' ')}</p><p><b><strong>Stage Status:</strong></b> @{item()['eventStatus']}</p><p><b><strong>Logic App:</strong></b> @{item()['metadata']['appName']}</p><p><b><strong>Workflow Name:</strong></b> @{item()['metadata']['flowName']}</p><p><b><strong>Run Instance Id:</strong></b> @{item()['metadata']['flowRunSequenceId']}</p><p><b><strong>Properties emitted: </strong></b>@{replace(replace(replace(replace(string(item()['properties']),'{\"',': '),'\":\"',': '),'\"}',''),'\",\"',' ')}</p><br><p><b><strong style=\"background-color: rgb(255, 255, 255); color: rgb(74, 144, 226);\">Entire Business Process:</strong></b></p><p>@{body('Create_HTML_table_BP_Details')}</p><br><br>",
-                                        "recipient": "@parameters('Teams-Recipient')"
+                                        "recipient": "@parameters('Teams-Recipient_#workflowname#')"
                                     },
                                     "host": {
                                         "connection": {
@@ -110,9 +110,9 @@
                                 "description": "Execute query looking for all business process records for a particular transaction.",
                                 "inputs": {
                                     "body": {
-                                        "cluster": "@parameters('Kusto-URL')",
+                                        "cluster": "@parameters('Kusto-URL_#workflowname#')",
                                         "csl": "@{outputs('Compose-BusinessProcessDetailsQuery')}",
-                                        "db": "@parameters('Kusto-DBName')"
+                                        "db": "@parameters('Kusto-DBName_#workflowname#')"
                                     },
                                     "host": {
                                         "connection": {
@@ -155,7 +155,7 @@
                                             "PartitionKey": "CustomerService",
                                             "RowKey": "PowerOutageTickets"
                                         },
-                                        "tableName": "@parameters('Azure-TableName')"
+                                        "tableName": "@parameters('Azure-TableName_#workflowname#')"
                                     },
                                     "serviceProviderConfiguration": {
                                         "connectionName": "azureTables-2",
@@ -303,7 +303,7 @@
                 "inputs": {
                     "parameters": {
                         "filter": "PartitionKey eq 'CustomerService' and RowKey eq 'PowerOutageTickets'",
-                        "tableName": "@parameters('Azure-TableName')"
+                        "tableName": "@parameters('Azure-TableName_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "azureTables-2",
@@ -317,9 +317,9 @@
                 "description": "Run our query looking for failed stages in ADX.",
                 "inputs": {
                     "body": {
-                        "cluster": "@parameters('Kusto-URL')",
+                        "cluster": "@parameters('Kusto-URL_#workflowname#')",
                         "csl": "@{outputs('Compose-KQLQuery')}",
-                        "db": "@parameters('Kusto-DBName')"
+                        "db": "@parameters('Kusto-DBName_#workflowname#')"
                     },
                     "host": {
                         "connection": {

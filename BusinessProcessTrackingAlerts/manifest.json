@@ -12,7 +12,7 @@
         "stateful",
         "stateless"
     ],
-    "detailsDescription": "This template is built upon AI building blocks in Logic Apps such as Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built in actions to document parsing and chunking. [Learn more] (https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
+    "detailsDescription": "This template will query Business Process Tracking data from an Azure Data Explorer instance and return any records that contain a stage status failure.",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
@@ -25,15 +25,15 @@
             "file": "workflow.json"
         },
         {
-            "type": "maps",
+            "type": "map",
             "file": "BPKQL-to-Teams.xslt"
         },
         {
-            "type": "schemas",
+            "type": "schema",
             "file": "BPKQL.json"
         },
         {
-            "type": "schemas",
+            "type": "schema",
             "file": "team.json"
         }
     ],
@@ -71,13 +71,13 @@
             "required": true
         },
         {
-            "name": "kusto-ConnectionRuntimeUrl_#workflowname#",
+            "name": "Kusto-URL_#workflowname#",
             "displayName": "Kusto Connection Runtime URL for Business Process Tracking instance",
             "type": "String",
             "description": "The URL found on the overview page for your ADX instance in the URI field.",
             "required": true
         }
-        
+      
     ],
     "connections": {
         "AISearch_#workflowname#": {
