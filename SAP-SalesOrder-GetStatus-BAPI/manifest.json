@@ -1,7 +1,7 @@
 {
     "title": "Retrieve the status of a SAP Sales Orders by ID in bulk using BAPI",
     "description": "Enable SAP Sales Order status retrieval from Microsoft Teams Channels. Template uses SAP's standard BAPI BAPI_SALESORDER_GETSTATUS. Learn more [here](https://www.youtube.com/watch?v=ZmOPPtIYYM4)",
-    "prerequisites": "To reach a private SAP on Azure system use [VNet integration](https://learn.microsoft.com/azure/logic-apps/secure-single-tenant-workflow-virtual-network-private-endpoint#set-up-outbound-traffic-using-virtual-network-integration). For on-premise adapt the BAPI configuration to use the [On-premises Data Gateway](https://learn.microsoft.com/azure/logic-apps/install-on-premises-data-gateway)",
+    "prerequisites": "The [SAP .Net Connector](https://support.sap.com/en/product/connectors/msnet.html) libraries need to be deployed under the assemblies of the Standard LogicApp, see [Connect to SAP from workflows in Azure Logic Apps](https://learn.microsoft.com/azure/logic-apps/connectors/sap?tabs=consumption) for more information. You will also need connection details for your SAP system and a RFC user. To reach a private SAP on Azure system use [VNet integration](https://learn.microsoft.com/azure/logic-apps/secure-single-tenant-workflow-virtual-network-private-endpoint#set-up-outbound-traffic-using-virtual-network-integration). For on-premise adapt the BAPI configuration to use the [On-premises Data Gateway](https://learn.microsoft.com/azure/logic-apps/install-on-premises-data-gateway)",
     "tags": [
         "SAP","BAPI","RFC","Microsoft Teams","mass data extraction","sales order"
     ],
