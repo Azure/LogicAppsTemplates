@@ -30,7 +30,7 @@
     "parameters": [
         {
             "name": "odataTopDefault_#workflowname#",
-            "displayName": "odataTopDefault",
+            "displayName": "Odata Top Default",
             "type": "Int",
             "default": "50",
             "description": "OData $top batch size",
@@ -38,7 +38,7 @@
         },
         {
             "name": "loopLimit_#workflowname#",
-            "displayName": "loopLimit",
+            "displayName": "Loop Limit",
             "type": "Int",
             "default": "71",
             "description": "Maximum number of loops to request data from SAP via OData",
@@ -46,7 +46,7 @@
         },
         {
             "name": "odata-api-key_#workflowname#",
-            "displayName": "odata-api-key",
+            "displayName": "Odata Api Key",
             "type": "String",
             "default": "This is the SAP API Business Hub key for the OData API",
             "description": "Get your API key from the SAP API Business Hub: https://api.sap.com/api/API_BUSINESS_PARTNER/overview",
@@ -54,7 +54,7 @@
         },
         {
             "name": "sharepoint-site-name_#workflowname#",
-            "displayName": "sharepoint-site-name",
+            "displayName": "Sharepoint Site Name",
             "type": "String",
             "default": "",
             "description": "Name of SharePoint Online site. Pick from URL after https://microsoft.sharepoint.com/teams/",
@@ -62,7 +62,7 @@
         },
         {
             "name": "sharepoint-folder-path_#workflowname#",
-            "displayName": "sharepoint-folder-path",
+            "displayName": "Sharepoint Folder Path",
             "type": "String",
             "default": "/sap/extracts",
             "description": "Name of SharePoint Online folder where SAP business partners will be stored",
@@ -70,7 +70,7 @@
         },
         {
             "name": "sharepoint-file-name_#workflowname#",
-            "displayName": "sharepoint-file-name",
+            "displayName": "Sharepoint File Name",
             "type": "String",
             "default": "sap-business-partners.json",
             "description": "Name of the JSON file containing the extracted SAP business partners.",

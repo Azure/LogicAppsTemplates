@@ -1,6 +1,6 @@
 import { program } from 'commander';
 import { z } from "zod";
-import { readFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import path from 'path';
 import { fromError } from 'zod-validation-error';
 
@@ -36,7 +36,7 @@ const manifestSchema = z.object({
                 message: 'parameters "name" field must end with _#workflowname#'
             }),
             displayName: z.string().regex(/^[A-Z].*$/, {
-                message: 'parameters "displayName" field must start with the first letter capitalized'
+                message: 'parameters "displayName" field must start with the first letter capitalized. Suggested naming convention: "Display Name" (O), "display-name" (X)'
             }),
             type: z.union([z.literal('String'), z.literal('Bool'), z.literal('Array'), z.literal('Float'), z.literal('Int'), z.literal('Object')]),
             description: z.string(),
@@ -61,9 +61,12 @@ const manifestSchema = z.object({
 program.parse();
 
 
-const manifestNamesList = JSON.parse(readFileSync(path.resolve('./manifest.json'), {
+const manifestNamesList: string[] = JSON.parse(readFileSync(path.resolve('./manifest.json'), {
     encoding: 'utf-8'
 }));
+const allManifestDirectories = readdirSync("./").filter(file => 
+    statSync(path.join("./", file)).isDirectory() && existsSync(path.join("./", file, "manifest.json"))
+);
 
 const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: string, listedFileNames: string[]) => {
     for (const fileName of listedFileNames) {
@@ -77,9 +80,25 @@ const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: s
 const workflowIdentifier = "_#workflowname#";
 const allowedCategories = ["Design Patterns", "Generative AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
 
-// Check all folders listed in manifest.json exist (case sensitive check)
-const allFileNamesInMainFolder = readdirSync(path.resolve("./"));
-checkFilesExistCaseSensitive(allFileNamesInMainFolder, '', manifestNamesList);
+const manifestNamesSet = new Set(manifestNamesList);
+if (manifestNamesSet.size !== manifestNamesList.length) {
+    console.error(`manifest.json contains ${manifestNamesList.length - manifestNamesSet.size} duplicate Template name(s)`);
+    throw '';
+}
+
+// Check all registered folders in manifest.json exist with another manifest.json
+const registeredNotExisting = manifestNamesList.filter(item => !allManifestDirectories.includes(item));
+if (registeredNotExisting.length) {
+    console.error(`Template(s) registered in manifest.json: ${JSON.stringify(registeredNotExisting)} not found in the repository`);
+    throw '';
+}
+
+// Check all the folders in the repo is registered in the main manifest.json
+const templatesNotRegistered = allManifestDirectories.filter(item => !manifestNamesList.includes(item));
+if (templatesNotRegistered.length) {
+    console.error(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json`);
+    throw '';
+}
 
 for (const folderName of manifestNamesList) {
     const manifestFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/manifest.json`), {
@@ -144,11 +163,11 @@ for (const folderName of manifestNamesList) {
 
     for (const connectionKey of Object.keys(manifestFile.connections)) {
         const connectionKeyWoIdentifier = connectionKey.replace(workflowIdentifier, "");
-        const invalidConnectionPattern = new RegExp(`"connectionName":\\s*"${connectionKeyWoIdentifier}"`);
+        const invalidConnectionPattern = new RegExp(`"referenceName":\\s*"${connectionKeyWoIdentifier}"`);
         const connectionResult = invalidConnectionPattern.test(JSON.stringify(workflowFile));
 
         if (connectionResult) {
-            console.error(`Workflow "${folderName}" Failed Validation: workflow connection ${`"connectionName": "${connectionKeyWoIdentifier}"`} does not contain identifier "${workflowIdentifier}"`);
+            console.error(`Workflow "${folderName}" Failed Validation: workflow connection ${`"referenceName": "${connectionKeyWoIdentifier}"`} does not contain identifier "${workflowIdentifier}"`);
             throw '';
         }
     }
