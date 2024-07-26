@@ -12,7 +12,7 @@
                                     "recipient": {
                                         "to": "@triggerBody()?['from']?['user']?['id']"
                                     },
-                                    "updateMessage": "Thank you for your response!"
+                                    "updateMessage": "Thanks for your response!"
                                 },
                                 "notificationUrl": "@{listCallbackUrl()}"
                             },
@@ -47,7 +47,7 @@
                     "Post_response_in_a_chat_or_channel": {
                         "inputs": {
                             "body": {
-                                "messageBody": "<p>\"User @{variables('userName')} has been unlocked\" @{items('For_each')?['MESSAGE']}</p>",
+                                "messageBody": "<p>\"User @{variables('userName')} unlock triggered.\" SAP response: @{items('For_each')?['MESSAGE']}</p>",
                                 "recipient": "@triggerBody()?['from']?['user']?['id']"
                             },
                             "host": {
@@ -75,7 +75,7 @@
                         {
                             "name": "userName",
                             "type": "string",
-                            "value": "@{body('Post_adaptive_card_to_M365_user_and_wait_for_a_response')?['data']?['userName']}"
+                            "value": "@body('Post_adaptive_card_to_M365_user_and_wait_for_a_response')?['data']?['userName']"
                         }
                     ]
                 },
@@ -154,7 +154,7 @@
                 },
                 "recurrence": {
                     "frequency": "Minute",
-                    "interval": 5
+                    "interval": 1
                 },
                 "splitOn": "@triggerBody()",
                 "type": "ApiConnection"
