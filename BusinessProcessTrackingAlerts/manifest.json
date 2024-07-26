@@ -1,7 +1,7 @@
 {
     "title": "Business Process Tracking Alert Notifications",
     "description": "The Business Process Tracking Alerts template allows you to detect Business Process Tracking stages that have failed so that you can notify key business stakeholders using Microsoft Teams.",
-    "prerequisites": "To use this template, you should have an existing Business Process deployed that is emitting data to an Azure Data Explorer (ADX) instance. This workflow will query a defined ADX instance and issue queries against that database and subsequently surface the business process details. To learn more about Busness Process Tracking, please see our documentation. [Learn more] (https://learn.microsoft.com/en-us/azure/business-process-tracking/create-business-process) You will also need an Azure Storage Account that includes a table, with the name of your choice, that includes a field called 'LastAlertedProcessed'",
+    "prerequisites": "To use this template, you should have an existing Business Process deployed that is emitting data to an Azure Data Explorer (ADX) instance. This workflow will query a defined ADX instance and issue queries against that database and subsequently surface the business process details. To learn more about Busness Process Tracking, please see our documentation. [Learn more](https://learn.microsoft.com/en-us/azure/business-process-tracking/create-business-process) You will also need an Azure Storage Account that includes a table, with the name of your choice, that includes a field called 'LastAlertedProcessed'",
     "tags": [
         "Automation"
     ],
