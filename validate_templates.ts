@@ -77,7 +77,6 @@ const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: s
     }
 }
 
-const workflowIdentifier = "_#workflowname#";
 const allowedCategories = ["Design Patterns", "Generative AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
 
 const manifestNamesSet = new Set(manifestNamesList);
@@ -149,25 +148,31 @@ for (const folderName of manifestNamesList) {
     const workflowFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFilePath}`), {
         encoding: 'utf-8'
     }));
+    const workflowFileString = JSON.stringify(workflowFile);
 
-    for (const parameter of manifestFile.parameters) {
-        const parameterNameWoIdentifier = parameter.name.replace(workflowIdentifier, "");
-        const invalidParameterPattern = new RegExp(`@parameters\\('\\s*${parameterNameWoIdentifier}\\s*'\\)`);
-        const parameterResult = invalidParameterPattern.test(JSON.stringify(workflowFile));
+    const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
+    const connectionNames = Object.keys(manifestFile.connections);
 
-        if (parameterResult) {
-            console.error(`Workflow "${folderName}" Failed Validation: workflow parameter ${`@parameters(${parameterNameWoIdentifier})`} does not contain identifier "${workflowIdentifier}"`);
+    const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
+    for (const match of parameterMatches) {
+        if (!parameterNames.includes(match[1])) {
+            console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json`);
+            throw '';
+        }
+    }
+ 
+    const connectionReferenceMatches = workflowFileString.matchAll(/"connection":\s*\{\s*"referenceName":\s*"([^"]+)"\}/g);
+    for (const match of connectionReferenceMatches) {
+        if (!connectionNames.includes(match[1])) {
+            console.error(`Workflow "${folderName}" Failed Validation: "${match[1]}" not found in manifest.json`);
             throw '';
         }
     }
 
-    for (const connectionKey of Object.keys(manifestFile.connections)) {
-        const connectionKeyWoIdentifier = connectionKey.replace(workflowIdentifier, "");
-        const invalidConnectionPattern = new RegExp(`"referenceName":\\s*"${connectionKeyWoIdentifier}"`);
-        const connectionResult = invalidConnectionPattern.test(JSON.stringify(workflowFile));
-
-        if (connectionResult) {
-            console.error(`Workflow "${folderName}" Failed Validation: workflow connection ${`"referenceName": "${connectionKeyWoIdentifier}"`} does not contain identifier "${workflowIdentifier}"`);
+    const connectionNameMatches = workflowFileString.matchAll(/"connectionName":\s*"([^"]+)"/g);
+    for (const match of connectionNameMatches) {
+        if (!connectionNames.includes(match[1])) {
+            console.error(`Workflow "${folderName}" Failed Validation: connection "${match[1]}" not found in manifest.json`);
             throw '';
         }
     }
