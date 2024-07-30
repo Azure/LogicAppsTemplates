@@ -156,7 +156,7 @@ for (const folderName of manifestNamesList) {
     const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
     for (const match of parameterMatches) {
         if (!parameterNames.includes(match[1])) {
-            console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json`);
+            console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
             throw '';
         }
     }
@@ -164,7 +164,7 @@ for (const folderName of manifestNamesList) {
     const connectionReferenceMatches = workflowFileString.matchAll(/"connection":\s*\{\s*"referenceName":\s*"([^"]+)"\}/g);
     for (const match of connectionReferenceMatches) {
         if (!connectionNames.includes(match[1])) {
-            console.error(`Workflow "${folderName}" Failed Validation: "${match[1]}" not found in manifest.json`);
+            console.error(`Workflow "${folderName}" Failed Validation: connection used in "referenceName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
             throw '';
         }
     }
@@ -172,7 +172,7 @@ for (const folderName of manifestNamesList) {
     const connectionNameMatches = workflowFileString.matchAll(/"connectionName":\s*"([^"]+)"/g);
     for (const match of connectionNameMatches) {
         if (!connectionNames.includes(match[1])) {
-            console.error(`Workflow "${folderName}" Failed Validation: connection "${match[1]}" not found in manifest.json`);
+            console.error(`Workflow "${folderName}" Failed Validation: connection used in "connectionName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
             throw '';
         }
     }
