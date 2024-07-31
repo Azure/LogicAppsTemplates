@@ -51,7 +51,8 @@
             "kind": "inapp"
         },
         "teams_#workflowname#": {
-            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",            "kind": "shared"
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",
+            "kind": "shared"
         }
     }
 }
