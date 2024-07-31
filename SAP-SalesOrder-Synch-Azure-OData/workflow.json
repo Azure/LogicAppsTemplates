@@ -85,7 +85,7 @@
                                     "inputs": {
                                         "host": {
                                             "connection": {
-                                                "referenceName": "sapodata"
+                                                "referenceName": "sapodata_#workflowname#"
                                             }
                                         },
                                         "method": "post",
@@ -129,7 +129,7 @@
                                     "overrideIfExists": "true"
                                 },
                                 "serviceProviderConfiguration": {
-                                    "connectionName": "AzureBlob",
+                                    "connectionName": "AzureBlob_#workflowname#",
                                     "operationId": "uploadBlob",
                                     "serviceProviderId": "/serviceProviders/AzureBlob"
                                 }

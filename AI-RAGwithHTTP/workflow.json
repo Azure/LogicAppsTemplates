@@ -23,7 +23,7 @@
                     "input": "@body('Chunk_text')?['value']"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai-1",
+                    "connectionName": "OpenAI_#workflowname#",
                     "operationId": "getArrayEmbeddings",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
@@ -55,7 +55,7 @@
                     "indexName": "@parameters('AISearch_Index_Name_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "azureaisearch-1",
+                    "connectionName": "AISearch_#workflowname#",
                     "operationId": "indexDocuments",
                     "serviceProviderId": "/serviceProviders/azureaisearch"
                 }
