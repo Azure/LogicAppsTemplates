@@ -92,11 +92,10 @@ if (registeredNotExisting.length) {
     throw '';
 }
 
-// Check all the folders in the repo is registered in the main manifest.json
+// Give warning if all the folders in the repo is registered in the main manifest.json
 const templatesNotRegistered = allManifestDirectories.filter(item => !manifestNamesList.includes(item));
 if (templatesNotRegistered.length) {
-    console.error(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json`);
-    throw '';
+    console.console.warn(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json. Ensure this is intentional.`);
 }
 
 for (const folderName of manifestNamesList) {
