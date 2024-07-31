@@ -46,7 +46,7 @@
         }
     ],
     "connections": {
-        "sap": {
+        "sap_#workflowname#": {
             "connectorId": "/serviceProviders/sap",
             "kind": "inapp"
         },
