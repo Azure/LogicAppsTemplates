@@ -30,7 +30,7 @@
     "parameters": [
         {
             "name": "odataTopDefault_#workflowname#",
-            "displayName": "odataTopDefault",
+            "displayName": "Odata Top Default",
             "type": "Int",
             "default": "50",
             "description": "OData $top batch size",
@@ -38,7 +38,7 @@
         },
         {
             "name": "loopLimit_#workflowname#",
-            "displayName": "loopLimit",
+            "displayName": "Loop Limit",
             "type": "Int",
             "default": "71",
             "description": "Maximum number of loops to request data from SAP via OData",
@@ -46,7 +46,7 @@
         },
         {
             "name": "odata-api-key_#workflowname#",
-            "displayName": "odata-api-key",
+            "displayName": "Odata Api Key",
             "type": "String",
             "default": "This is the SAP API Business Hub key for the OData API",
             "description": "Get your API key from the SAP API Business Hub: https://api.sap.com/api/API_BUSINESS_PARTNER/overview",
@@ -54,7 +54,7 @@
         },
         {
             "name": "azure-container-name_#workflowname#",
-            "displayName": "azure-container-name",
+            "displayName": "Azure Container Name",
             "type": "String",
             "default": "sap-sales-orders",
             "description": "The name of the container on Azure storage account to store the extracted data from SAP.",
@@ -62,7 +62,7 @@
         },
         {
             "name": "azure-blob-name_#workflowname#",
-            "displayName": "azure-blob-name",
+            "displayName": "Azure Blob Name",
             "type": "String",
             "default": "sales-orders.csv",
             "description": "The name of the blob on Azure storage account container to store the extracted data from SAP as csv.",
@@ -70,7 +70,7 @@
         }
     ],
     "connections": {
-        "AzureBlob": {
+        "AzureBlob_#workflowname#": {
             "connectorId": "/serviceProviders/AzureBlob",
             "kind": "inapp"
         },
