@@ -1,0 +1,10 @@
+$version: 1
+$input: JSON
+$output: JSON
+$sourceSchema: BPKQL.json
+$targetSchema: team.json
+root:
+  $for(/root/value/*):
+    Stage: eventName
+    Status: if-then-else(is-equal(eventStatus, "success"), "Success", "Failure")
+    DateTime: replace(substring(eventTimestamp, 0, 20), "T", " ")
