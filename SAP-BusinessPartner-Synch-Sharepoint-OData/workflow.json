@@ -31,7 +31,7 @@
                                 "body": "@outputs('Compose')",
                                 "host": {
                                     "connection": {
-                                        "referenceName": "sharepointonline"
+                                        "referenceName": "sharepointonline_#workflowname#"
                                     }
                                 },
                                 "method": "post",
@@ -106,7 +106,7 @@
                                     "inputs": {
                                         "host": {
                                             "connection": {
-                                                "referenceName": "sapodata-1"
+                                                "referenceName": "sapodata_#workflowname#"
                                             }
                                         },
                                         "method": "post",
