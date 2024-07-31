@@ -5,5 +5,9 @@
     "DesignPattern-RequestResponse",
     "ServiceBusQueuePeekLockAbandon",
     "ServiceBusTopicPeekLockAbandon",
-    "IBMMQQueueBrowseLockAbort"
+    "IBMMQQueueBrowseLockAbort",
+    "SAP-BusinessPartner-Synch-Sharepoint-OData",
+    "SAP-UserUnblock-SelfService-BAPI",
+    "SAP-SalesOrder-GetStatus-BAPI",
+    "SAP-SalesOrder-Synch-Azure-OData"
 ]
