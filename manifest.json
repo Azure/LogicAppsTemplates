@@ -7,5 +7,6 @@
     "SAP-BusinessPartner-Synch-Sharepoint-OData",
     "SAP-SalesOrder-Synch-Azure-OData",
     "ServiceBusQueueLockTokenRenewal",
-    "ServiceBusTopicLockTokenRenewal"
+    "ServiceBusTopicLockTokenRenewal",
+    "BusinessProcessTrackingAlerts"
 ]

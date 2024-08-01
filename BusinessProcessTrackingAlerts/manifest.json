@@ -98,9 +98,6 @@
             "type": "XSLT"
         },
         {
-            "type": "Table"
-        },
-        {
             "type":"Recurrence"
 
         }
