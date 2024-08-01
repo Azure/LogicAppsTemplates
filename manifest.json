@@ -6,6 +6,7 @@
     "IBMMQQueueBrowseLockAbort",
     "SAP-BusinessPartner-Synch-Sharepoint-OData",
     "SAP-SalesOrder-Synch-Azure-OData",
+    "SAP-GoodsMovementCreate-BAPI",
     "ServiceBusQueueLockTokenRenewal",
     "ServiceBusTopicLockTokenRenewal"
 ]
