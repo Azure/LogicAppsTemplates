@@ -95,7 +95,8 @@ if (registeredNotExisting.length) {
 // Give warning if all the folders in the repo is registered in the main manifest.json
 const templatesNotRegistered = allManifestDirectories.filter(item => !manifestNamesList.includes(item));
 if (templatesNotRegistered.length) {
-    console.warn(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json. Ensure this is intentional.`);
+    console.error(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json.`);
+    throw '';
 }
 
 for (const folderName of manifestNamesList) {
@@ -113,10 +114,15 @@ for (const folderName of manifestNamesList) {
 
     const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
       const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.prerequisites ?? "");
+      const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.description ?? "");
       const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.detailsDescription ?? "");
       
       if (prerequisitesInvalidPattern.success) {
         console.error(`Template "${folderName}" Failed Validation: prerequisites link is invalid, ensure no space between the [text] and the (link)`);
+        throw '';
+      }
+      if (descriptionInvalidPattern.success) {
+        console.error(`Template "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
       }
       if (detailsDescriptionInvalidPattern.success) {
