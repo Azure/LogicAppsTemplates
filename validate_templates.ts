@@ -114,10 +114,15 @@ for (const folderName of manifestNamesList) {
 
     const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
       const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.prerequisites ?? "");
+      const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.description ?? "");
       const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.detailsDescription ?? "");
       
       if (prerequisitesInvalidPattern.success) {
         console.error(`Template "${folderName}" Failed Validation: prerequisites link is invalid, ensure no space between the [text] and the (link)`);
+        throw '';
+      }
+      if (descriptionInvalidPattern.success) {
+        console.error(`Template "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
       }
       if (detailsDescriptionInvalidPattern.success) {
