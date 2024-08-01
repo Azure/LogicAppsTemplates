@@ -12,12 +12,12 @@
         "stateful",
         "stateless"
     ],
-    "detailsDescription": "This template is built upon AI building blocks in Logic Apps such as Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built in actions to document parsing and chunking. [Learn more] (https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
+    "detailsDescription": "This template is built upon AI building blocks in Logic Apps such as Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built in actions to document parsing and chunking. [Learn more](https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
-        "Category": "AI, RAG"
+        "Category": "Generative AI, RAG"
     },
     "artifacts": [
         {
@@ -31,42 +31,42 @@
     },
     "parameters": [
         {
-            "name": "AISearch_Index_Name",
+            "name": "AISearch_Index_Name_#workflowname#",
             "displayName": "AISearch Index Name",
             "type": "String",
             "description": "Provide the Index name you want to use to map OpenAI embeddings",
             "required": true
         },
         {
-            "name": "AISearch_Schema_DocumentName",
+            "name": "AISearch_Schema_DocumentName_#workflowname#",
             "displayName": "AISearch Schema DocumentName",
             "type": "String",
             "description": "Provide the Document Name for the content that is vectorized and stored in Azure AI Search vector store",
             "required": true
         },
         {
-            "name": "AISearch_Schema_ID",
+            "name": "AISearch_Schema_ID_#workflowname#",
             "displayName": "AISearch Schema ID",
             "type": "String",
             "description": "Provide a string that will be used as a prefix for the vector embeddings",
             "required": true
         },
         {
-            "name": "Sharepoint_Site_Address",
+            "name": "Sharepoint_Site_Address_#workflowname#",
             "displayName": "Sharepoint Site Address",
             "type": "String",
             "description": "Provide the Sharepoint Site address from which you want get your document",
             "required": true
         },
         {
-            "name": "Sharepoint_Library_Name",
+            "name": "Sharepoint_Library_Name_#workflowname#",
             "displayName": "Sharepoint Library Name",
             "type": "String",
             "description": "Provide the Sharepoint Library Name in the site from which you want get your document",
             "required": true
         },
         {
-            "name": "OpenAI_TextEmbedding_Deployment_Identifier",
+            "name": "OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#",
             "displayName": "OpenAI Text Embedding Deployment Identifier",
             "type": "String",
             "description": "Provide the Azure OpenAI deployment model you want to use to generate embeddings",
@@ -75,15 +75,15 @@
         
     ],
     "connections": {
-        "azureaisearch-1": {
+        "azureaisearch-1_#workflowname#": {
             "connectorId": "/serviceProviders/azureaisearch",
             "kind": "inapp"
         },
-        "openai-1": {
+        "openai-1_#workflowname#": {
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"
         },
-        "sharepointonline": {
+        "sharepointonline_#workflowname#": {
             "connectorId": "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/providers/Microsoft.Web/locations/westus3/managedApis/sharepointonline",
             "kind": "shared"
         }

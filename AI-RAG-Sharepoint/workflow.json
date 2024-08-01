@@ -20,11 +20,11 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "referenceName": "sharepointonline"
+                        "referenceName": "sharepointonline_#workflowname#"
                     }
                 },
                 "method": "get",
-                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('Sharepoint_Site_Address')))}/files/@{encodeURIComponent(triggerBody()?['{Identifier}'])}/content",
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('Sharepoint_Site_Address_#workflowname#')))}/files/@{encodeURIComponent(triggerBody()?['{Identifier}'])}/content",
                 "queries": {
                     "inferContentType": true
                 }
@@ -35,11 +35,11 @@
         "Get_multiple_embeddings": {
             "inputs": {
                 "parameters": {
-                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier')",
+                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#')",
                     "input": "@body('Chunk_text')?['value']"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai-1",
+                    "connectionName": "openai-1_#workflowname#",
                     "operationId": "getArrayEmbeddings",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
@@ -55,10 +55,10 @@
             "inputs": {
                 "parameters": {
                     "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
-                    "indexName": "@parameters('AISearch_Index_Name')"
+                    "indexName": "@parameters('AISearch_Index_Name_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "azureaisearch-1",
+                    "connectionName": "azureaisearch-1_#workflowname#",
                     "operationId": "indexDocuments",
                     "serviceProviderId": "/serviceProviders/azureaisearch"
                 }
@@ -86,9 +86,9 @@
                 "from": "@range(0, length(body('Chunk_text')['value']))",
                 "select": {
                     "content": "@body('Chunk_text')['value'][item()]",
-                    "documentName": "@parameters('AISearch_Schema_DocumentName')",
+                    "documentName": "@parameters('AISearch_Schema_DocumentName_#workflowname#')",
                     "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
-                    "id": "@concat(parameters('AISearch_Schema_ID'), item())"
+                    "id": "@concat(parameters('AISearch_Schema_ID_#workflowname#'), item())"
                 }
             },
             "runAfter": {
@@ -106,11 +106,11 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "referenceName": "sharepointonline"
+                        "referenceName": "sharepointonline_#workflowname#"
                     }
                 },
                 "method": "get",
-                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('Sharepoint_Site_Address')))}/tables/@{encodeURIComponent(encodeURIComponent(parameters('Sharepoint_Library_Name')))}/onnewfileitems"
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('Sharepoint_Site_Address_#workflowname#')))}/tables/@{encodeURIComponent(encodeURIComponent(parameters('Sharepoint_Library_Name_#workflowname#')))}/onnewfileitems"
             },
             "recurrence": {
                 "frequency": "Minute",
