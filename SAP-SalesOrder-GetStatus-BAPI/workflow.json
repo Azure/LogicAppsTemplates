@@ -18,7 +18,7 @@
                             },
                             "host": {
                                 "connection": {
-                                    "referenceName": "teams"
+                                    "referenceName": "teams_#workflowname#"
                                 }
                             },
                             "path": "/v1.0/teams/conversation/gatherinput/poster/Flow bot/location/@{encodeURIComponent('Chat with Flow bot')}/$subscriptions"
@@ -101,7 +101,7 @@
                     },
                     "host": {
                         "connection": {
-                            "referenceName": "teams"
+                            "referenceName": "teams_#workflowname#"
                         }
                     },
                     "method": "post",
@@ -124,7 +124,7 @@
                     },
                     "host": {
                         "connection": {
-                            "referenceName": "teams"
+                            "referenceName": "teams_#workflowname#"
                         }
                     },
                     "method": "post",
@@ -169,7 +169,7 @@
                 "inputs": {
                     "host": {
                         "connection": {
-                            "referenceName": "teams"
+                            "referenceName": "teams_#workflowname#"
                         }
                     },
                     "method": "get",
