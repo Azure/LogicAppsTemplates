@@ -149,7 +149,7 @@
                         "rfcName": "BAPI_SALESORDER_GETSTATUS"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "sap",
+                        "connectionName": "sap_#workflowname#",
                         "operationId": "callRfc",
                         "serviceProviderId": "/serviceProviders/sap"
                     }
