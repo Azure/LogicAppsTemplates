@@ -10,5 +10,6 @@
     "SAP-SalesOrder-Synch-Azure-OData",
     "ServiceBusQueueLockTokenRenewal",
     "ServiceBusTopicLockTokenRenewal",
-    "BusinessProcessTrackingAlerts"
+    "BusinessProcessTrackingAlerts",
+    "AI-RAG-Sharepoint"
 ]
