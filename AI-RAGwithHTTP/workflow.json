@@ -19,11 +19,11 @@
         "Get_multiple_embeddings": {
             "inputs": {
                 "parameters": {
-                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier')",
+                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#')",
                     "input": "@body('Chunk_text')?['value']"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai-1",
+                    "connectionName": "OpenAI_#workflowname#",
                     "operationId": "getArrayEmbeddings",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
@@ -38,7 +38,7 @@
         "HTTP": {
             "inputs": {
                 "method": "GET",
-                "uri": "@parameters('HTTP_Endpoint_For_Document')"
+                "uri": "@parameters('HTTP_Endpoint_For_Document_#workflowname#')"
             },
             "runAfter": {},
             "runtimeConfiguration": {
@@ -52,10 +52,10 @@
             "inputs": {
                 "parameters": {
                     "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
-                    "indexName": "@parameters('AISearch_Index_Name')"
+                    "indexName": "@parameters('AISearch_Index_Name_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "azureaisearch-1",
+                    "connectionName": "AISearch_#workflowname#",
                     "operationId": "indexDocuments",
                     "serviceProviderId": "/serviceProviders/azureaisearch"
                 }
@@ -83,7 +83,7 @@
                 "from": "@range(0, length(body('Chunk_text')['value']))",
                 "select": {
                     "content": "@body('Chunk_text')['value'][item()]",
-                    "documentName": "@parameters('AISearch_Schema_DocumentName')",
+                    "documentName": "@parameters('AISearch_Schema_DocumentName_#workflowname#')",
                     "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
                     "id": "@concat(parameters('AISearch_Schema_ID'), item())"
                 }

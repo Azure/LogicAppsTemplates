@@ -1,0 +1,83 @@
+{
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Abandon_the_message_in_a_queue": {
+                "inputs": {
+                    "parameters": {
+                        "lockToken": "@triggerBody()?['lockToken']",
+                        "queueName": "@parameters('queueName_#workflowname#')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "serviceBus_#workflowname#",
+                        "operationId": "abandonQueueMessageV2",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compensation_Logic": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ServiceProvider"
+            },
+            "Compensation_Logic": {
+                "inputs": "Replace this item with your compensation / exception handling logic",
+                "runAfter": {
+                    "Scope": [
+                        "FAILED",
+                        "SKIPPED",
+                        "TIMEDOUT"
+                    ]
+                },
+                "type": "Compose"
+            },
+            "Complete_the_message_in_a_queue": {
+                "inputs": {
+                    "parameters": {
+                        "lockToken": "@triggerBody()?['lockToken']",
+                        "queueName": "@parameters('queueName_#workflowname#')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "serviceBus_#workflowname#",
+                        "operationId": "completeQueueMessageV2",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Scope": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ServiceProvider"
+            },
+            "Scope": {
+                "actions": {
+                    "Business_Logic": {
+                        "inputs": "Replace this item with your business logic",
+                        "type": "Compose"
+                    }
+                },
+                "runAfter": {},
+                "type": "Scope"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_messages_are_available_in_a_queue_(peek-lock)": {
+                "inputs": {
+                    "parameters": {
+                        "maxMessageBatchSize": "@parameters('messageBatchSize_#workflowname#')",
+                        "queueName": "@parameters('queueName_#workflowname#')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "serviceBus_#workflowname#",
+                        "operationId": "peekLockQueueMessagesV2",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']",
+                "type": "ServiceProvider"
+            }
+        }
+    }

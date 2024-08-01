@@ -1,5 +1,11 @@
 [
-    "ExampleTemplate",
-    "ConnectionTemplate",
-    "ConnectionOnlyTemplate"
+    "AI-RAGwithHTTP",
+    "DesignPattern-RequestResponse",
+    "ServiceBusQueuePeekLockAbandon",
+    "ServiceBusTopicPeekLockAbandon",
+    "IBMMQQueueBrowseLockAbort",
+    "SAP-BusinessPartner-Synch-Sharepoint-OData",
+    "SAP-SalesOrder-Synch-Azure-OData",
+    "ServiceBusQueueLockTokenRenewal",
+    "ServiceBusTopicLockTokenRenewal"
 ]

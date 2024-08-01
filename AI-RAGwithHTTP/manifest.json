@@ -17,7 +17,7 @@
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
-        "Category": "AI, RAG"
+        "Category": "Generative AI,RAG"
     },
     "artifacts": [
         {
@@ -31,35 +31,35 @@
     },
     "parameters": [
         {
-            "name": "AISearch_Index_Name",
+            "name": "AISearch_Index_Name_#workflowname#",
             "displayName": "AISearch Index Name",
             "type": "String",
             "description": "Provide the Index name you want to use to map OpenAI embeddings",
             "required": true
         },
         {
-            "name": "AISearch_Schema_DocumentName",
+            "name": "AISearch_Schema_DocumentName_#workflowname#",
             "displayName": "AISearch Schema DocumentName",
             "type": "String",
             "description": "Provide the Document Name for the content that is vectorized and stored in Azure AI Search vector store",
             "required": true
         },
         {
-            "name": "AISearch_Schema_ID",
+            "name": "AISearch_Schema_ID_#workflowname#",
             "displayName": "AISearch Schema ID",
             "type": "String",
             "description": "Provide a string that will be used as a prefix for the vector embeddings",
             "required": true
         },
         {
-            "name": "HTTP_Endpoint_For_Document",
+            "name": "HTTP_Endpoint_For_Document_#workflowname#",
             "displayName": "HTTP Endpoint For Document",
             "type": "String",
             "description": "Provide the HTTP endpoint from which you want get your document",
             "required": true
         },
         {
-            "name": "OpenAI_TextEmbedding_Deployment_Identifier",
+            "name": "OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#",
             "displayName": "OpenAI Text Embedding Deployment Identifier",
             "type": "String",
             "description": "Provide the Azure OpenAI deployment model you want to use to generate embeddings",
@@ -68,11 +68,11 @@
         
     ],
     "connections": {
-        "AISearch": {
+        "AISearch_#workflowname#": {
             "connectorId": "/serviceProviders/azureaisearch",
             "kind": "inapp"
         },
-        "OpenAI": {
+        "OpenAI_#workflowname#": {
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"
         }
