@@ -1,5 +1,5 @@
 {
-    "title": "RAG-Based Workflow for Document Ingestion and Indexing Using Azure OpenAI and Azure AI Search. The document to be ingested is read from Sharepoint.",
+    "title": "RAG - Ingestion and Indexing of Sharepoint files using Azure OpenAI and Azure AI Search",
     "description": "This template is based on RAG (Retrieval-augmented generation) pattern for document processing and indexing using Azure Open AI and Azure AI Search. Triggered when a File is added to Sharepoint, the workflow fetches a document from a specified endpoint, parses the content, and chunks the text based on token size. Each chunk is then processed to generate embeddings via an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search, and finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis.",
     "prerequisites": "Before you use this template, you need to configure Azure OpenAI instance with embedding model. You also need to configure AI Search instance as your vector store, with an index and the appropriate schema. We recommend to follow [this](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo) sample on GitHub to review these prerequisites in more details ",
     "tags": [
