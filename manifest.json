@@ -11,5 +11,6 @@
     "ServiceBusQueueLockTokenRenewal",
     "ServiceBusTopicLockTokenRenewal",
     "BusinessProcessTrackingAlerts",
-    "AI-RAG-Sharepoint"
+    "AI-RAG-Sharepoint",
+    "AI-RAG-for-Images"
 ]

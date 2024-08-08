@@ -1,0 +1,147 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Below_are_sample_questions": {
+            "inputs": "Below are some example of questions you can ask based on the Purchase Order Image. You can use this pattern and pass questions as parameters to make this more dynamic. \n\nAlso, the deployment model should support image/vision requests (https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/gpt-with-vision?tabs=rest%2Csystem-assigned%2Cresource)",
+            "runAfter": {
+                "Get_file_content_which_has_image_using_path": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Compose"
+        },
+        "Get_chat_completions": {
+            "description": "",
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision_#workflowname#')",
+                    "max_tokens": 500,
+                    "messages": [
+                        {
+                            "message": "Tell me the Purchase Order Number",
+                            "role": "user",
+                            "user": "bryan"
+                        },
+                        {
+                            "image": "@body('Get_file_content_which_has_image_using_path')",
+                            "role": "user",
+                            "user": "bryan"
+                        },
+                        {
+                            "message": "You are an AI assistant that helps people find information.",
+                            "role": "system"
+                        }
+                    ],
+                    "temperature": 1
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai",
+                    "operationId": "getChatCompletions",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {
+                "Below_are_sample_questions": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Get_chat_completions-2": {
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision_#workflowname#')",
+                    "max_tokens": 500,
+                    "messages": [
+                        {
+                            "message": "How many Notebooks are in this order",
+                            "role": "user",
+                            "user": "bryan"
+                        },
+                        {
+                            "image": "@body('Get_file_content_which_has_image_using_path')",
+                            "role": "user",
+                            "user": "bryan"
+                        },
+                        {
+                            "message": "You are an AI assistant that helps people find information.",
+                            "role": "system"
+                        }
+                    ],
+                    "temperature": 1
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai",
+                    "operationId": "getChatCompletions",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {
+                "Below_are_sample_questions": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Get_chat_completions-3": {
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision_#workflowname#')",
+                    "max_tokens": 500,
+                    "messages": [
+                        {
+                            "message": "What is the total cost of notebooks and staplers. Also how much is the tax",
+                            "role": "user",
+                            "user": "bryan"
+                        },
+                        {
+                            "image": "@body('Get_file_content_which_has_image_using_path')",
+                            "role": "user",
+                            "user": "bryan"
+                        },
+                        {
+                            "message": "You are an AI assistant that helps people find information.",
+                            "role": "system"
+                        }
+                    ],
+                    "temperature": 1
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai",
+                    "operationId": "getChatCompletions",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {
+                "Below_are_sample_questions": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Get_file_content_which_has_image_using_path": {
+            "description": "Get the image. Use any connector here to ge the image",
+            "inputs": {
+                "parameters": {
+                    "fileId": "/PurchaseOrder.png",
+                    "inferContentType": true
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "AzureFile",
+                    "operationId": "getFileContentByPath",
+                    "serviceProviderId": "/serviceProviders/AzureFile"
+                }
+            },
+            "runAfter": {},
+            "type": "ServiceProvider"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "kind": "Http",
+            "type": "Request"
+        }
+    }
+}
