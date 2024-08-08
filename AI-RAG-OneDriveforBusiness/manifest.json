@@ -1,6 +1,6 @@
 {
-    "title": "RAG - Ingestion and Indexing of Sharepoint files using Azure OpenAI and Azure AI Search",
-    "description": "This template is based on RAG (Retrieval-augmented generation) pattern for document processing and indexing using Azure Open AI and Azure AI Search. Triggered when a File is added to Sharepoint, the workflow fetches a document from a specified endpoint, parses the content, and chunks the text based on token size. Each chunk is then processed to generate embeddings via an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search, and finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis.",
+    "title": "RAG - Ingestion and Indexing of OneDrive files using Azure OpenAI and Azure AI Search",
+    "description": "This template is based on RAG (Retrieval-augmented generation) pattern for document processing and indexing using Azure Open AI and Azure AI Search. Triggered when a File is added to OneDrive for Business, the workflow fetches a document from a specified endpoint, parses the content, and chunks the text based on token size. Each chunk is then processed to generate embeddings via an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search, and finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis.",
     "prerequisites": "Before you use this template, you need to configure Azure OpenAI instance with embedding model. You also need to configure AI Search instance as your vector store, with an index and the appropriate schema. We recommend to follow [this](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo) sample on GitHub to review these prerequisites in more details ",
     "tags": [
         "RAG-Document-Ingestion"
@@ -52,20 +52,6 @@
             "required": true
         },
         {
-            "name": "Sharepoint_Site_Address_#workflowname#",
-            "displayName": "Sharepoint Site Address",
-            "type": "String",
-            "description": "Provide the Sharepoint Site address from which you want get your document",
-            "required": true
-        },
-        {
-            "name": "Sharepoint_Library_Name_#workflowname#",
-            "displayName": "Sharepoint Library Name",
-            "type": "String",
-            "description": "Provide the Sharepoint Library Name in the site from which you want get your document",
-            "required": true
-        },
-        {
             "name": "OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#",
             "displayName": "OpenAI Text Embedding Deployment Identifier",
             "type": "String",
@@ -83,8 +69,8 @@
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"
         },
-        "sharepointonline_#workflowname#": {
-            "connectorId": "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/providers/Microsoft.Web/locations/westus3/managedApis/sharepointonline",
+        "onedriveforbusiness_#workflowname#": {
+            "connectorId": "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/resourceGroups/LogicAppsTemplates/providers/Microsoft.Web/connections/onedriveforbusiness",
             "kind": "shared"
         }
     },

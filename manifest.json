@@ -1,5 +1,5 @@
 [
-    "AI-RAGwithHTTP",
+    "AI-RAG-HTTP",
     "DesignPattern-RequestResponse",
     "ServiceBusQueuePeekLockAbandon",
     "ServiceBusTopicPeekLockAbandon",
@@ -11,5 +11,7 @@
     "ServiceBusQueueLockTokenRenewal",
     "ServiceBusTopicLockTokenRenewal",
     "BusinessProcessTrackingAlerts",
-    "AI-RAG-Sharepoint"
+    "AI-RAG-Sharepoint",
+    "AI-RAG-for-Images",
+    "AI-RAG-OneDriveforBusiness"
 ]

@@ -29,8 +29,7 @@
             "name": "queueName_#workflowname#",
             "displayName": "Queue Name",
             "type": "String",
-            "default": "This is the name of the IBM MQ queue from which the message will be read.",
-                "description": "This is a parameter",
+            "description": "This is the name of the IBM MQ queue from which the message will be read.",
             "required": true
         },
         {
