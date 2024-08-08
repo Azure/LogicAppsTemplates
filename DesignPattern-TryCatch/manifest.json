@@ -1,0 +1,43 @@
+{
+    "title": "Exception Handling via Try-Catch pattern using Scope action",
+    "description": "This Logic Apps workflow represents the try-catch pattern for exception handling using Scope action",
+    "tags": [
+        "Exception Handling, try catch"
+    ],
+    "skus": [
+        "consumption",
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "detailsDescription": "This Logic Apps workflow is designed to execute specified business logic, and if any errors occur, it catches and processes those errors, and terminates the workflow with a detailed error message. Learn more about exception handling in Logic Apps [here](https://learn.microsoft.com/azure/logic-apps/error-exception-handling?tabs=standard)",
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "Design Patterns"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow_light",
+        "dark": "workflow_dark"
+    },
+    "parameters": [
+    ],
+    "connections": {
+
+    },
+    "featuredOperations": [
+        {
+            "type": "Scope"
+        }
+    ]
+
+}
