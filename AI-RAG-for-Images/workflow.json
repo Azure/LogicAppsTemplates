@@ -35,7 +35,7 @@
                     "temperature": 1
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai",
+                    "connectionName": "Openai_#workflowname#",
                     "operationId": "getChatCompletions",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
@@ -71,7 +71,7 @@
                     "temperature": 1
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai",
+                    "connectionName": "Openai_#workflowname#",
                     "operationId": "getChatCompletions",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
@@ -107,7 +107,7 @@
                     "temperature": 1
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai",
+                    "connectionName": "Openai_#workflowname#",
                     "operationId": "getChatCompletions",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
@@ -127,7 +127,7 @@
                     "inferContentType": true
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "AzureFile",
+                    "connectionName": "AzureFile_#workflowname#",
                     "operationId": "getFileContentByPath",
                     "serviceProviderId": "/serviceProviders/AzureFile"
                 }
