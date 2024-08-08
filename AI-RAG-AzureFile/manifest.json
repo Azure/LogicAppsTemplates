@@ -69,7 +69,7 @@
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"
         },
-        "AzureFile_#workflowname": {
+        "AzureFile_#workflowname#": {
             "connectorId": "/serviceProviders/AzureFile",
             "kind": "inapp"
         }
