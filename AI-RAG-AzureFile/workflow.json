@@ -34,11 +34,11 @@
         "Get_multiple_embeddings": {
             "inputs": {
                 "parameters": {
-                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_#workflowname')",
+                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#')",
                     "input": "@body('Chunk_text')?['value']"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai-1_#workflowname",
+                    "connectionName": "openai-1_#workflowname#",
                     "operationId": "getArrayEmbeddings",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
@@ -54,10 +54,10 @@
             "inputs": {
                 "parameters": {
                     "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
-                    "indexName": "@parameters('AISearch_Index_Name_#workflowname')"
+                    "indexName": "@parameters('AISearch_Index_Name_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "azureaisearch-1_#workflowname",
+                    "connectionName": "azureaisearch-1_#workflowname#",
                     "operationId": "indexDocuments",
                     "serviceProviderId": "/serviceProviders/azureaisearch"
                 }
@@ -85,9 +85,9 @@
                 "from": "@range(0, length(body('Chunk_text')['value']))",
                 "select": {
                     "content": "@body('Chunk_text')['value'][item()]",
-                    "documentName": "@parameters('AISearch_Schema_DocumentName_#workflowname')",
+                    "documentName": "@parameters('AISearch_Schema_DocumentName_#workflowname#')",
                     "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
-                    "id": "@concat(parameters('AISearch_Schema_ID_#workflowname'), item())"
+                    "id": "@concat(parameters('AISearch_Schema_ID_#workflowname#'), item())"
                 }
             },
             "runAfter": {
