@@ -12,5 +12,6 @@
     "ServiceBusTopicLockTokenRenewal",
     "BusinessProcessTrackingAlerts",
     "AI-RAG-Sharepoint",
-    "AI-RAG-for-Images"
+    "AI-RAG-for-Images",
+    "AI-RAG-OneDriveforBusiness"
 ]
