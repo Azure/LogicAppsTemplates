@@ -13,5 +13,9 @@
     "BusinessProcessTrackingAlerts",
     "AI-RAG-Sharepoint",
     "AI-RAG-for-Images",
-    "AI-RAG-OneDriveforBusiness"
+    "AI-RAG-OneDriveforBusiness",
+    "AI-RAG-SFTP",
+    "AI-RAG-AzureFile",
+    "AI-RAG-BlobStorage"
+
 ]
