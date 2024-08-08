@@ -77,7 +77,7 @@ const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: s
     }
 }
 
-const allowedCategories = ["Design Patterns", "Generative AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
+const allowedCategories = ["Design Patterns", "AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
 
 const manifestNamesSet = new Set(manifestNamesList);
 if (manifestNamesSet.size !== manifestNamesList.length) {
@@ -113,22 +113,22 @@ for (const folderName of manifestNamesList) {
     }
 
     const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
-      const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.prerequisites ?? "");
-      const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.description ?? "");
-      const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.detailsDescription ?? "");
-      
-      if (prerequisitesInvalidPattern.success) {
-        console.error(`Template "${folderName}" Failed Validation: prerequisites link is invalid, ensure no space between the [text] and the (link)`);
-        throw '';
-      }
-      if (descriptionInvalidPattern.success) {
-        console.error(`Template "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
-        throw '';
-      }
-      if (detailsDescriptionInvalidPattern.success) {
-        console.error(`Template "${folderName}" Failed Validation: detailsDescription link is invalid, ensure no space between the [text] and the (link)`);
-        throw '';
-      }
+    const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.prerequisites ?? "");
+    const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.description ?? "");
+    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.detailsDescription ?? "");
+    
+    if (prerequisitesInvalidPattern.success) {
+    console.error(`Template "${folderName}" Failed Validation: prerequisites link is invalid, ensure no space between the [text] and the (link)`);
+    throw '';
+    }
+    if (descriptionInvalidPattern.success) {
+    console.error(`Template "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
+    throw '';
+    }
+    if (detailsDescriptionInvalidPattern.success) {
+    console.error(`Template "${folderName}" Failed Validation: detailsDescription link is invalid, ensure no space between the [text] and the (link)`);
+    throw '';
+    }
 
     if (manifestFile.details?.Category) {
         for (const category of manifestFile.details?.Category?.split(",") ?? []) {
@@ -137,6 +137,11 @@ for (const folderName of manifestNamesList) {
                 throw '';
             }
         }
+    }
+
+    if (manifestFile.tags?.some((tag) => tag.includes(","))) {
+        console.error(`Template "${folderName}" Failed Validation: Tags should be separate strings, not one string separated by ","`);
+        throw '';
     }
 
     // Check all artifacts/images listed in manifest.json exist (case sensitive check)
@@ -154,6 +159,20 @@ for (const folderName of manifestNamesList) {
         encoding: 'utf-8'
     }));
     const workflowFileString = JSON.stringify(workflowFile);
+
+    const allArtifactsInFolder = readdirSync(`./${folderName}`).filter(file => 
+        !file.endsWith(".png") && file !== "manifest.json"
+    );
+
+    // Give warning if all the artifacts in the template/manifest.json is not registered
+    const allRegisteredArtifacts = manifestFile.artifacts.map(artifact => artifact.file);
+    const artifactsNotRegistered = allArtifactsInFolder.filter(item => !allRegisteredArtifacts.includes(item));
+    if (artifactsNotRegistered.length) {
+        console.error(`Artifacts(s) ${JSON.stringify(artifactsNotRegistered)} found in the repository not registered in ${folderName}/manifest.json.`);
+        throw '';
+    }
+
+
 
     const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
     const connectionNames = Object.keys(manifestFile.connections);

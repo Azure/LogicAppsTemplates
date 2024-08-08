@@ -2,7 +2,8 @@
     "title": "Exception Handling via Try-Catch pattern using Scope action",
     "description": "This Logic Apps workflow represents the try-catch pattern for exception handling using Scope action",
     "tags": [
-        "Exception Handling, try catch"
+        "Exception Handling",
+        "try catch"
     ],
     "skus": [
         "consumption",
