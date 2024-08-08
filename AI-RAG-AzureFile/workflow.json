@@ -23,7 +23,7 @@
                     "inferContentType": true
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "AzureFile_#workflowname",
+                    "connectionName": "AzureFile_#workflowname#",
                     "operationId": "getFileContentByPath",
                     "serviceProviderId": "/serviceProviders/AzureFile"
                 }
