@@ -70,7 +70,7 @@
             "kind": "inapp"
         },
         "onedriveforbusiness_#workflowname#": {
-            "connectorId": "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/resourceGroups/LogicAppsTemplates/providers/Microsoft.Web/connections/onedriveforbusiness",
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
             "kind": "shared"
         }
     },
