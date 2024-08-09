@@ -1,6 +1,7 @@
 [
     "AI-RAG-HTTP",
     "DesignPattern-RequestResponse",
+    "SAP-BAPI-GoodsMovementCreate",
     "ServiceBusQueuePeekLockAbandon",
     "ServiceBusTopicPeekLockAbandon",
     "IBMMQQueueBrowseLockAbort",
