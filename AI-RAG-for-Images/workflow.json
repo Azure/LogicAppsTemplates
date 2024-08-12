@@ -120,7 +120,7 @@
             "type": "ServiceProvider"
         },
         "Get_file_content_which_has_image_using_path": {
-            "description": "Get the image. Use any connector here to get the image.",
+            "description": "This action gets the image. You can replace this action with a different connector action to get the image.",
             "inputs": {
                 "parameters": {
                     "fileId": "/PurchaseOrder.png",
