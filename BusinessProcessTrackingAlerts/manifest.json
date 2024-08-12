@@ -1,7 +1,7 @@
 {
-    "title": "Business Process Tracking Alert Notifications",
-    "description": "The Business Process Tracking Alerts template allows you to detect Business Process Tracking stages that have failed so that you can notify key business stakeholders using Microsoft Teams.",
-    "prerequisites": "To use this template, you should have an existing Business Process deployed that is emitting data to an Azure Data Explorer (ADX) instance. This workflow will query a defined ADX instance and issue queries against that database and subsequently surface the business process details. Note: To use this template, there are some pre-requisites that need to be addressed. You will also need an Azure Storage Account that includes a table, with the name of your choice, that includes a field called 'LastAlertedProcessed'. You will also find some development artifacts which can be retrieved from our [GitHub Repo](https://github.com/Azure/LogicAppsTemplates/tree/main/BusinessProcessTrackingAlerts). Within this folder, you will find 2 schemas, an XSLT map and the LML file. You will need to upload XSLT file to the Artifacts/Maps folder in your Logic App. You can achieve this through Azure Portal. The other artifacts are for your reference in the case you want to make changes to the data transformation. To learn more about Busness Process Tracking, please see our documentation. [Learn more](https://learn.microsoft.com/en-us/azure/business-process-tracking/create-business-process) ",
+    "title": "Azure Business Process Tracking: Send alert",
+    "description": "This workflow template lets you detect failed stages in Azure Business Process Tracking so that you can notify key business stakeholders using Microsoft Teams. The workflow queries the specified database in an Azure Data Explorer instance and returns any records that contain a failed stage status. For more information, see [Create business process](https://go.microsoft.com/fwlink/?linkid=2282030).",
+    "prerequisites": "Before you use this template, you need to meet the following prerequisites. 1) An existing 'Business Process Tracking' resource deployed Azure that emits data to a Data Explorer instance. 2) An Azure Storage account that includes a table with a field named 'LastAlertedProcessed'. 3) In the Azure portal, upload the XSLT map and LML file from the template folder to the Maps folder in your logic app resource. You can find the Maps folder under Artifacts on your logic app menu. Other artifacts in the template folder exist for your reference, for example, if you want to edit the data transformations.",
     "tags": [
         "Automation"
     ],
@@ -12,7 +12,7 @@
         "stateful",
         "stateless"
     ],
-    "detailsDescription": "This template will query Business Process Tracking data from an Azure Data Explorer instance and return any records that contain a stage status failure.",
+    "detailsDescription": "This workflow template queries for business process data in an Azure Data Explorer instance and returns any records that contain a failed stage status.",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
@@ -48,37 +48,37 @@
     "parameters": [
         {
             "name": "Azure-TableName_#workflowname#",
-            "displayName": "Azure Table Name",
+            "displayName": "Azure table name",
             "type": "String",
-            "description": "The name of the table that will be used to store the workflow last run timestamp.",
+            "description": "The name of the table that stores the timestamp for the workflow's last run.",
             "required": true
         },
         {
             "name": "Kusto-DBName_#workflowname#",
-            "displayName": "Kusto Database Name",
+            "displayName": "Kusto database name",
             "type": "String",
-            "description": "The name of the database that is used to store Business Process Tracking transactions.",
+            "description": "The name of the database that stores transactions from Azure Business Process Tracking.",
             "required": true
         },
         {
             "name": "Kusto-TableName_#workflowname#",
-            "displayName": "Kusto Table Name",
+            "displayName": "Kusto table name",
             "type": "String",
-            "description": "The name of the table that is used to store Business Process Tracking transactions. Ex. [\"CityPowerAndLight-TroubleTicketProcessing\"] ",
+            "description": "The name of the table that stores transactions from Azure Business Process Tracking, for example, 'CityPowerAndLight-TroubleTicketProcessing'.",
             "required": true
         },
         {
             "name": "Teams-Recipient_#workflowname#",
-            "displayName": "Microsoft Teams Recipient",
+            "displayName": "Microsoft Teams recipient",
             "type": "String",
-            "description": "The email address of the person or distribution list that should receive Microsoft Teams notification.",
+            "description": "The email address for the person or distribution list that receives notifications through Microsoft Teams.",
             "required": true
         },
         {
             "name": "Kusto-URL_#workflowname#",
-            "displayName": "Kusto Connection Runtime URL for Business Process Tracking instance",
+            "displayName": "Kusto connection runtime URL for Business Process Tracking instance",
             "type": "String",
-            "description": "The URL found on the overview page for your ADX instance in the URI field.",
+            "description": "The URL in the URI field on the Overview page for your Azure Data Explorer instance.",
             "required": true
         }
       
