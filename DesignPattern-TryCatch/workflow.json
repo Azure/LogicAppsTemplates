@@ -4,7 +4,7 @@
             "Catch": {
                 "actions": {
                     "Compensation_Logic": {
-                        "inputs": "Replace this with your compensation / exception handling logic",
+                        "inputs": "Replace this action with the actions for your exception handling logic.",
                         "type": "Compose"
                     },
                     "Filter_Try_Scope_Errors": {
@@ -38,7 +38,7 @@
                         "inputs": {
                             "runError": {
                                 "code": "500",
-                                "message": "There was an error processing messages. The following error(s) occured:\n\n@{body('Format_Errors')}"
+                                "message": "One or more errors occurred while processing messages: \n\n@{body('Format_Errors')}"
                             },
                             "runStatus": "Failed"
                         },
@@ -62,7 +62,7 @@
             "Try": {
                 "actions": {
                     "Business_Logic": {
-                        "inputs": "Remove this item and include your business logic",
+                        "inputs": "Replace this action with the actions for your business logic.",
                         "type": "Compose"
                     }
                 },
