@@ -315,7 +315,7 @@
                     "type": "ServiceProvider"
                 },
                 "Run_KQL_query": {
-                    "description": "Run the query to find failed business process stages in Azure Data Explorer.",
+                    "description": "Run the query to find business process stages with failed status in Azure Data Explorer.",
                     "inputs": {
                         "body": {
                             "cluster": "@parameters('Kusto-URL_#workflowname#')",
