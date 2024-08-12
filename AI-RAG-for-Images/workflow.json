@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
     "actions": {
         "Below_are_sample_questions": {
-            "inputs": "Below are some example of questions you can ask based on the Purchase Order Image. You can use this pattern and pass questions as parameters to make this more dynamic. \n\nAlso, the deployment model should support image/vision requests (https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/gpt-with-vision?tabs=rest%2Csystem-assigned%2Cresource)",
+            "inputs": "Here are some example questions that you can ask, based on the purchase order image. You can use this pattern and pass questions as parameters to make this more dynamic. \n\nMake sure the deployment model supports [image and vision requests](https://go.microsoft.com/fwlink/?linkid=2282600).",
             "runAfter": {
                 "Get_file_content_which_has_image_using_path": [
                     "SUCCEEDED"
@@ -18,7 +18,7 @@
                     "max_tokens": 500,
                     "messages": [
                         {
-                            "message": "Tell me the Purchase Order Number",
+                            "message": "Tell me the purchase order number",
                             "role": "user",
                             "user": "bryan"
                         },
@@ -54,7 +54,7 @@
                     "max_tokens": 500,
                     "messages": [
                         {
-                            "message": "How many Notebooks are in this order",
+                            "message": "How many notebooks are in this order?",
                             "role": "user",
                             "user": "bryan"
                         },
@@ -90,7 +90,7 @@
                     "max_tokens": 500,
                     "messages": [
                         {
-                            "message": "What is the total cost of notebooks and staplers. Also how much is the tax",
+                            "message": "What is the total cost of notebooks and staplers. Also, how much is the tax?",
                             "role": "user",
                             "user": "bryan"
                         },
@@ -120,7 +120,7 @@
             "type": "ServiceProvider"
         },
         "Get_file_content_which_has_image_using_path": {
-            "description": "Get the image. Use any connector here to ge the image",
+            "description": "Get the image. Use any connector here to get the image.",
             "inputs": {
                 "parameters": {
                     "fileId": "/PurchaseOrder.png",
