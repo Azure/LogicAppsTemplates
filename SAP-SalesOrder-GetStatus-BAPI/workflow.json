@@ -96,7 +96,7 @@
             "Post_error_message_in_a_chat_or_channel": {
                 "inputs": {
                     "body": {
-                        "messageBody": "<p>SAP sales order status retrieval from SAP failed!</p>",
+                        "messageBody": "<p>SAP sales order status retrieval from SAP failed.</p>",
                         "recipient": "@triggerBody()?['from']?['user']?['id']"
                     },
                     "host": {
