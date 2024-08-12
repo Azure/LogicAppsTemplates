@@ -102,7 +102,7 @@
     "outputs": {},
     "triggers": {
         "When_a_HTTP_request_is_received": {
-            "description": "Provide the path of file as input. Here is an example  - \n{ \"FilePath\" : \"/TroubleShootingResources/Guide.pdf\" }",
+            "description": "Provide the file path as input, for example: \n{ \"FilePath\" : \"/TroubleshootingResources/Guide.pdf\" }",
             "inputs": {
                 "schema": {
                     "properties": {
