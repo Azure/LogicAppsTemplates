@@ -22,7 +22,7 @@
             "type": "ServiceProvider"
         },
         "Compensation_Logic": {
-            "inputs": "Replace this item with your compensation / exception handling logic",
+            "inputs": "Replace this action with the actions for your exception handling logic.",
             "runAfter": {
                 "Scope": [
                     "TIMEDOUT",
@@ -70,7 +70,7 @@
                 "Business_Logic_Scope": {
                     "actions": {
                         "Business_Logic": {
-                            "inputs": "Replace this item with your business logic",
+                            "inputs": "Replace this action with the actions for your business logic.",
                             "type": "Compose"
                         }
                     },
