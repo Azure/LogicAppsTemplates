@@ -39,7 +39,7 @@
         },
         {
             "name": "AISearch_Schema_DocumentName_#workflowname#",
-            "displayName": "AISearch Schema DocumentName",
+            "displayName": "AI Search schema document name",
             "type": "String",
             "description": "Provide the document name for the content to vectorize and store in the Azure AI Search vector store.",
             "required": true
