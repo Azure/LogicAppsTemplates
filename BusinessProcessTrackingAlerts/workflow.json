@@ -4,10 +4,10 @@
         "Scope-Catch": {
             "actions": {
                 "Post_message_in_a_chat_or_channel_-_Error": {
-                    "description": "This is a general exception handler. If you have an error above, you will learn more information about the failure.",
+                    "description": "This action is a general exception handler. If an error occurs in a preceding operation, you get more information about the failure.",
                     "inputs": {
                         "body": {
-                            "messageBody": "<p>An error has occurred within the ProcessBPTAlerts workflow. Here are the details:</p><br><p>@{result('Scope-Try')}</p>",
+                            "messageBody": "<p>An error happened in the BusinessProcessTrackingAlerts workflow. Here are the details:</p><br><p>@{result('Scope-Try')}</p>",
                             "recipient": "@parameters('Teams-Recipient_#workflowname#')"
                         },
                         "host": {
@@ -33,7 +33,7 @@
         "Scope-Try": {
             "actions": {
                 "Capture_Current_Timestamp": {
-                    "description": "To avoid race conditions/long running processes, we will capture the timestamp which will subsequently used to update table storage at end of workflow. Any new records added to ADX will be processed in next batch.",
+                    "description": "To avoid race conditions or long running processes, this action captures the timestamp, which is later used to update the table storage at end of the workflow. Any new records added to Azure Data Explorer are processed in next batch.",
                     "inputs": "@utcNow()",
                     "runAfter": {
                         "Parse-KQLQueryResult": [
@@ -43,7 +43,7 @@
                     "type": "Compose"
                 },
                 "Compose-KQLQuery": {
-                    "description": "Composing ADX query using KQL. We will query the table for our Business Process and look for any records with a failure status that are newer than our timestamp stored in Azure Table Storage.",
+                    "description": "Compose a query for Azure Data Explorer database using Kusto Query Language. This action queries the database table for your Business Process Tracking instance for any records with a failed status that are newer than the timestamp stored in Azure Table Storage.",
                     "inputs": "@{parameters('Kusto-TableName')}\n| order by eventTimestamp desc \n| where eventStatus == \"failure\" and eventTimestamp > todatetime(\"@{outputs('Compose-LastTimeStamp')}\")",
                     "runAfter": {
                         "Compose-LastTimeStamp": [
@@ -53,7 +53,7 @@
                     "type": "Compose"
                 },
                 "Compose-LastTimeStamp": {
-                    "description": "Table storage will return an array, using compose here to simplify usage further down workflow.",
+                    "description": "Azure Table Storage returns an array using the 'Compose' action to simplify usage later in the workflow.",
                     "inputs": "@first(body('Query_Entities_Get_latest_alert')?['entities'])['LastAlertedProcessed']",
                     "runAfter": {
                         "Query_Entities_Get_latest_alert": [
@@ -67,12 +67,12 @@
                         "For_each": {
                             "actions": {
                                 "Compose-BusinessProcessDetailsQuery": {
-                                    "description": "Construct our query that will be based upon our correlationId or our \"Transaction Id\"",
+                                    "description": "Construct a query based on the 'correlationId' or your own 'Transaction Id'.",
                                     "inputs": "@{parameters('Kusto-TableName')}\n| order by eventTimestamp asc\n| where correlationId == \"@{item()['correlationId']}\"\n",
                                     "type": "Compose"
                                 },
                                 "Create_HTML_table_BP_Details": {
-                                    "description": "Take the Data mapper output and then convert it into an HTML table so that we can include it in our communication.",
+                                    "description": "Convert output from Data Mapper to an HTML table for inclusion with stakeholder communication.",
                                     "inputs": {
                                         "format": "HTML",
                                         "from": "@body('Transform_using_Data_Mapper_XSLT')"
@@ -85,11 +85,11 @@
                                     "type": "Table"
                                 },
                                 "Post_message_in_a_chat_or_channel": {
-                                    "description": "Post a message to a user that includes the business process stage that failed and the rest of the business process execution details.",
+                                    "description": "Send a message that has the failed business process stage and other business process execution details to specified recipients in Microsoft Teams.",
                                     "inputs": {
                                         "body": {
                                             "isAlert": true,
-                                            "messageBody": "<p><u><b><strong style=\"color: rgb(74, 144, 226);\">A Business Process Stage has failed with the following details:</strong></b></u></p><br><p><b><strong style=\"color: rgb(74, 144, 226);\">Business Process Name:</strong></b> @{item()['metadata']['businessProcessName']}</p><p><b><strong>Ticket Number:</strong></b> @{item()['correlationId']}</p><p><b><strong>Stage Name: </strong></b>@{item()['eventName']}</p><p><b><strong>Time Stamp:</strong></b> @{replace(substring(item()['eventTimestamp'],0,19),'T',' ')}</p><p><b><strong>Stage Status:</strong></b> @{item()['eventStatus']}</p><p><b><strong>Logic App:</strong></b> @{item()['metadata']['appName']}</p><p><b><strong>Workflow Name:</strong></b> @{item()['metadata']['flowName']}</p><p><b><strong>Run Instance Id:</strong></b> @{item()['metadata']['flowRunSequenceId']}</p><p><b><strong>Properties emitted: </strong></b>@{replace(replace(replace(replace(string(item()['properties']),'{\"',': '),'\":\"',': '),'\"}',''),'\",\"',' ')}</p><br><p><b><strong style=\"background-color: rgb(255, 255, 255); color: rgb(74, 144, 226);\">Entire Business Process:</strong></b></p><p>@{body('Create_HTML_table_BP_Details')}</p><br><br>",
+                                            "messageBody": "<p><u><b><strong style=\"color: rgb(74, 144, 226);\">A business process stage failed with the following details:</strong></b></u></p><br><p><b><strong style=\"color: rgb(74, 144, 226);\">Business process name:</strong></b> @{item()['metadata']['businessProcessName']}</p><p><b><strong>Ticket Number:</strong></b> @{item()['correlationId']}</p><p><b><strong>Stage name: </strong></b>@{item()['eventName']}</p><p><b><strong>Timestamp:</strong></b> @{replace(substring(item()['eventTimestamp'],0,19),'T',' ')}</p><p><b><strong>Stage status:</strong></b> @{item()['eventStatus']}</p><p><b><strong>Logic app:</strong></b> @{item()['metadata']['appName']}</p><p><b><strong>Workflow name:</strong></b> @{item()['metadata']['flowName']}</p><p><b><strong>Run instance ID:</strong></b> @{item()['metadata']['flowRunSequenceId']}</p><p><b><strong>Emitted properties:</strong></b>@{replace(replace(replace(replace(string(item()['properties']),'{\"',': '),'\":\"',': '),'\"}',''),'\",\"',' ')}</p><br><p><b><strong style=\"background-color: rgb(255, 255, 255); color: rgb(74, 144, 226);\">Entire business process:</strong></b></p><p>@{body('Create_HTML_table_BP_Details')}</p><br><br>",
                                             "recipient": "@parameters('Teams-Recipient_#workflowname#')"
                                         },
                                         "host": {
@@ -108,7 +108,7 @@
                                     "type": "ApiConnection"
                                 },
                                 "Run_KQL_query_BP_Details": {
-                                    "description": "Execute query looking for all business process records for a particular transaction.",
+                                    "description": "Execute query to find all business process records for a particular transaction.",
                                     "inputs": {
                                         "body": {
                                             "cluster": "@parameters('Kusto-URL_#workflowname#')",
@@ -131,7 +131,7 @@
                                     "type": "ApiConnection"
                                 },
                                 "Transform_using_Data_Mapper_XSLT": {
-                                    "description": "We will take our ADX - KQL result and transform it into a smaller message and also perform some data manipulation.",
+                                    "description": "This action transforms the Azure Data Explorer - Kusto Query Language result into a smaller message and performs some data manipulation.",
                                     "inputs": {
                                         "content": "@body('Run_KQL_query_BP_Details')",
                                         "map": {
@@ -148,7 +148,7 @@
                                     "type": "Xslt"
                                 },
                                 "Update_Entity_-_Last_Processed": {
-                                    "description": "Now that we have processed the batch we need to update the Azure Storage table so that we exclude these records from future executions",
+                                    "description": "After the batch finishes processing, update the Azure Storage table to exclude processed records from future workflow runs.",
                                     "inputs": {
                                         "parameters": {
                                             "entity": {
@@ -172,12 +172,12 @@
                                     "type": "ServiceProvider"
                                 }
                             },
-                            "description": "A business process is likely to have many stages so now we want to get the status of remaining stages in business process.",
+                            "description": "Get the status from any remaining stages in a business process, which likely has multiple stages.",
                             "foreach": "@body('Parse-KQLQueryResult')?['value']",
                             "type": "Foreach"
                         }
                     },
-                    "description": "Checking to see if we have any records returned. If we do, it means we have failures which we need to process.",
+                    "description": "Check for any returned records, which indicate failures exist and need processing.",
                     "else": {
                         "actions": {}
                     },
@@ -199,7 +199,7 @@
                     "type": "If"
                 },
                 "Parse-KQLQueryResult": {
-                    "description": "We will now parse the result from KQL so we have a typed schema",
+                    "description": "Parse the result from Kusto Query Language to get a typed schema.",
                     "inputs": {
                         "content": "@body('Run_KQL_query')",
                         "schema": {
@@ -300,7 +300,7 @@
                     "type": "ParseJson"
                 },
                 "Query_Entities_Get_latest_alert": {
-                    "description": "We need to track the last time this workflow ran so that we don't process alerts multiple times.",
+                    "description": "Track the last time that this workflow ran to avoid processing alerts multiple times.",
                     "inputs": {
                         "parameters": {
                             "filter": "PartitionKey eq 'CustomerService' and RowKey eq 'PowerOutageTickets'",
@@ -315,7 +315,7 @@
                     "type": "ServiceProvider"
                 },
                 "Run_KQL_query": {
-                    "description": "Run our query looking for failed stages in ADX.",
+                    "description": "Run the query to find failed stages in Azure Data Explorer.",
                     "inputs": {
                         "body": {
                             "cluster": "@parameters('Kusto-URL_#workflowname#')",
@@ -346,7 +346,7 @@
     "outputs": {},
     "triggers": {
         "Recurrence": {
-            "description": "Currently this workflow is configured to run once per hour. Modify to address your requirements.",
+            "description": "This workflow is currently set up to run once per hour. You can change this recurrence for your requirements.",
             "recurrence": {
                 "frequency": "Hour",
                 "interval": 1
