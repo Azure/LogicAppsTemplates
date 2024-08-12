@@ -172,7 +172,7 @@
                                     "type": "ServiceProvider"
                                 }
                             },
-                            "description": "Get the status from any remaining stages in a business process, which likely has multiple stages.",
+                            "description": "Get the status for any remaining stages in a business process, which likely has multiple stages.",
                             "foreach": "@body('Parse-KQLQueryResult')?['value']",
                             "type": "Foreach"
                         }
