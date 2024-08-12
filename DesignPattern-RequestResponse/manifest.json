@@ -1,5 +1,5 @@
 {
-    "title": "Receive a request and return a response over HTTP or HTTPS",
+    "title": "Request-Response: Receive and respond to messages over HTTP or HTTPS",
     "description": "This workflow template triggers when a message or request arrives over HTTP or HTTPS and returns a response after any other actions that you might want to add for the workflow to run.",
     "tags": [
         "HTTP"
