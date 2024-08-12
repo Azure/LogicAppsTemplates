@@ -1,5 +1,5 @@
 {
-    "title": "Azure Service Bus: Get message from a queue with token renewal - Peek lock pattern",
+    "title": "Azure Service Bus: Get message from a queue with token renewal - Peek lock renew pattern",
     "description": "This workflow template triggers when a message is available in a Service Bus queue. The workflow gets the message from the queue, locks the message for processing, and renews the lock token until processing completes. The message is deleted from the queue after processing completes. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing.",
     "prerequisites": "Before you use this template, you need to create or set up an existing Service Bus namespace, and create a queue. For more information, see [Create a Service Bus namespace and queue](https://go.microsoft.com/fwlink/?linkid=2282508).",
     "skus": [
