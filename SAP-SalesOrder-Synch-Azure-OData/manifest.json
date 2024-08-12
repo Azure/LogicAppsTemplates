@@ -1,7 +1,7 @@
 {
-    "title": "Synch SAP Sales Orders to Azure Blob storage using OData",
-    "description": "Support downstream data processing of SAP transactional data in Azure. Template uses SAP's publicly available [S/4HANA public cloud sandbox](https://api.sap.com/api/CE_SALESORDER_0001/overview) and produces CSV. Replace URL and authentication scheme for your SAP system. Learn more [here](https://learn.microsoft.com/azure/sap/workloads/integration-get-started)",
-    "prerequisites": "To reach a private SAP on Azure system use [VNet integration](https://learn.microsoft.com/azure/logic-apps/secure-single-tenant-workflow-virtual-network-private-endpoint#set-up-outbound-traffic-using-virtual-network-integration). For on-premise adapt the OData connector conifguration to use the [On-premises Data Gateway](https://learn.microsoft.com/azure/logic-apps/install-on-premises-data-gateway)",
+    "title": "SAP: Synch sales orders to Azure Blob Storage using OData",
+    "description": "This workflow template triggers on a recurring schedule and supports processing downstream SAP transactional data in Azure. The workflow uses the publicly available SAP [S/4HANA public cloud sandbox](https://go.microsoft.com/fwlink/?linkid=2282241), and produces CSV. When you use this template, use the URL and authentication scheme for your own SAP system. For more information, see [Get started with SAP and Microsoft integration scenarios](https://go.microsoft.com/fwlink/?linkid=2282033).",
+    "prerequisites": "To access a private SAP system on Azure, use [virtual network integration](https://go.microsoft.com/fwlink/?linkid=2282334). For an on-premises SAP system, change the SAP connector's OData setup to use the [on-premises data gateway](https://go.microsoft.com/fwlink/?linkid=2282414).",
     "tags": [
         "SAP","OData","Azure Storage","mass data extraction","CSV"
     ],
@@ -30,42 +30,42 @@
     "parameters": [
         {
             "name": "odataTopDefault_#workflowname#",
-            "displayName": "Odata Top Default",
+            "displayName": "OData top default",
             "type": "Int",
             "default": "50",
-            "description": "OData $top batch size",
+            "description": "The OData $top batch size.",
             "required": true
         },
         {
             "name": "loopLimit_#workflowname#",
-            "displayName": "Loop Limit",
+            "displayName": "Loop limit",
             "type": "Int",
             "default": "71",
-            "description": "Maximum number of loops to request data from SAP via OData",
+            "description": "The maximum number of loops to use when requesting data from SAP through OData.", 
             "required": true
         },
         {
             "name": "odata-api-key_#workflowname#",
-            "displayName": "Odata Api Key",
+            "displayName": "OData API key",
             "type": "String",
-            "default": "This is the SAP API Business Hub key for the OData API",
-            "description": "Get your API key from the SAP API Business Hub: https://api.sap.com/api/API_BUSINESS_PARTNER/overview",
+            "default": "The SAP API Business Hub key for the OData API.",
+            "description": "Get your API key from the [SAP API Business Hub](https://go.microsoft.com/fwlink/?linkid=2282241).",
             "required": true
         },
         {
             "name": "azure-container-name_#workflowname#",
-            "displayName": "Azure Container Name",
+            "displayName": "Azure Storage container name",
             "type": "String",
             "default": "sap-sales-orders",
-            "description": "The name of the container on Azure storage account to store the extracted data from SAP.",
+            "description": "The name of the Azure Storage account container to store the data extracted from SAP.",
             "required": true
         },
         {
             "name": "azure-blob-name_#workflowname#",
-            "displayName": "Azure Blob Name",
+            "displayName": "Azure Storage blob name",
             "type": "String",
             "default": "sales-orders.csv",
-            "description": "The name of the blob on Azure storage account container to store the extracted data from SAP as csv.",
+            "description": "The name of the blob in an Azure storage account container to store the data extracted from SAP in CSV format.",
             "required": true
         }
     ],
