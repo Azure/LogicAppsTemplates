@@ -1,7 +1,7 @@
 {
-    "title": "Service Bus Peek Lock Pattern - get message from a topic subscription",
-    "description": "Get new message from a Service Bus topic subscription and lock it for processing. The message will be deleted from the topic subscription after the processing is completed. This pattern is useful when you want to ensure that the message is processed only once and not lost in case of a failure during processing.",
-    "prerequisites": "Before you can use this template, you need to configure a Service Bus namespace and create a topic and a subscription. For more information about Service Bus see [Create a new topic/subscription on Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-quickstart-topics-subscriptions-portal)",
+    "title": "Azure Service Bus: Get message from a topic subscription - Peek lock abandon pattern",
+    "description": "This workflow template triggers when a message is available in a Service Bus topic subscription. The workflow gets the message from the topic subscription and locks the message for processing. The message is deleted from the topic subscription after processing completes. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing.",
+    "prerequisites": "Before you use this template, you need to create or set up an existing Service Bus namespace, and create a queue. For more information, see [Create a Service Bus namespace and queue](https://go.microsoft.com/fwlink/?linkid=2282508).",
     "skus": [
         "standard"
     ],
@@ -27,26 +27,26 @@
     "parameters": [
         {
             "name": "topicName_#workflowname#",
-            "displayName": "Topic Name",
+            "displayName": "Topic name",
             "type": "String",
-            "default": "This is the name of the topic from which the message will be fetched.",
-            "description": "This is a parameter",
+            "default": "Service Bus topic name",
+            "description": "The name for the Service Bus topic from where to get the message.",
             "required": true
         },
         {
             "name": "subscriptionName_#workflowname#",
-            "displayName": "Subscription Name",
+            "displayName": "Subscription name",
             "type": "String",
-            "default": "This is the name of the subscription from which the message will be fetched.",
-            "description": "This is a parameter",
+            "default": "Service Bus topic subscription name",
+            "description": "The name for the Service Bus topic subscription from where to get the message",
             "required": true
         },        
         {
             "name": "messageBatchSize_#workflowname#",
-            "displayName": "Message Batch Size",
+            "displayName": "Message batch size",
             "type": "Int",
             "default": "50",
-            "description": "This indicates how many messages will be fetched in a single batch.",
+            "description": "The number of messages to get as a single batch.",
             "required": true
         }
     ],
