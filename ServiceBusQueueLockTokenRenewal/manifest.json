@@ -29,7 +29,7 @@
             "name": "queueName_#workflowname#",
             "displayName": "Queue name",
             "type": "String",
-            "default": "The Service Bus queue name.",
+            "default": "Service Bus queue name",
             "description": "The name for the Service Bus queue from where to get the message.",
             "required": true
         },
