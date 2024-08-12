@@ -1,6 +1,6 @@
 {
-    "title": "IBM MQ: Get message from a queue - Browse-lock pattern",
-    "description": "This workflow template lets you get a new message from an IBM MQ server queue and lock for processing. After processing completes, the message is deleted from the queue. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing. For more information, see [Connect to an IBM MQ server from a workflow in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282332).",
+    "title": "IBM MQ: Get message from a queue - Browse lock pattern",
+    "description": "This workflow template gets a new message from an IBM MQ server queue and locks for processing. After processing completes, the message is deleted from the queue. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing. For more information, see [Connect to an IBM MQ server from a workflow in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282332).",
     "prerequisites": "Before you use this template, you need to enable state preservation on the IBM MQ built-in connector and virtual network integration. For more information, see [Enable stateful mode for stateless built-in connectors in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282411).",
     "skus": [
         "standard"
