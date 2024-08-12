@@ -53,7 +53,7 @@
                     "type": "Compose"
                 },
                 "Compose-LastTimeStamp": {
-                    "description": "Azure Table Storage returns an array using the 'Compose' action to simplify usage later in the workflow.",
+                    "description": "Return an array from Azure Table Storage using the 'Compose' action to simplify usage later in the workflow.",
                     "inputs": "@first(body('Query_Entities_Get_latest_alert')?['entities'])['LastAlertedProcessed']",
                     "runAfter": {
                         "Query_Entities_Get_latest_alert": [
