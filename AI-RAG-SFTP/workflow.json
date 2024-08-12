@@ -83,7 +83,7 @@
     "outputs": {},
     "triggers": {
         "When_a_file_is_added_or_updated": {
-            "description": "The Folder name from where you want to read the files and ingest them. We have used root folder but you can use the specific folder path",
+            "description": "The name for the folder from where to read and ingest files. By default, this trigger uses the root folder, but you can specify another folder path.",
             "inputs": {
                 "parameters": {
                     "folderPath": "/demo",
