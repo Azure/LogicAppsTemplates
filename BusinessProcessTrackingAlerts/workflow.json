@@ -43,7 +43,7 @@
                     "type": "Compose"
                 },
                 "Compose-KQLQuery": {
-                    "description": "Compose a query for Azure Data Explorer database using Kusto Query Language. This action queries the database table for your Business Process Tracking instance for any records with a failed status that are newer than the timestamp stored in Azure Table Storage.",
+                    "description": "Compose a query against the Azure Data Explorer database table for your Business Process Tracking instance using Kusto Query Language. This action queries for any records with a failed status that is newer than the timestamp stored in Azure Table Storage.",
                     "inputs": "@{parameters('Kusto-TableName')}\n| order by eventTimestamp desc \n| where eventStatus == \"failure\" and eventTimestamp > todatetime(\"@{outputs('Compose-LastTimeStamp')}\")",
                     "runAfter": {
                         "Compose-LastTimeStamp": [
@@ -131,7 +131,7 @@
                                     "type": "ApiConnection"
                                 },
                                 "Transform_using_Data_Mapper_XSLT": {
-                                    "description": "This action transforms the Azure Data Explorer - Kusto Query Language result into a smaller message and performs some data manipulation.",
+                                    "description": "Transform the Azure Data Explorer - Kusto Query Language result into a smaller message and performs some data manipulation.",
                                     "inputs": {
                                         "content": "@body('Run_KQL_query_BP_Details')",
                                         "map": {
@@ -148,7 +148,7 @@
                                     "type": "Xslt"
                                 },
                                 "Update_Entity_-_Last_Processed": {
-                                    "description": "After the batch finishes processing, update the Azure Storage table to exclude processed records from future workflow runs.",
+                                    "description": "Update the Azure Storage table to exclude previously processed records from future workflow runs.",
                                     "inputs": {
                                         "parameters": {
                                             "entity": {
@@ -315,7 +315,7 @@
                     "type": "ServiceProvider"
                 },
                 "Run_KQL_query": {
-                    "description": "Run the query to find failed stages in Azure Data Explorer.",
+                    "description": "Run the query to find failed business process stages in Azure Data Explorer.",
                     "inputs": {
                         "body": {
                             "cluster": "@parameters('Kusto-URL_#workflowname#')",
