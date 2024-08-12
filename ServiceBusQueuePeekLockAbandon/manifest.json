@@ -1,7 +1,7 @@
 {
-    "title": "Service Bus Peek Lock Pattern - get message from a queue",
-    "description": "Get new message from a Service Bus queue and lock it for processing. The message will be deleted from the queue after the processing is completed. This pattern is useful when you want to ensure that the message is processed only once and not lost in case of a failure during processing.",
-    "prerequisites": "Before you can use this template, you need to configure a Service Bus namespace and create a queue. For more information about Service Bus see [Create a new queue on Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-quickstart-portal)",
+    "title": "Azure Service Bus: Get message from a queue - Peek lock abandon pattern",
+    "description": "This workflow template triggers when a message is available in a Service Bus queue. The workflow gets the message from the queue and locks the message for processing. The message is deleted from the queue after processing completes. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing.",
+    "prerequisites": "Before you use this template, you need to create or set up an existing Service Bus namespace, and create a queue. For more information, see [Create a Service Bus namespace and queue](https://go.microsoft.com/fwlink/?linkid=2282508).",
     "skus": [
         "standard"
     ],
@@ -27,18 +27,18 @@
     "parameters": [
         {
             "name": "queueName_#workflowname#",
-            "displayName": "Queue Name",
+            "displayName": "Queue name",
             "type": "String",
-            "default": "This is the name of the queue from which the message will be fetched.",
-            "description": "This is a parameter",
+            "default": "Service Bus queue name",
+            "description": "The name for the Service Bus queue from where to get the message.",
             "required": true
         },
         {
             "name": "messageBatchSize_#workflowname#",
-            "displayName": "Message Batch Size",
+            "displayName": "Message batch size",
             "type": "Int",
             "default": "50",
-            "description": "This indicates how many messages will be fetched in a single batch.",
+            "description": "The number of messages to get as a single batch.",
             "required": true
         }
     ],
