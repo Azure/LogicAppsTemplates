@@ -1,7 +1,7 @@
 {
-    "title": "Enable self-service SAP user unblock using BAPI",
-    "description": "Enable self-service SAP user unblock from Microsoft Teams Channels. Template uses SAP's standard BAPI BAPI_USER_UNLOCK. Learn more [here](https://www.youtube.com/watch?v=ZmOPPtIYYM4)",
-    "prerequisites": "The [SAP .Net Connector](https://support.sap.com/en/product/connectors/msnet.html) libraries need to be deployed under the assemblies of the Standard LogicApp, see [Connect to SAP from workflows in Azure Logic Apps](https://learn.microsoft.com/azure/logic-apps/connectors/sap?tabs=consumption) for more information. You will also need connection details for your SAP system and a RFC user. To reach a private SAP on Azure system use [VNet integration](https://learn.microsoft.com/azure/logic-apps/secure-single-tenant-workflow-virtual-network-private-endpoint#set-up-outbound-traffic-using-virtual-network-integration). For on-premise adapt the BAPI configuration to use the [On-premises Data Gateway](https://learn.microsoft.com/azure/logic-apps/install-on-premises-data-gateway)",
+    "title": "SAP: Enable self-service user unblock from Microsoft Teams using BAPI",
+    "description": "This workflow template triggers on a recurring schedule, enables SAP self-service user unblock from Teams channels, and uses SAP's standard BAPI 'BAPI_USER_UNLOCK'. For more information, see [Connect to SAP from Standard logic apps using BAPI and RFC](https://go.microsoft.com/fwlink/?linkid=2282035).",
+    "prerequisites": "Before you use this template, you need to meet the following prerequisites: 1) Upload the libraries for the [SAP Connector for Microsoft .NET](https://go.microsoft.com/fwlink/?linkid=2282504) to the 'Assemblies' folder in your Standard logic app resource. You can find this folder on the logic app menu, under 'Artifacts'. For more information, see [Connect to SAP from workflows in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282243). 2) Get the connection information for your SAP system and an RFC user. <p>To access a private SAP system on Azure, use [virtual network integration](https://go.microsoft.com/fwlink/?linkid=2282334). For an on-premises SAP system, change the SAP connector's BAPI setup to use the [on-premises data gateway](https://go.microsoft.com/fwlink/?linkid=2282414).",
     "tags": [
         "SAP","BAPI","RFC","Microsoft Teams","user unblock","self-service"
     ],
@@ -30,18 +30,18 @@
     "parameters": [
         {
             "name": "TeamsChannelID_#workflowname#",
-            "displayName": "TeamsChannelID",
+            "displayName": "Teams channel ID",
             "type": "String",
             "default": "a123b1c2-1a23-456a-7a89-1a2345a8cd1",
-            "description": "The ID of the Microsoft Teams team from where the user unblock request will be picked up.",
+            "description": "The ID for the Teams channel from where to get the user unblock request.",
             "required": true
         },
         {
             "name": "TeamsTeamID_#workflowname#",
-            "displayName": "TeamsTeamID",
+            "displayName": "Teams team ID",
             "type": "String",
             "default": "19:AtFwAB123yWo1@thread.tacv2",
-            "description": "The ID of the Microsoft Teams channel from where the user unblock request will be picked up.",
+            "description": "The ID for the Teams team from where to get the user unblock request.",
             "required": true
         }
     ],
