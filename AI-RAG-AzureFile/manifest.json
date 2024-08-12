@@ -1,5 +1,5 @@
 {
-    "title": "Ingest and index Azure Files documents using Azure OpenAI and Azure AI Search - RAG pattern",
+    "title": "Azure Files - Ingest and index documents using Azure OpenAI and Azure AI Search - RAG pattern",
     "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template reads a file from Azure Files. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
     "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo).",
     "tags": [
