@@ -1,6 +1,6 @@
 {
-    "title": "Request Response over HTTP",
-    "description": "Receive a message over HTTP, perform some other work of your choosing, and then return a response",
+    "title": "Receive a request and return a response over HTTP or HTTPS",
+    "description": "This workflow template triggers when a message or request arrives over HTTP or HTTPS and returns a response after any other actions that you might want to add for the workflow to run.",
     "tags": [
         "HTTP"
     ],
@@ -12,7 +12,7 @@
         "stateful",
         "stateless"
     ],
-    "detailsDescription": "This template serves the starting point for building synchronous Request Response patterns using Logic Apps. Learn more about these capabilites [here](https://learn.microsoft.com/azure/connectors/connectors-native-reqres?tabs=consumption) ",
+    "detailsDescription": "This template serves as a starting point for you to build synchronous Request-Response workflow patterns using Azure Logic Apps. [Learn more](https://go.microsoft.com/fwlink/?linkid=2282330)",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
