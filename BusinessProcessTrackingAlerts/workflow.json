@@ -7,7 +7,7 @@
                     "description": "This action is a general exception handler. If an error occurs in a preceding operation, you get more information about the failure.",
                     "inputs": {
                         "body": {
-                            "messageBody": "<p>An error happened in the BusinessProcessTrackingAlerts workflow. Here are the details:</p><br><p>@{result('Scope-Try')}</p>",
+                            "messageBody": "<p>An error happened in the workflow for Business Process Tracking Alerts. Here are the details:</p><br><p>@{result('Scope-Try')}</p>",
                             "recipient": "@parameters('Teams-Recipient_#workflowname#')"
                         },
                         "host": {
