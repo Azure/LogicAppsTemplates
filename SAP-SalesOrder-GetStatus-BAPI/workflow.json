@@ -119,7 +119,7 @@
             "Post_salesorder_status_message_in_a_chat_or_channel": {
                 "inputs": {
                     "body": {
-                        "messageBody": "<p>Order status for each item:</p><p>@{variables('itemstatuses')}</p><br><p>SAP response (@{body('[RFC]_Call_BAPI_SALESORDER_GETSTATUS')?['content']?['RETURN']?['CODE']}): @{body('[RFC]_Call_BAPI_SALESORDER_GETSTATUS')?['content']?['RETURN']?['MESSAGE']}</p>",
+                        "messageBody": "<p>Order status for each item:</p><p>@{variables('itemstatuses')}</p><br><p>SAP response: (@{body('[RFC]_Call_BAPI_SALESORDER_GETSTATUS')?['content']?['RETURN']?['CODE']}): @{body('[RFC]_Call_BAPI_SALESORDER_GETSTATUS')?['content']?['RETURN']?['MESSAGE']}</p>",
                         "recipient": "@triggerBody()?['from']?['user']?['id']"
                     },
                     "host": {
