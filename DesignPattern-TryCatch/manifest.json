@@ -1,5 +1,5 @@
 {
-    "title": "Handle exceptions with the Scope action and Try-Catch pattern",
+    "title": "Try-Catch: Handle exceptions with the Scope action",
     "description": "This workflow template uses the 'Scope' action and Try-Catch pattern for exception handling.",
     "tags": [
         "Exception Handling",
