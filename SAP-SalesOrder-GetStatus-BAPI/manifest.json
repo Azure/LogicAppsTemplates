@@ -33,7 +33,7 @@
             "displayName": "Teams channel ID",
             "type": "String",
             "default": "a123b1c2-1a23-456a-7a89-1a2345a8cd1",
-            "description": "The ID for the channel in Microsoft Teams from where to pick up the sales order status request.",
+            "description": "The ID for the Teams channel from where to get the sales order status request.",
             "required": true
         },
         {
@@ -41,7 +41,7 @@
             "displayName": "Teams team ID",
             "type": "String",
             "default": "19:AtFwAB123yWo1@thread.tacv2",
-            "description": "The ID for the team in Microsoft Teams from where to pick up the sales order status request.",
+            "description": "The ID for the Teams team from where to get the sales order status request.",
             "required": true
         }
     ],
