@@ -1,7 +1,7 @@
 $version: 1
 $input: JSON
 $output: JSON
-$sourceSchema: BPKQL.json
+$sourceSchema: bpkql.json
 $targetSchema: team.json
 root:
   $for(/root/value/*):

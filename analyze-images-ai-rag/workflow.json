@@ -123,7 +123,7 @@
             "description": "This action gets the image. You can replace this action with a different connector action to get the image.",
             "inputs": {
                 "parameters": {
-                    "fileId": "/PurchaseOrder.png",
+                    "fileId": "/purchase-order.png",
                     "inferContentType": true
                 },
                 "serviceProviderConfiguration": {

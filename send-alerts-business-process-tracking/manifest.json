@@ -26,15 +26,15 @@
         },
         {
             "type": "map",
-            "file": "BPKQL-to-Teams.lml"
+            "file": "bpkql-to-teams.lml"
         },
         {
             "type": "map",
-            "file": "BPKQL-to-Teams.xslt"
+            "file": "bpkql-to-teams.xslt"
         },
         {
             "type": "schema",
-            "file": "BPKQL.json"
+            "file": "bpkql.json"
         },
         {
             "type": "schema",
@@ -42,8 +42,8 @@
         }
     ],
     "images": {
-        "light": "BusinessProcessTrackingAlertsWorkflow-light",
-        "dark": "BusinessProcessTrackingAlertsWorkflow-dark"
+        "light": "workflow-light",
+        "dark": "workflow-dark"
     },
     "parameters": [
         {
