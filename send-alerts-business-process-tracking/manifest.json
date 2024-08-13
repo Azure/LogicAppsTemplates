@@ -30,7 +30,7 @@
         },
         {
             "type": "map",
-            "file": "bpkql-to-teams.xslt"
+            "file": "BPKQL-to-Teams.xslt"
         },
         {
             "type": "schema",
