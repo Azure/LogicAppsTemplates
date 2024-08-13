@@ -8,7 +8,7 @@
                         "inputs": {
                             "runError": {
                                 "code": "500",
-                                "message": "Loop limit reached (@{add(div(variables('totalCountOfSAPBusinessPartners'),variables('odataTopValue')),1)} where current value is @{parameters('loopLimit_#workflowname#')}). Either adjust $top (@{variables('odataTopValue')}), or the raise loop limit. The max value is 5000."
+                                "message": "Loop limit reached where current value is @{parameters('loopLimit_#workflowname#')}), but (@{add(div(variables('totalCountOfSAPBusinessPartners'),variables('odataTopValue')),1)} is needed. Either adjust $top (@{variables('odataTopValue')}), or the raise the loop limit. The maximum value is 5000."
                             },
                             "runStatus": "Failed"
                         },
