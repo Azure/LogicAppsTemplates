@@ -135,7 +135,7 @@
                                     "inputs": {
                                         "content": "@body('Run_KQL_query_BP_Details')",
                                         "map": {
-                                            "name": "bpkql-to-teams.xslt",
+                                            "name": "BPKQL-to-Teams.xslt",
                                             "source": "LogicApp"
                                         }
                                     },
