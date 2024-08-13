@@ -27,7 +27,7 @@
     ],
     "images": {
         "light": "workflow-light",
-        "dark": "workflow=dark"
+        "dark": "workflow-dark"
     },
     "parameters": [
         {
