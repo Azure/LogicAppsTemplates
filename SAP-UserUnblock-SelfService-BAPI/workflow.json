@@ -47,7 +47,7 @@
                     "Post_response_in_a_chat_or_channel": {
                         "inputs": {
                             "body": {
-                                "messageBody": "<p>\"User @{variables('userName')} unlock triggered.\" SAP response: @{items('For_each')?['MESSAGE']}</p>",
+                                "messageBody": "<p>\"Triggered unlock for user: @{variables('userName')}. \"SAP response: @{items('For_each')?['MESSAGE']}</p>",
                                 "recipient": "@triggerBody()?['from']?['user']?['id']"
                             },
                             "host": {
@@ -90,7 +90,7 @@
                 "inputs": {
                     "body": {
                         "isAlert": true,
-                        "messageBody": "<p>\"Unblock User @{variables('userName')} has failed!\" </p>",
+                        "messageBody": "<p>\"Failed to unblock user: @{variables('userName')}.\" </p>",
                         "recipient": "@triggerBody()?['from']?['user']?['id']"
                     },
                     "host": {
