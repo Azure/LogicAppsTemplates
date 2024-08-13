@@ -34,7 +34,7 @@
         },
         {
             "type": "schema",
-            "file": "bpkql.json"
+            "file": "BPKQL.json"
         },
         {
             "type": "schema",
