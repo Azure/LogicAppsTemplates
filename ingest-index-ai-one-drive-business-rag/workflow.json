@@ -1,0 +1,112 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Chunk_text": {
+            "inputs": {
+                "EncodingModel": "cl100k_base",
+                "PageOverlapLength": 0,
+                "TokenSize": 5000,
+                "chunkingStrategy": "TokenSize",
+                "text": "@body('Parse_a_document')?['text']"
+            },
+            "runAfter": {
+                "Parse_a_document": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ChunkText"
+        },
+        "Get_multiple_embeddings": {
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#')",
+                    "input": "@body('Chunk_text')?['value']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai-1_#workflowname#",
+                    "operationId": "getArrayEmbeddings",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {
+                "Chunk_text": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Index_multiple_documents": {
+            "inputs": {
+                "parameters": {
+                    "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
+                    "indexName": "@parameters('AISearch_Index_Name_#workflowname#')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "azureaisearch-1_#workflowname#",
+                    "operationId": "indexDocuments",
+                    "serviceProviderId": "/serviceProviders/azureaisearch"
+                }
+            },
+            "runAfter": {
+                "Select_embeddings_and_map_to_AI_Search_schema": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "Parse_a_document": {
+            "inputs": {
+                "content": "@triggerBody()"
+            },
+            "runAfter": {},
+            "type": "ParseDocument"
+        },
+        "Select_embeddings_and_map_to_AI_Search_schema": {
+            "inputs": {
+                "from": "@range(0, length(body('Chunk_text')['value']))",
+                "select": {
+                    "content": "@body('Chunk_text')['value'][item()]",
+                    "documentName": "@parameters('AISearch_Schema_DocumentName_#workflowname#')",
+                    "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                    "id": "@concat(parameters('AISearch_Schema_ID_#workflowname#'), item())"
+                }
+            },
+            "runAfter": {
+                "Get_multiple_embeddings": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Select"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_a_file_is_created": {
+            "description": "The name for the folder from where to read and ingest files. By default, this trigger uses the root folder, but you can specify another folder path.",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "referenceName": "onedriveforbusiness_#workflowname#"
+                    }
+                },
+                "method": "get",
+                "path": "/datasets/default/triggers/onnewfilev2",
+                "queries": {
+                    "folderId": "b!a6SSQsc9lU2KCyF-97dxuFV6YmHpX0NHne_LnaJ7kSOZEN9lSlpKRoM6-MY4SoZm.01IQVCMNJTY26MQZXO55FIQECOH7X6Q5CO",
+                    "includeSubfolders": false,
+                    "inferContentType": true,
+                    "simulate": false
+                }
+            },
+            "metadata": {
+                "b!a6SSQsc9lU2KCyF-97dxuFV6YmHpX0NHne_LnaJ7kSOZEN9lSlpKRoM6-MY4SoZm.01IQVCMNJTY26MQZXO55FIQECOH7X6Q5CO": "/"
+            },
+            "recurrence": {
+                "frequency": "Minute",
+                "interval": 1
+            },
+            "type": "ApiConnection"
+        }
+    }
+}

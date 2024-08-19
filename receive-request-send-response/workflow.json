@@ -1,0 +1,23 @@
+{
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Response": {
+                "description": "Return a response to the caller. The Body and Headers parameters are optional.",
+                "inputs": {
+                    "statusCode": 200
+                },
+                "kind": "Http",
+                "runAfter": {},
+                "type": "Response"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "description": "Create a callable REST endpoint URL for this workflow and wait to receive a request over HTTP or HTTPS, which triggers the workflow.",
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    }
