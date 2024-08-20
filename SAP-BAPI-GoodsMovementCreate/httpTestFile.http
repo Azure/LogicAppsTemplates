@@ -1,4 +1,4 @@
-#Test file which can be used to in visual studio code to post a goods movement in SAP using the BAPI_GOODSMVT_CREATE
+#This is a test file which can be used to in visual studio code to post a goods movement in SAP using the BAPI_GOODSMVT_CREATE
 #You'll need to install the REST Client extension in Visual Studio Code to use this file
 #The xml file is an example and will need to be adapted according to your SAP system
 

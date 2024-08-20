@@ -17,7 +17,7 @@
             <ns3:ENTRY_UOM>ST</ns3:ENTRY_UOM>
         </ns3:BAPI2017_GM_ITEM_CREATE>
         <ns3:BAPI2017_GM_ITEM_CREATE>
-            <ns3:MATERIAL>MZ-RM-R100-04</ns3:MATERIAL>
+            <ns3:MATERIAL>MZ-RM-R100-05</ns3:MATERIAL>
             <ns3:PLANT>1710</ns3:PLANT>
             <ns3:STGE_LOC>171A</ns3:STGE_LOC>
             <ns3:MOVE_TYPE>501</ns3:MOVE_TYPE>

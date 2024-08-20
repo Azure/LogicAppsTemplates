@@ -1,5 +1,5 @@
 {
-    "title": "Create SAP GoodsMovement using BAPI_GOODSMVT_CREATE",
+    "title": "SAP BAPI: Create SAP GoodsMovement using BAPI_GOODSMVT_CREATE",
     "description": "Create a goods movement in SAP using the BAPI_GOODSMVT_CREATE function module. The input is assumed to be a RFC XML document provided by a HTTP POST to the logic app. This template executes a RFC Call BAPI_GOODSMVT_CREATE on the SAP system.",
     "prerequisites": "The [SAP .Net Connector](https://support.sap.com/en/product/connectors/msnet.html) libraries  need to be deployed under the assemblies of the Standard LogicApp, see [Connect to SAP from workflows in Azure Logic Apps](https://learn.microsoft.com/en-us/azure/logic-apps/connectors/sap?tabs=consumption) for more information. You will also need connection details for your SAP system and a RFC user.",
     "tags": [
