@@ -28,7 +28,7 @@
                                 "wait": true
                             },
                             "serviceProviderConfiguration": {
-                                "connectionName": "sap",
+                                "connectionName": "sap_#workflowname#",
                                 "operationId": "bapiCommit",
                                 "serviceProviderId": "/serviceProviders/sap"
                             }
@@ -90,7 +90,7 @@
             "[BAPI_-_RFC]_Create_stateful_session": {
                 "inputs": {
                     "serviceProviderConfiguration": {
-                        "connectionName": "sap",
+                        "connectionName": "sap_#workflowname#",
                         "operationId": "createSession",
                         "serviceProviderId": "/serviceProviders/sap"
                     }
