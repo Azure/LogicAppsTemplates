@@ -14,7 +14,7 @@
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
-        "Trigger": "When_a_HTTP_request_is_received"
+        "Trigger": "Request"
     },
     "artifacts": [
         {
