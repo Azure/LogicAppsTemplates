@@ -6,7 +6,7 @@
     "get-message-service-bus-topic-peek-lock-abandon",
     "get-message-service-bus-topic-peek-lock-renew",
     "get-sales-order-status-sap-teams-bapi",
-    "SAP-BAPI-GoodsMovementCreate",
+    "post-sap-goodsmovement-using-bapi",
     "ingest-index-ai-azure-files-rag",
     "ingest-index-ai-blob-storage-rag",
     "ingest-index-ai-http-rag",
