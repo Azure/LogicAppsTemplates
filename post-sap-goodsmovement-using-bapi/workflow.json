@@ -109,7 +109,7 @@
                         "sessionId": "@body('[BAPI_-_RFC]_Create_stateful_session')?['sessionId']"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "sap",
+                        "connectionName": "sap_#workflowname#",
                         "operationId": "callRfc",
                         "serviceProviderId": "/serviceProviders/sap"
                     }
