@@ -23,8 +23,8 @@
         }
     ],
     "images": {
-        "light": "snapshot_light",
-        "dark": "snapshot_dark"
+        "light": "workflow_light",
+        "dark": "workflow_dark"
     },
     "parameters": [
     ],
