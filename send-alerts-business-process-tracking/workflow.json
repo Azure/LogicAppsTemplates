@@ -1,0 +1,357 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Scope-Catch": {
+            "actions": {
+                "Post_message_in_a_chat_or_channel_-_Error": {
+                    "description": "This action is a general exception handler. If an error occurs in a preceding operation, you get more information about the failure.",
+                    "inputs": {
+                        "body": {
+                            "messageBody": "<p>An error happened in the workflow for Business Process Tracking Alerts. Here are the details:</p><br><p>@{result('Scope-Try')}</p>",
+                            "recipient": "@parameters('Teams-Recipient_#workflowname#')"
+                        },
+                        "host": {
+                            "connection": {
+                                "referenceName": "teams_#workflowname#"
+                            }
+                        },
+                        "method": "post",
+                        "path": "/beta/teams/conversation/message/poster/Flow bot/location/@{encodeURIComponent('Chat with Flow bot')}"
+                    },
+                    "type": "ApiConnection"
+                }
+            },
+            "runAfter": {
+                "Scope-Try": [
+                    "TIMEDOUT",
+                    "SKIPPED",
+                    "FAILED"
+                ]
+            },
+            "type": "Scope"
+        },
+        "Scope-Try": {
+            "actions": {
+                "Capture_Current_Timestamp": {
+                    "description": "To avoid race conditions or long running processes, this action captures the timestamp, which is later used to update the table storage at end of the workflow. Any new records added to Azure Data Explorer are processed in next batch.",
+                    "inputs": "@utcNow()",
+                    "runAfter": {
+                        "Parse-KQLQueryResult": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "Compose"
+                },
+                "Compose-KQLQuery": {
+                    "description": "Compose a query against the Azure Data Explorer database table for your Business Process Tracking instance using Kusto Query Language. This action queries for any records with a failed status that is newer than the timestamp stored in Azure Table Storage.",
+                    "inputs": "@{parameters('Kusto-TableName')}\n| order by eventTimestamp desc \n| where eventStatus == \"failure\" and eventTimestamp > todatetime(\"@{outputs('Compose-LastTimeStamp')}\")",
+                    "runAfter": {
+                        "Compose-LastTimeStamp": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "Compose"
+                },
+                "Compose-LastTimeStamp": {
+                    "description": "Return an array from Azure Table Storage using the 'Compose' action to simplify usage later in the workflow.",
+                    "inputs": "@first(body('Query_Entities_Get_latest_alert')?['entities'])['LastAlertedProcessed']",
+                    "runAfter": {
+                        "Query_Entities_Get_latest_alert": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "Compose"
+                },
+                "Condition": {
+                    "actions": {
+                        "For_each": {
+                            "actions": {
+                                "Compose-BusinessProcessDetailsQuery": {
+                                    "description": "Construct a query based on the 'correlationId' or your own 'Transaction Id'.",
+                                    "inputs": "@{parameters('Kusto-TableName')}\n| order by eventTimestamp asc\n| where correlationId == \"@{item()['correlationId']}\"\n",
+                                    "type": "Compose"
+                                },
+                                "Create_HTML_table_BP_Details": {
+                                    "description": "Convert output from Data Mapper to an HTML table for inclusion with stakeholder communication.",
+                                    "inputs": {
+                                        "format": "HTML",
+                                        "from": "@body('Transform_using_Data_Mapper_XSLT')"
+                                    },
+                                    "runAfter": {
+                                        "Transform_using_Data_Mapper_XSLT": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "Table"
+                                },
+                                "Post_message_in_a_chat_or_channel": {
+                                    "description": "Send a message that has the failed business process stage and other business process execution details to specified recipients in Microsoft Teams.",
+                                    "inputs": {
+                                        "body": {
+                                            "isAlert": true,
+                                            "messageBody": "<p><u><b><strong style=\"color: rgb(74, 144, 226);\">A business process stage failed with the following details:</strong></b></u></p><br><p><b><strong style=\"color: rgb(74, 144, 226);\">Business process name:</strong></b> @{item()['metadata']['businessProcessName']}</p><p><b><strong>Ticket Number:</strong></b> @{item()['correlationId']}</p><p><b><strong>Stage name: </strong></b>@{item()['eventName']}</p><p><b><strong>Timestamp:</strong></b> @{replace(substring(item()['eventTimestamp'],0,19),'T',' ')}</p><p><b><strong>Stage status:</strong></b> @{item()['eventStatus']}</p><p><b><strong>Logic app:</strong></b> @{item()['metadata']['appName']}</p><p><b><strong>Workflow name:</strong></b> @{item()['metadata']['flowName']}</p><p><b><strong>Run instance ID:</strong></b> @{item()['metadata']['flowRunSequenceId']}</p><p><b><strong>Emitted properties:</strong></b>@{replace(replace(replace(replace(string(item()['properties']),'{\"',': '),'\":\"',': '),'\"}',''),'\",\"',' ')}</p><br><p><b><strong style=\"background-color: rgb(255, 255, 255); color: rgb(74, 144, 226);\">Entire business process:</strong></b></p><p>@{body('Create_HTML_table_BP_Details')}</p><br><br>",
+                                            "recipient": "@parameters('Teams-Recipient_#workflowname#')"
+                                        },
+                                        "host": {
+                                            "connection": {
+                                                "referenceName": "teams_#workflowname#"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "path": "/beta/teams/conversation/message/poster/Flow bot/location/@{encodeURIComponent('Chat with Flow bot')}"
+                                    },
+                                    "runAfter": {
+                                        "Create_HTML_table_BP_Details": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "ApiConnection"
+                                },
+                                "Run_KQL_query_BP_Details": {
+                                    "description": "Execute query to find all business process records for a particular transaction.",
+                                    "inputs": {
+                                        "body": {
+                                            "cluster": "@parameters('Kusto-URL_#workflowname#')",
+                                            "csl": "@{outputs('Compose-BusinessProcessDetailsQuery')}",
+                                            "db": "@parameters('Kusto-DBName_#workflowname#')"
+                                        },
+                                        "host": {
+                                            "connection": {
+                                                "referenceName": "kusto-1_#workflowname#"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "path": "/ListKustoResults/false"
+                                    },
+                                    "runAfter": {
+                                        "Compose-BusinessProcessDetailsQuery": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "ApiConnection"
+                                },
+                                "Transform_using_Data_Mapper_XSLT": {
+                                    "description": "Transform the Azure Data Explorer - Kusto Query Language result into a smaller message and performs some data manipulation.",
+                                    "inputs": {
+                                        "content": "@body('Run_KQL_query_BP_Details')",
+                                        "map": {
+                                            "name": "BPKQL-to-Teams.xslt",
+                                            "source": "LogicApp"
+                                        }
+                                    },
+                                    "kind": "DataMapper",
+                                    "runAfter": {
+                                        "Run_KQL_query_BP_Details": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "Xslt"
+                                },
+                                "Update_Entity_-_Last_Processed": {
+                                    "description": "Update the Azure Storage table to exclude previously processed records from future workflow runs.",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entity": {
+                                                "LastAlertedProcessed": "@outputs('Capture_Current_Timestamp')",
+                                                "PartitionKey": "CustomerService",
+                                                "RowKey": "PowerOutageTickets"
+                                            },
+                                            "tableName": "@parameters('Azure-TableName_#workflowname#')"
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "AISearch_#workflowname#",
+                                            "operationId": "updateEntity",
+                                            "serviceProviderId": "/serviceProviders/azureTables"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Post_message_in_a_chat_or_channel": [
+                                            "SUCCEEDED"
+                                        ]
+                                    },
+                                    "type": "ServiceProvider"
+                                }
+                            },
+                            "description": "Get the status for any remaining stages in a business process, which likely has multiple stages.",
+                            "foreach": "@body('Parse-KQLQueryResult')?['value']",
+                            "type": "Foreach"
+                        }
+                    },
+                    "description": "Check for any returned records, which indicate failures exist and need processing.",
+                    "else": {
+                        "actions": {}
+                    },
+                    "expression": {
+                        "and": [
+                            {
+                                "greater": [
+                                    "@length(body('Parse-KQLQueryResult')?['value'])",
+                                    0
+                                ]
+                            }
+                        ]
+                    },
+                    "runAfter": {
+                        "Capture_Current_Timestamp": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "If"
+                },
+                "Parse-KQLQueryResult": {
+                    "description": "Parse the result from Kusto Query Language to get a typed schema.",
+                    "inputs": {
+                        "content": "@body('Run_KQL_query')",
+                        "schema": {
+                            "properties": {
+                                "value": {
+                                    "items": {
+                                        "properties": {
+                                            "correlationId": {
+                                                "type": "string"
+                                            },
+                                            "eventId": {
+                                                "type": "string"
+                                            },
+                                            "eventName": {
+                                                "type": "string"
+                                            },
+                                            "eventStatus": {
+                                                "type": "string"
+                                            },
+                                            "eventTimestamp": {
+                                                "type": "string"
+                                            },
+                                            "metadata": {
+                                                "properties": {
+                                                    "appName": {
+                                                        "type": "string"
+                                                    },
+                                                    "batchId": {
+                                                        "type": "string"
+                                                    },
+                                                    "businessProcessName": {
+                                                        "type": "string"
+                                                    },
+                                                    "businessProcessVersion": {
+                                                        "type": "string"
+                                                    },
+                                                    "clientTrackingId": {
+                                                        "type": "string"
+                                                    },
+                                                    "flowId": {
+                                                        "type": "string"
+                                                    },
+                                                    "flowName": {
+                                                        "type": "string"
+                                                    },
+                                                    "flowRunSequenceId": {
+                                                        "type": "string"
+                                                    },
+                                                    "flowSequenceId": {
+                                                        "type": "string"
+                                                    },
+                                                    "trackingProfileId": {
+                                                        "type": "string"
+                                                    },
+                                                    "trackingProfileName": {
+                                                        "type": "string"
+                                                    },
+                                                    "trackingProfileSequenceId": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "properties": {
+                                                "properties": {
+                                                    "SafetyAssessment": {
+                                                        "type": "string"
+                                                    },
+                                                    "TicketNumber": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "required": [
+                                            "correlationId",
+                                            "eventName",
+                                            "eventStatus",
+                                            "eventTimestamp",
+                                            "eventId",
+                                            "properties",
+                                            "metadata"
+                                        ],
+                                        "type": "object"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "runAfter": {
+                        "Run_KQL_query": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ParseJson"
+                },
+                "Query_Entities_Get_latest_alert": {
+                    "description": "Track the last time that this workflow ran to avoid processing alerts multiple times.",
+                    "inputs": {
+                        "parameters": {
+                            "filter": "PartitionKey eq 'CustomerService' and RowKey eq 'PowerOutageTickets'",
+                            "tableName": "@parameters('Azure-TableName_#workflowname#')"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "AISearch_#workflowname#",
+                            "operationId": "queryEntities",
+                            "serviceProviderId": "/serviceProviders/azureTables"
+                        }
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Run_KQL_query": {
+                    "description": "Run the query to find business process stages with failed status in Azure Data Explorer.",
+                    "inputs": {
+                        "body": {
+                            "cluster": "@parameters('Kusto-URL_#workflowname#')",
+                            "csl": "@{outputs('Compose-KQLQuery')}",
+                            "db": "@parameters('Kusto-DBName_#workflowname#')"
+                        },
+                        "host": {
+                            "connection": {
+                                "referenceName": "kusto-1_#workflowname#"
+                            }
+                        },
+                        "method": "post",
+                        "path": "/ListKustoResults/false"
+                    },
+                    "runAfter": {
+                        "Compose-KQLQuery": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ApiConnection"
+                }
+            },
+            "runAfter": {},
+            "type": "Scope"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "Recurrence": {
+            "description": "This workflow is currently set up to run once per hour. You can change this recurrence for your requirements.",
+            "recurrence": {
+                "frequency": "Hour",
+                "interval": 1
+            },
+            "type": "Recurrence"
+        }
+    }
+}

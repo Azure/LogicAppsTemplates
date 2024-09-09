@@ -1,0 +1,58 @@
+{
+    "title": "SAP: Get sales order status by ID in bulk using BAPI",
+    "description": "This workflow template triggers when a new sales order status message is added to a Microsoft Teams channel. The workflow gets the SAP sales order status from Teams channels. The template uses SAP's standard BAPI 'BAPI_SALESORDER_GETSTATUS'. For more information, see [Connect to SAP from Standard logic apps using BAPI and RFC](https://go.microsoft.com/fwlink/?linkid=2282035).",
+    "prerequisites": "Before you use this template, you need to meet the following prerequisites: 1) Upload the libraries for the [SAP Connector for Microsoft .NET](https://go.microsoft.com/fwlink/?linkid=2282504) to the 'Assemblies' folder in your Standard logic app resource. You can find this folder on the logic app menu, under 'Artifacts'. For more information, see [Connect to SAP from workflows in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282243). 2) Get the connection information for your SAP system and an RFC user. To access a private SAP system on Azure, use [virtual network integration](https://go.microsoft.com/fwlink/?linkid=2282334). For an on-premises SAP system, change the SAP connector's BAPI setup to use the [on-premises data gateway](https://go.microsoft.com/fwlink/?linkid=2282414).",
+    "tags": [
+        "SAP","BAPI","RFC","Microsoft Teams","mass data extraction","sales order"
+    ],
+    "skus": [
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Recurrence"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "snapshot-light",
+        "dark": "snapshot-dark"
+    },
+    "parameters": [
+        {
+            "name": "TeamsChannelID_#workflowname#",
+            "displayName": "Teams channel ID",
+            "type": "String",
+            "default": "a123b1c2-1a23-456a-7a89-1a2345a8cd1",
+            "description": "The ID for the Teams channel from where to get the sales order status request.",
+            "required": true
+        },
+        {
+            "name": "TeamsTeamID_#workflowname#",
+            "displayName": "Teams team ID",
+            "type": "String",
+            "default": "19:AtFwAB123yWo1@thread.tacv2",
+            "description": "The ID for the Teams team from where to get the sales order status request.",
+            "required": true
+        }
+    ],
+    "connections": {
+        "sap_#workflowname#": {
+            "connectorId": "/serviceProviders/sap",
+            "kind": "inapp"
+        },
+        "teams_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",
+            "kind": "shared"
+        }
+    }
+}
