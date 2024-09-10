@@ -1,31 +1,21 @@
 {
     "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
     "actions": {
-        "Below_are_sample_questions": {
-            "inputs": "Here are some example questions that you can ask, based on the purchase order image. You can use this pattern and pass questions as parameters to make this more dynamic. \n\nMake sure the deployment model supports [image and vision requests](https://go.microsoft.com/fwlink/?linkid=2282600).",
-            "runAfter": {
-                "Get_file_content_which_has_image_using_path": [
-                    "SUCCEEDED"
-                ]
-            },
-            "type": "Compose"
-        },
-        "Get_chat_completions": {
-            "description": "",
+        "Azure_Open_AI_-_Get_chat_completions": {
             "inputs": {
                 "parameters": {
-                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision_#workflowname#')",
+                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision')",
                     "max_tokens": 500,
                     "messages": [
                         {
-                            "message": "Tell me the purchase order number",
+                            "message": "Answer these questions based on the image provided to you.   @{triggerBody()?['questions']}",
                             "role": "user",
-                            "user": "bryan"
+                            "user": "divya"
                         },
                         {
-                            "image": "@body('Get_file_content_which_has_image_using_path')",
+                            "image": "@body('HTTP_-_Get_Image')",
                             "role": "user",
-                            "user": "bryan"
+                            "user": "divya"
                         },
                         {
                             "message": "You are an AI assistant that helps people find information.",
@@ -35,111 +25,62 @@
                     "temperature": 1
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "Openai_#workflowname#",
+                    "connectionName": "openai-2",
                     "operationId": "getChatCompletions",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
             },
             "runAfter": {
-                "Below_are_sample_questions": [
+                "HTTP_-_Get_Image": [
                     "SUCCEEDED"
                 ]
             },
             "type": "ServiceProvider"
         },
-        "Get_chat_completions-2": {
+        "HTTP_-_Get_Image": {
             "inputs": {
-                "parameters": {
-                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision_#workflowname#')",
-                    "max_tokens": 500,
-                    "messages": [
-                        {
-                            "message": "How many notebooks are in this order?",
-                            "role": "user",
-                            "user": "bryan"
-                        },
-                        {
-                            "image": "@body('Get_file_content_which_has_image_using_path')",
-                            "role": "user",
-                            "user": "bryan"
-                        },
-                        {
-                            "message": "You are an AI assistant that helps people find information.",
-                            "role": "system"
-                        }
-                    ],
-                    "temperature": 1
-                },
-                "serviceProviderConfiguration": {
-                    "connectionName": "Openai_#workflowname#",
-                    "operationId": "getChatCompletions",
-                    "serviceProviderId": "/serviceProviders/openai"
-                }
-            },
-            "runAfter": {
-                "Below_are_sample_questions": [
-                    "SUCCEEDED"
-                ]
-            },
-            "type": "ServiceProvider"
-        },
-        "Get_chat_completions-3": {
-            "inputs": {
-                "parameters": {
-                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision_#workflowname#')",
-                    "max_tokens": 500,
-                    "messages": [
-                        {
-                            "message": "What is the total cost of notebooks and staplers. Also, how much is the tax?",
-                            "role": "user",
-                            "user": "bryan"
-                        },
-                        {
-                            "image": "@body('Get_file_content_which_has_image_using_path')",
-                            "role": "user",
-                            "user": "bryan"
-                        },
-                        {
-                            "message": "You are an AI assistant that helps people find information.",
-                            "role": "system"
-                        }
-                    ],
-                    "temperature": 1
-                },
-                "serviceProviderConfiguration": {
-                    "connectionName": "Openai_#workflowname#",
-                    "operationId": "getChatCompletions",
-                    "serviceProviderId": "/serviceProviders/openai"
-                }
-            },
-            "runAfter": {
-                "Below_are_sample_questions": [
-                    "SUCCEEDED"
-                ]
-            },
-            "type": "ServiceProvider"
-        },
-        "Get_file_content_which_has_image_using_path": {
-            "description": "This action gets the image. You can replace this action with a different connector action to get the image.",
-            "inputs": {
-                "parameters": {
-                    "fileId": "/purchase-order.png",
-                    "inferContentType": true
-                },
-                "serviceProviderConfiguration": {
-                    "connectionName": "AzureFile_#workflowname#",
-                    "operationId": "getFileContentByPath",
-                    "serviceProviderId": "/serviceProviders/AzureFile"
-                }
+                "method": "GET",
+                "uri": "@triggerBody()?['filepath']"
             },
             "runAfter": {},
-            "type": "ServiceProvider"
+            "runtimeConfiguration": {
+                "contentTransfer": {
+                    "transferMode": "Chunked"
+                }
+            },
+            "type": "Http"
+        },
+        "Response": {
+            "inputs": {
+                "body": "@body('Azure_Open_AI_-_Get_chat_completions')?['content']",
+                "statusCode": 200
+            },
+            "kind": "Http",
+            "runAfter": {
+                "Azure_Open_AI_-_Get_chat_completions": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Response"
         }
     },
     "contentVersion": "1.0.0.0",
     "outputs": {},
     "triggers": {
         "When_a_HTTP_request_is_received": {
+            "inputs": {
+                "schema": {
+                    "properties": {
+                        "filepath": {
+                            "type": "string"
+                        },
+                        "questions": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
             "kind": "Http",
             "type": "Request"
         }
