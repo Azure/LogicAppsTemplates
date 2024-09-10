@@ -164,15 +164,14 @@ for (const folderName of manifestNamesList) {
         !file.endsWith(".png") && file !== "manifest.json"
     );
 
-    // Give warning if all the artifacts in the template/manifest.json is not registered
-    const allRegisteredArtifacts = manifestFile.artifacts.map(artifact => artifact.file);
-    const artifactsNotRegistered = allArtifactsInFolder.filter(item => !allRegisteredArtifacts.includes(item));
-    if (artifactsNotRegistered.length) {
-        console.error(`Artifacts(s) ${JSON.stringify(artifactsNotRegistered)} found in the repository not registered in ${folderName}/manifest.json.`);
-        throw '';
-    }
-
-
+    // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
+    // // Give warning if all the artifacts in the template/manifest.json is not registered
+    // const allRegisteredArtifacts = manifestFile.artifacts.map(artifact => artifact.file);
+    // const artifactsNotRegistered = allArtifactsInFolder.filter(item => !allRegisteredArtifacts.includes(item));
+    // if (artifactsNotRegistered.length) {
+    //     console.error(`Artifacts(s) ${JSON.stringify(artifactsNotRegistered)} found in the repository not registered in ${folderName}/manifest.json.`);
+    //     throw '';
+    // }
 
     const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
     const connectionNames = Object.keys(manifestFile.connections);
