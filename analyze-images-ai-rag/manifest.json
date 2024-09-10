@@ -40,10 +40,6 @@
         
     ],
     "connections": {
-        "AzureFile_#workflowname#": {
-            "connectorId": "/serviceProviders/AzureFile",
-            "kind": "inapp"
-        },
         "Openai_#workflowname#": {
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"

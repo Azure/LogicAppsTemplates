@@ -25,7 +25,7 @@
                     "temperature": 1
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai-2",
+                    "connectionName": "Openai_#workflowname#",
                     "operationId": "getChatCompletions",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
