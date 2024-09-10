@@ -4,7 +4,7 @@
         "Azure_Open_AI_-_Get_chat_completions": {
             "inputs": {
                 "parameters": {
-                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision')",
+                    "deploymentId": "@parameters('AzureOpenAI_deployment_model_vision_#workflowname#')",
                     "max_tokens": 500,
                     "messages": [
                         {
