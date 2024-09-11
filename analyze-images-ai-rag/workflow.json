@@ -10,12 +10,12 @@
                         {
                             "message": "Answer these questions based on the image provided to you.   @{triggerBody()?['questions']}",
                             "role": "user",
-                            "user": "divya"
+                            "user": "LA"
                         },
                         {
                             "image": "@body('HTTP_-_Get_Image')",
                             "role": "user",
-                            "user": "divya"
+                            "user": "LA"
                         },
                         {
                             "message": "You are an AI assistant that helps people find information.",
