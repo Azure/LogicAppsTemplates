@@ -1,0 +1,149 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Azure_File_-_List_files_in_the_folder": {
+            "inputs": {
+                "parameters": {
+                    "folderId": "@parameters('AzureFile_FolderName#workflowname#')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "AzureFile#workflowname#",
+                    "operationId": "listFolder",
+                    "serviceProviderId": "/serviceProviders/AzureFile"
+                }
+            },
+            "runAfter": {},
+            "type": "ServiceProvider"
+        },
+        "Filter_list_and_pick_files_added_or_updated_in_the_time_window": {
+            "inputs": {
+                "from": "@body('Azure_File_-_List_files_in_the_folder')",
+                "where": "@greater(item()?['lastModifiedDateTime'],triggerOutputs()['windowStartTime'])"
+            },
+            "runAfter": {
+                "Azure_File_-_List_files_in_the_folder": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Query"
+        },
+        "For_each_newly_added_or_updated_file": {
+            "actions": {
+                "Azure_AI_Search_-_Index_multiple_documents": {
+                    "inputs": {
+                        "parameters": {
+                            "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
+                            "indexName": "@parameters('AISearch_Index_Name#workflowname#')"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "azureaisearch-1#workflowname#",
+                            "operationId": "indexDocuments",
+                            "serviceProviderId": "/serviceProviders/azureaisearch"
+                        }
+                    },
+                    "runAfter": {
+                        "Select_embeddings_and_map_to_AI_Search_schema": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Azure_File_-_Get_file_content_using_path": {
+                    "inputs": {
+                        "parameters": {
+                            "fileId": "@items('For_each_newly_added_or_updated_file')?['path']",
+                            "inferContentType": true
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "AzureFile#workflowname#",
+                            "operationId": "getFileContentByPath",
+                            "serviceProviderId": "/serviceProviders/AzureFile"
+                        }
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Azure_OpenAI_-_Get_multiple_embeddings": {
+                    "inputs": {
+                        "parameters": {
+                            "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier#workflowname#')",
+                            "input": "@body('Chunk_text')?['value']"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "openai-1#workflowname#",
+                            "operationId": "getArrayEmbeddings",
+                            "serviceProviderId": "/serviceProviders/openai"
+                        }
+                    },
+                    "runAfter": {
+                        "Chunk_text": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Chunk_text": {
+                    "inputs": {
+                        "EncodingModel": "cl100k_base",
+                        "PageOverlapLength": 0,
+                        "TokenSize": 5000,
+                        "chunkingStrategy": "TokenSize",
+                        "text": "@body('Parse_a_document')?['text']"
+                    },
+                    "runAfter": {
+                        "Parse_a_document": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ChunkText"
+                },
+                "Parse_a_document": {
+                    "inputs": {
+                        "content": "@body('Azure_File_-_Get_file_content_using_path')"
+                    },
+                    "runAfter": {
+                        "Azure_File_-_Get_file_content_using_path": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ParseDocument"
+                },
+                "Select_embeddings_and_map_to_AI_Search_schema": {
+                    "inputs": {
+                        "from": "@range(0, length(body('Chunk_text')['value']))",
+                        "select": {
+                            "content": "@body('Chunk_text')['value'][item()]",
+                            "documentName": "@items('For_each_newly_added_or_updated_file')?['name']",
+                            "embeddings": "@body('Azure_OpenAI_-_Get_multiple_embeddings')['embeddings'][item()]",
+                            "id": "@concat(split(items('For_each_newly_added_or_updated_file')?['name'], '.')[0], item())"
+                        }
+                    },
+                    "runAfter": {
+                        "Azure_OpenAI_-_Get_multiple_embeddings": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "Select"
+                }
+            },
+            "foreach": "@outputs('Filter_list_and_pick_files_added_or_updated_in_the_time_window')['body']",
+            "runAfter": {
+                "Filter_list_and_pick_files_added_or_updated_in_the_time_window": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "foreach"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "Recurrence": {
+            "recurrence": {
+                "frequency": "Minute",
+                "interval": 5,
+                "timeZone": "Pacific Standard Time"
+            },
+            "type": "SlidingWindow"
+        }
+    }
+}
