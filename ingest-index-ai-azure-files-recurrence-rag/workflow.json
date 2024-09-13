@@ -4,7 +4,7 @@
         "Azure_File_-_List_files_in_the_folder": {
             "inputs": {
                 "parameters": {
-                    "folderId": "@parameters('AzureFile_FolderName#workflowname#')"
+                    "folderId": "@parameters('AzureFile_FolderName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
                     "connectionName": "AzureFile#workflowname#",

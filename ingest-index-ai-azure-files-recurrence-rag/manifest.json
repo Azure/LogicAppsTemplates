@@ -45,7 +45,7 @@
             ",required": true
         },
         {
-            "name": "AzureFile_FolderName#",
+            "name": "AzureFile_FolderName_#workflowname#",
             "displayName": "Azure File storage Folder Name",
             "type": "String",
             "description": "Provide the folder name in your Azure File Storage from where the files to be ingested will be read",
