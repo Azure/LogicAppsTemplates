@@ -1,0 +1,39 @@
+#This is a test file which can be used to in visual studio code to post a goods movement in SAP using the BAPI_GOODSMVT_CREATE
+#You'll need to install the REST Client extension in Visual Studio Code to use this file
+#The xml file is an example and will need to be adapted according to your SAP system
+
+@postURL = <insert the URL of the logicApp>
+###
+#Create the Goods Movement
+# @name CreateGoodsMovement
+POST {{postURL}}
+Content-type: application/xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<ns0:BAPI_GOODSMVT_CREATE xmlns:ns0="http://Microsoft.LobServices.Sap/2007/03/Rfc" xmlns:ns3="http://Microsoft.LobServices.Sap/2007/03/Types/Rfc/">
+    <ns0:GOODSMVT_HEADER>
+        <ns3:PSTNG_DATE>2023-04-23</ns3:PSTNG_DATE>
+        <ns3:DOC_DATE>2023-04-23</ns3:DOC_DATE>
+    </ns0:GOODSMVT_HEADER>
+    <ns0:GOODSMVT_CODE>
+            <ns3:GM_CODE>05</ns3:GM_CODE>
+    </ns0:GOODSMVT_CODE>
+    <ns0:GOODSMVT_ITEM>
+        <ns3:BAPI2017_GM_ITEM_CREATE>
+            <ns3:MATERIAL>MZ-RM-R100-01</ns3:MATERIAL>
+            <ns3:PLANT>1710</ns3:PLANT>
+            <ns3:STGE_LOC>171A</ns3:STGE_LOC>
+            <ns3:MOVE_TYPE>501</ns3:MOVE_TYPE>
+            <ns3:ENTRY_QNT>3</ns3:ENTRY_QNT>
+            <ns3:ENTRY_UOM>ST</ns3:ENTRY_UOM>
+        </ns3:BAPI2017_GM_ITEM_CREATE>
+        <ns3:BAPI2017_GM_ITEM_CREATE>
+            <ns3:MATERIAL>MZ-RM-R100-04</ns3:MATERIAL>
+            <ns3:PLANT>1710</ns3:PLANT>
+            <ns3:STGE_LOC>171A</ns3:STGE_LOC>
+            <ns3:MOVE_TYPE>501</ns3:MOVE_TYPE>
+            <ns3:ENTRY_QNT>10</ns3:ENTRY_QNT>
+            <ns3:ENTRY_UOM>ST</ns3:ENTRY_UOM>
+        </ns3:BAPI2017_GM_ITEM_CREATE>
+    </ns0:GOODSMVT_ITEM>
+</ns0:BAPI_GOODSMVT_CREATE>
