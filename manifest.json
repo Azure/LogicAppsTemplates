@@ -19,5 +19,6 @@
     "sync-sales-order-sap-blob-storage-odata",
     "try-catch",
     "unblock-user-sap-teams-self-service-bapi",
-    "ingest-index-ai-azure-files-recurrence-rag"
+    "ingest-index-ai-azure-files-recurrence-rag",
+    "analyze-documents-ai-docintelligence"
 ]

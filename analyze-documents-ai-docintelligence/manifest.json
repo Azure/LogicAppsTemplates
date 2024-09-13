@@ -1,0 +1,52 @@
+{
+    "title": "Document Intelligence: Interact and Analyze complex documents using Document Intelligence and Azure OpenAI",
+    "description": "This workflow uses Forms Recognizer connector to covert complex documents into markdown and Azure Open AI connector to analyze the image content, and provides response to specific questions, based on that image.",
+    "prerequisites": "To use this template, you need to configure an Azure Open AI instance and an embedding model. Learn more [here](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo).You also need to [create an Azure AI service or Document Intelligent resource](https://learn.microsoft.com/azure/ai-services/document-intelligence/quickstarts/get-started-sdks-rest-api?view=doc-intel-4.0.0&pivots=programming-language-csharp), and use the keys and endpoint to create connection. ",
+    "detailsDescription": "",
+    "tags": [
+        "RAG-Document-Ingestion"
+    ],
+    "skus": [
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI,RAG"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#",
+            "displayName": "OpenAI text embedding deployment identifier",
+            "type": "String",
+            "description": "Provide the Azure OpenAI deployment model",
+            "required": true
+        }
+        
+    ],
+    "connections": {
+        "openai#workflowname#": {
+            "connectorId": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        "formrecognizer#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/formrecognizer",
+            "kind": "shared"
+        }
+    }
+}
