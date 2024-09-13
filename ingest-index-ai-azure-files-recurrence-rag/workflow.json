@@ -7,7 +7,7 @@
                     "folderId": "@parameters('AzureFile_FolderName_#workflowname#')"
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "AzureFile#workflowname#",
+                    "connectionName": "AzureFile_#workflowname#",
                     "operationId": "listFolder",
                     "serviceProviderId": "/serviceProviders/AzureFile"
                 }
@@ -33,10 +33,10 @@
                     "inputs": {
                         "parameters": {
                             "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
-                            "indexName": "@parameters('AISearch_Index_Name#workflowname#')"
+                            "indexName": "@parameters('AISearch_Index_Name_#workflowname#')"
                         },
                         "serviceProviderConfiguration": {
-                            "connectionName": "azureaisearch-1#workflowname#",
+                            "connectionName": "azureaisearch-1_#workflowname#",
                             "operationId": "indexDocuments",
                             "serviceProviderId": "/serviceProviders/azureaisearch"
                         }
@@ -55,7 +55,7 @@
                             "inferContentType": true
                         },
                         "serviceProviderConfiguration": {
-                            "connectionName": "AzureFile#workflowname#",
+                            "connectionName": "AzureFile_#workflowname#",
                             "operationId": "getFileContentByPath",
                             "serviceProviderId": "/serviceProviders/AzureFile"
                         }
@@ -65,11 +65,11 @@
                 "Azure_OpenAI_-_Get_multiple_embeddings": {
                     "inputs": {
                         "parameters": {
-                            "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier#workflowname#')",
+                            "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#')",
                             "input": "@body('Chunk_text')?['value']"
                         },
                         "serviceProviderConfiguration": {
-                            "connectionName": "openai-1#workflowname#",
+                            "connectionName": "openai-1_#workflowname#",
                             "operationId": "getArrayEmbeddings",
                             "serviceProviderId": "/serviceProviders/openai"
                         }
