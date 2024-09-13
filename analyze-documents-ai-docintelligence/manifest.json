@@ -40,11 +40,11 @@
         
     ],
     "connections": {
-        "openai#workflowname#": {
+        "openai_#workflowname#": {
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"
         },
-        "formrecognizer#workflowname#": {
+        "formrecognizer_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/formrecognizer",
             "kind": "shared"
         }
