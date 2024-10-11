@@ -48,7 +48,7 @@
             "name": "OneDriveFolderName_#workflowname#",
             "displayName": "One Drive Folder Name",
             "type": "String",
-            "description": "Provide the OneDrive folder name for your files",
+            "description": "Provide the OneDrive folder name for your files. It should be a folder in root folder.",
             "required": true
         },
         {
