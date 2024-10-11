@@ -1,0 +1,242 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Filter_list_to_only_select_the_folder_user_provided": {
+            "inputs": {
+                "from": "@body('List_files_in_root_folder')",
+                "where": "@equals(item()?['NameNoExt'],parameters('OneDriveFolderName_#workflowname#'))"
+            },
+            "runAfter": {
+                "List_files_in_root_folder": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "Query"
+        },
+        "For_each_file": {
+            "actions": {
+                "Chunk_text": {
+                    "inputs": {
+                        "EncodingModel": "cl100k_base",
+                        "PageOverlapLength": 0,
+                        "TokenSize": 5000,
+                        "chunkingStrategy": "TokenSize",
+                        "text": "@body('Parse_a_document')?['text']"
+                    },
+                    "runAfter": {
+                        "Parse_a_document": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ChunkText"
+                },
+                "Get_file_content_using_path_": {
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "referenceName": "onedriveforbusiness_#workflowname#"
+                            }
+                        },
+                        "method": "get",
+                        "path": "/datasets/default/GetFileContentByPath",
+                        "queries": {
+                            "inferContentType": true,
+                            "path": "@items('For_each_file')?['Path']"
+                        }
+                    },
+                    "type": "ApiConnection"
+                },
+                "Get_multiple_embeddings": {
+                    "inputs": {
+                        "parameters": {
+                            "deploymentId": "@parameters('OpenAIDeployment__#workflowname#')",
+                            "input": "@body('Chunk_text')?['value']"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "openai_#workflowname#",
+                            "operationId": "getArrayEmbeddings",
+                            "serviceProviderId": "/serviceProviders/openai"
+                        }
+                    },
+                    "runAfter": {
+                        "Chunk_text": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Index_multiple_documents": {
+                    "inputs": {
+                        "parameters": {
+                            "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
+                            "indexName": "@parameters('SearchIndex_#workflowname#')"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "azureaisearch_#workflowname#",
+                            "operationId": "indexDocuments",
+                            "serviceProviderId": "/serviceProviders/azureaisearch"
+                        }
+                    },
+                    "runAfter": {
+                        "Select_embeddings_and_map_to_AI_Search_schema": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Parse_a_document": {
+                    "inputs": {
+                        "content": "@body('Get_file_content_using_path_')"
+                    },
+                    "runAfter": {
+                        "Get_file_content_using_path_": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ParseDocument"
+                },
+                "Select_embeddings_and_map_to_AI_Search_schema": {
+                    "inputs": {
+                        "from": "@range(0, length(body('Chunk_text')['value']))",
+                        "select": {
+                            "content": "@body('Chunk_text')['value'][item()]",
+                            "documentName": "@items('For_each_file')['NameNoExt']",
+                            "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                            "id": "@concat(items('For_each_file')['NameNoExt'], item())"
+                        }
+                    },
+                    "runAfter": {
+                        "Get_multiple_embeddings": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "Select"
+                }
+            },
+            "foreach": "@variables('FileList')",
+            "runAfter": {
+                "Is_this_first_run": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "foreach"
+        },
+        "Initialize_variable_-_FileList": {
+            "inputs": {
+                "variables": [
+                    {
+                        "name": "FileList",
+                        "type": "array"
+                    }
+                ]
+            },
+            "runAfter": {},
+            "type": "InitializeVariable"
+        },
+        "Is_this_first_run": {
+            "actions": {
+                "Pick_all_files_for_indexing": {
+                    "inputs": {
+                        "name": "FileList",
+                        "value": "@body('List_files_in_folder')?['value']"
+                    },
+                    "type": "SetVariable"
+                }
+            },
+            "else": {
+                "actions": {
+                    "Filter_list_and_pick_files_added_or_updated_in_the_time_window": {
+                        "inputs": {
+                            "from": "@body('List_files_in_folder')?['value']",
+                            "where": "@greater(item()?['LastModified'], triggerOutputs()['windowStartTime'])"
+                        },
+                        "type": "Query"
+                    },
+                    "Pick_only_new_or_updated_files": {
+                        "inputs": {
+                            "name": "FileList",
+                            "value": "@body('Filter_list_and_pick_files_added_or_updated_in_the_time_window')"
+                        },
+                        "runAfter": {
+                            "Filter_list_and_pick_files_added_or_updated_in_the_time_window": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "SetVariable"
+                    }
+                }
+            },
+            "expression": {
+                "and": [
+                    {
+                        "greater": [
+                            "@addMinutes(parameters('StartTime_#workflowname#'), 21)",
+                            "@triggerOutputs()['windowEndTime']"
+                        ]
+                    }
+                ]
+            },
+            "runAfter": {
+                "List_files_in_folder": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "If"
+        },
+        "List_files_in_folder": {
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "referenceName": "onedriveforbusiness_#workflowname#"
+                    }
+                },
+                "method": "get",
+                "path": "/datasets/default/foldersV2/@{encodeURIComponent(encodeURIComponent(outputs('Filter_list_to_only_select_the_folder_user_provided')['body'][0]['Id']))}",
+                "queries": {
+                    "skipToken": "",
+                    "top": 20
+                }
+            },
+            "runAfter": {
+                "Filter_list_to_only_select_the_folder_user_provided": [
+                    "SUCCEEDED"
+                ]
+            },
+            "runtimeConfiguration": {
+                "paginationPolicy": {
+                    "minimumItemCount": 100000
+                }
+            },
+            "type": "ApiConnection"
+        },
+        "List_files_in_root_folder": {
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "referenceName": "onedriveforbusiness_#workflowname#"
+                    }
+                },
+                "method": "get",
+                "path": "/datasets/default/folders"
+            },
+            "runAfter": {
+                "Initialize_variable_-_FileList": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ApiConnection"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "Recurrence": {
+            "recurrence": {
+                "frequency": "Minute",
+                "interval": 20,
+                "startTime": "@parameters('StartTime_#workflowname#')"
+            },
+            "type": "SlidingWindow"
+        }
+    }
+}
