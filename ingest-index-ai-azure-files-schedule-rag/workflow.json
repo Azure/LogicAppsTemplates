@@ -1,0 +1,203 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Azure_File_-_List_files_in_the_folder": {
+            "inputs": {
+                "parameters": {
+                    "folderId": "@parameters('AzureFileShareName_#workflowname#')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "AzureFile_#workflowname#",
+                    "operationId": "listFolder",
+                    "serviceProviderId": "/serviceProviders/AzureFile"
+                }
+            },
+            "runAfter": {
+                "Initialize_variable_-_AllFilesList": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "ServiceProvider"
+        },
+        "For_each_newly_added_or_updated_file": {
+            "actions": {
+                "Azure_AI_Search_-_Index_multiple_documents": {
+                    "inputs": {
+                        "parameters": {
+                            "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
+                            "indexName": "@parameters('SearchIndex_#workflowname#')"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "azureaisearch_#workflowname#",
+                            "operationId": "indexDocuments",
+                            "serviceProviderId": "/serviceProviders/azureaisearch"
+                        }
+                    },
+                    "runAfter": {
+                        "Select_embeddings_and_map_to_AI_Search_schema": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Azure_File_-_Get_file_content_using_path": {
+                    "inputs": {
+                        "parameters": {
+                            "fileId": "@items('For_each_newly_added_or_updated_file')?['path']",
+                            "inferContentType": true
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "AzureFile_#workflowname#",
+                            "operationId": "getFileContentByPath",
+                            "serviceProviderId": "/serviceProviders/AzureFile"
+                        }
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Azure_OpenAI_-_Get_multiple_embeddings": {
+                    "inputs": {
+                        "parameters": {
+                            "deploymentId": "@parameters('OpenAIDeployment_#workflowname#')",
+                            "input": "@body('Chunk_text')?['value']"
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "openai_#workflowname#",
+                            "operationId": "getArrayEmbeddings",
+                            "serviceProviderId": "/serviceProviders/openai"
+                        }
+                    },
+                    "runAfter": {
+                        "Chunk_text": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ServiceProvider"
+                },
+                "Chunk_text": {
+                    "inputs": {
+                        "EncodingModel": "cl100k_base",
+                        "PageOverlapLength": 0,
+                        "TokenSize": 5000,
+                        "chunkingStrategy": "TokenSize",
+                        "text": "@body('Parse_a_document')?['text']"
+                    },
+                    "runAfter": {
+                        "Parse_a_document": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ChunkText"
+                },
+                "Parse_a_document": {
+                    "inputs": {
+                        "content": "@body('Azure_File_-_Get_file_content_using_path')"
+                    },
+                    "runAfter": {
+                        "Azure_File_-_Get_file_content_using_path": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "ParseDocument"
+                },
+                "Select_embeddings_and_map_to_AI_Search_schema": {
+                    "inputs": {
+                        "from": "@range(0, length(body('Chunk_text')['value']))",
+                        "select": {
+                            "content": "@body('Chunk_text')['value'][item()]",
+                            "documentName": "@items('For_each_newly_added_or_updated_file')?['name']",
+                            "embeddings": "@body('Azure_OpenAI_-_Get_multiple_embeddings')['embeddings'][item()]",
+                            "id": "@concat(split(items('For_each_newly_added_or_updated_file')?['name'], '.')[0], item())"
+                        }
+                    },
+                    "runAfter": {
+                        "Azure_OpenAI_-_Get_multiple_embeddings": [
+                            "SUCCEEDED"
+                        ]
+                    },
+                    "type": "Select"
+                }
+            },
+            "foreach": "@outputs('Filter_list_and_pick_files_added_or_updated_in_the_time_window')['body']",
+            "runAfter": {
+                "Is_this_first_run": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "foreach"
+        },
+        "Initialize_variable_-_AllFilesList": {
+            "inputs": {
+                "variables": [
+                    {
+                        "name": "AllFilesList",
+                        "type": "array"
+                    }
+                ]
+            },
+            "runAfter": {},
+            "type": "InitializeVariable"
+        },
+        "Is_this_first_run": {
+            "actions": {
+                "Pick_all_files_for_indexing": {
+                    "inputs": {
+                        "name": "AllFilesList",
+                        "value": "@body('Azure_File_-_List_files_in_the_folder')"
+                    },
+                    "type": "SetVariable"
+                }
+            },
+            "else": {
+                "actions": {
+                    "Filter_list_and_pick_files_added_or_updated_in_the_time_window": {
+                        "inputs": {
+                            "from": "@body('Azure_File_-_List_files_in_the_folder')",
+                            "where": "@greater(item()?['lastModifiedDateTime'],triggerOutputs()['windowStartTime'])"
+                        },
+                        "type": "Query"
+                    },
+                    "Pick_only_new_or_updated_files": {
+                        "inputs": {
+                            "name": "AllFilesList",
+                            "value": "@body('Filter_list_and_pick_files_added_or_updated_in_the_time_window')"
+                        },
+                        "runAfter": {
+                            "Filter_list_and_pick_files_added_or_updated_in_the_time_window": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "SetVariable"
+                    }
+                }
+            },
+            "expression": {
+                "and": [
+                    {
+                        "greater": [
+                            "@addMinutes(parameters('StartTime_#workflowname#'), 21)",
+                            "@triggerOutputs()['windowEndTime']"
+                        ]
+                    }
+                ]
+            },
+            "runAfter": {
+                "Azure_File_-_List_files_in_the_folder": [
+                    "SUCCEEDED"
+                ]
+            },
+            "type": "If"
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "Recurrence": {
+            "recurrence": {
+                "frequency": "Minute",
+                "interval": 20,
+                "startTime": "@parameters('StartTime_#workflowname#')"
+            },
+            "type": "SlidingWindow"
+        }
+    }
+}
