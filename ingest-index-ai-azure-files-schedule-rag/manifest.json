@@ -34,7 +34,7 @@
             "name": "SearchIndex_#workflowname#",
             "displayName": "AISearch index name",
             "type": "String",
-            "description": "Provide the Azure AI search index name",
+            "description": "Provide the Azure AI search index name.",
             "required": true
         },
         {
@@ -48,14 +48,14 @@
             "name": "AzureFileShareName_#workflowname#",
             "displayName": "Azure File share name",
             "type": "String",
-            "description": "Provide the Azure File share name",
+            "description": "Provide the Azure File share name.",
             "required": true
         },
         {
             "name": "StartTime_#workflowname#",
             "displayName": "Start Time for Ingestion (Recurrence Trigger)",
             "type": "String",
-            "description": "Provider the start time for ingestion. Use the format - YYYY-MM-DDThh:mm:ssZ. For example:  September 18, 2017 at 2:00 PM would be 2017-09-18T14:00:00Z",
+            "description": "Provider the start time for ingestion. Use the format - YYYY-MM-DDThh:mm:ssZ. For example:  September 18, 2017 at 2:00 PM would be 2017-09-18T14:00:00Z.",
             "required": true
         }
         
