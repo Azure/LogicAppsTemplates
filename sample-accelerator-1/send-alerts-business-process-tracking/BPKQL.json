@@ -1,0 +1,113 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "value": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "correlationId": {
+                "type": "string"
+              },
+              "eventName": {
+                "type": "string"
+              },
+              "eventStatus": {
+                "type": "string"
+              },
+              "eventTimestamp": {
+                "type": "string"
+              },
+              "eventId": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "properties": {
+                  "TicketNumber": {
+                    "type": "string"
+                  },
+                  "SafetyAssessment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "TicketNumber",
+                  "SafetyAssessment"
+                ]
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "appName": {
+                    "type": "string"
+                  },
+                  "businessProcessName": {
+                    "type": "string"
+                  },
+                  "businessProcessVersion": {
+                    "type": "string"
+                  },
+                  "trackingProfileName": {
+                    "type": "string"
+                  },
+                  "trackingProfileId": {
+                    "type": "string"
+                  },
+                  "trackingProfileSequenceId": {
+                    "type": "string"
+                  },
+                  "flowName": {
+                    "type": "string"
+                  },
+                  "flowId": {
+                    "type": "string"
+                  },
+                  "flowSequenceId": {
+                    "type": "string"
+                  },
+                  "flowRunSequenceId": {
+                    "type": "string"
+                  },
+                  "clientTrackingId": {
+                    "type": "string"
+                  },
+                  "batchId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "appName",
+                  "businessProcessName",
+                  "businessProcessVersion",
+                  "trackingProfileName",
+                  "trackingProfileId",
+                  "trackingProfileSequenceId",
+                  "flowName",
+                  "flowId",
+                  "flowSequenceId",
+                  "flowRunSequenceId",
+                  "clientTrackingId",
+                  "batchId"
+                ]
+              }
+            },
+            "required": [
+              "correlationId",
+              "eventName",
+              "eventStatus",
+              "eventTimestamp",
+              "eventId",
+              "properties",
+              "metadata"
+            ]
+          }
+        ]
+      }
+    },
+    "required": [
+      "value"
+    ]
+  }

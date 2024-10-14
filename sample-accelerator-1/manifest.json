@@ -1,0 +1,66 @@
+{
+    "title": "Accelerator Sample Template for multi workflow scenario",
+    "description": "This workflow template uses different single workflow templates for a sample test pattern to include parameters, connections and also simple workflows",
+    "skus": [
+      "standard"
+    ],
+    "detailsDescription": "- Create extract-bassed full or incremental dat pipelins.  \n- Send alerts on Business process tracking.  \n- Just some data, would like to add a markdown",
+    "details": {
+      "By": "Microsoft",
+      "Type": "Accelerator",
+      "Category": "Design Patterns"
+    },
+    "artifacts": [],
+    "workflows": {
+        "ingest-index-ai-one-drive-business-rag": { "name": "Ingest_AI_Onedrive" },
+        "ingest-index-ai-sharepoint-rag": { "name": "Ingest_AI_Sharepoint" },
+        "send-alerts-business-process-tracking": { "name": "BPT_Alert" },
+        "try-catch": { "name": "Try_Catch" }
+    },
+    "images": {},
+    "parameters": [],
+    "connections": {
+        "azureaisearch-1_#workflowname#": {
+            "connectorId": "/serviceProviders/azureaisearch",
+            "kind": "inapp"
+        },
+        "openai-1_#workflowname#": {
+            "connectorId": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        "onedriveforbusiness_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
+            "kind": "shared"
+        },
+        "sharepointonline_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
+            "kind": "shared"
+        },
+        "AISearch_#workflowname#": {
+            "connectorId": "/serviceProviders/azureTables",
+            "kind": "inapp"
+        },
+        "teams_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",
+            "kind": "shared"
+        },
+        "kusto-1_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/kusto",
+            "kind": "shared"
+        }
+    },
+    "featuredOperations": [
+        {
+            "type": "ChunkText"
+        },
+        {
+            "type": "Scope"
+        },
+        {
+            "type": "XSLT"
+        },
+        {
+            "type": "Recurrence"
+        }
+    ]
+  }
