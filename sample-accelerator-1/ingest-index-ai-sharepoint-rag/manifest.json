@@ -26,8 +26,8 @@
     }
   ],
   "images": {
-    "light": "https://raw.githubusercontent.com/azure/LogicAppsTemplates/release/20240909/ingest-index-ai-sharepoint-rag/workflow-light.png",
-    "dark": "https://raw.githubusercontent.com/azure/LogicAppsTemplates/release/20240909/ingest-index-ai-sharepoint-rag/workflow-dark.png"
+    "light": "workflow-light",
+    "dark": "workflow-dark"
   },
   "parameters": [
     {

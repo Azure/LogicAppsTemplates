@@ -27,8 +27,8 @@
     }
   ],
   "images": {
-    "light": "https://raw.githubusercontent.com/azure/LogicAppsTemplates/release/20240909/try-catch/workflow-light.png",
-    "dark": "https://raw.githubusercontent.com/azure/LogicAppsTemplates/release/20240909/try-catch/workflow-dark.png"
+    "light": "workflow-light",
+    "dark": "workflow-dark"
   },
   "parameters": [],
   "connections": {},
