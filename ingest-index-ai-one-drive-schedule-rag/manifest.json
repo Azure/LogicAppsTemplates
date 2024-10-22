@@ -55,7 +55,7 @@
             "name": "StartTime_#workflowname#",
             "displayName": "Start Time for Ingestion (Recurrence Trigger)",
             "type": "String",
-            "description": "Provide the start time for ingestion. Use the format - YYYY-MM-DDThh:mm:ssZ. For example:  September 18, 2017 at 2:00 PM would be 2017-09-18T14:00:00Z.",
+            "description": "Provide the start time (in UTC) for ingestion. Use the format - YYYY-MM-DDThh:mm:ssZ. For example:  September 18, 2017 at 2:00 PM would be 2017-09-18T14:00:00Z.",
             "required": true
         }
     ],
