@@ -117,7 +117,7 @@
                     "type": "Select"
                 }
             },
-            "foreach": "@outputs('Filter_list_and_pick_files_added_or_updated_in_the_time_window')['body']",
+            "foreach": "@variables('AllFilesList')",
             "runAfter": {
                 "Is_this_first_run": [
                     "SUCCEEDED"
