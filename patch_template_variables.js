@@ -4,6 +4,22 @@ import path from 'path';
 const workflowSuffix = '_#workflowname#';
 const foldersPath = process.argv.slice(2);
 
+const patchTemplateVariables = async (folderPath, manifest) => {
+  const manifestFilePath = `./${folderPath}/manifest.json`;
+  const workflowFilePath = `./${folderPath}/workflow.json`;
+  const workflow = getFileContentInJSON(workflowFilePath);
+
+  console.log(`Patching parameter and connection names for ${folderPath}...`);
+
+  const { manifest: updatedManifest, workflow: updatedWorkflow } = await updateConnections(manifest, JSON.stringify(workflow));
+  const { manifest: finalUpdatedManifest, workflow: finalUpdatedWorkflow} = await updateParameters(updatedManifest, updatedWorkflow);
+
+  writeFile(manifestFilePath, JSON.stringify(finalUpdatedManifest, null, 4), () => {});
+  writeFile(workflowFilePath, JSON.stringify(JSON.parse(finalUpdatedWorkflow), null, 4), () => {});
+
+  console.log(`Successfully patched parameter and connection names for ${folderPath}.`);
+};
+
 const run = async () => {
   if (foldersPath.length === 0) {
     console.error('There are no template folders specified. Please provide the folders with spaces for multiple template folders, example `npm run patchTemplate folder1 folder2 folder3`');
@@ -12,19 +28,21 @@ const run = async () => {
 
   for (const folderPath of foldersPath) {
     const manifestFilePath = `./${folderPath}/manifest.json`;
-    const workflowFilePath = `./${folderPath}/workflow.json`;
     const manifest = getFileContentInJSON(manifestFilePath);
-    const workflow = getFileContentInJSON(workflowFilePath);
 
-    console.log(`Patching parameter and connection names for ${folderPath}...`);
+    const isFolderMultiWorkflow = manifest.workflows && Object.keys(manifest.workflows).length > 1;
+    if (isFolderMultiWorkflow) {
+      console.log(`[Multi-workflow patch start] Patching parameter and connection names for all workflows under: ${folderPath}...`);
 
-    const { manifest: updatedManifest, workflow: updatedWorkflow } = await updateConnections(manifest, JSON.stringify(workflow));
-    const { manifest: finalUpdatedManifest, workflow: finalUpdatedWorkflow} = await updateParameters(updatedManifest, updatedWorkflow);
-
-    writeFile(manifestFilePath, JSON.stringify(finalUpdatedManifest, null, 4), () => {});
-    writeFile(workflowFilePath, JSON.stringify(JSON.parse(finalUpdatedWorkflow), null, 4), () => {});
-
-    console.log(`Successfully patched parameter and connection names for ${folderPath}.`);
+      for (const workflowFolderName of Object.keys(manifest.workflows)) {
+        const workflowManifestFilePath = `./${folderPath}/${workflowFolderName}/manifest.json`;
+        const workflowManifest = getFileContentInJSON(workflowManifestFilePath);
+        await patchTemplateVariables(`${folderPath}/${workflowFolderName}`, workflowManifest);
+      }
+      console.log(`[Multi-workflow patch success] Successfully patched all parameter and connection names of all workflows under: ${folderPath}.`);
+    } else {
+      await patchTemplateVariables(folderPath, manifest);
+    }
   }
 };
 
