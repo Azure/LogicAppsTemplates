@@ -117,7 +117,27 @@ const run = async () => {
     }
     console.log("------------Completed combining and updating multi-workflow templates connections------------");
 
-    // 3) Checking parameters with keys have the same values
+    // 3) Combining featuredOperations to each root manifest.json
+    console.log("------------Starting combining and updating multi-workflow templates featuredOperations------------");
+    for (const [folderPath, manifest] of Object.entries(multiWorkflowManifests)) {
+      console.log(`[Updating featuredOperations start] Combining connection names for all workflows under: ${folderPath}...`);
+      const combinedFeaturedOperations = Object.keys(manifest.workflows).flatMap((workflowFolderName) => {
+        const workflowManifestFilePath = `./${folderPath}/${workflowFolderName}/manifest.json`;
+        const workflowManifest = allManifests[workflowManifestFilePath];
+        return workflowManifest.featuredOperations ?? [];
+      }).reduce((acc, operation) => {
+        if (!acc.some(item => item.type === operation.type)) {
+          acc.push(operation); // Add the operation if it's a unique type
+        }
+        return acc;
+      }, []);
+      manifest.featuredOperations = combinedFeaturedOperations;
+      writeFile(`./${folderPath}/manifest.json`, JSON.stringify(manifest, null, 4), () => {});
+      console.log(`[Updating featuredOperations success] Successfully combined and updated manifest for: ${folderPath}.`);
+    }
+    console.log("------------Completed combining and updating multi-workflow templates featuredOperations------------");
+
+    // 4) Checking parameters with keys have the same values
     console.log("------------Verifying multi-workflow templates parameters------------");
     for (const [folderPath, manifest] of Object.entries(multiWorkflowManifests)) {
       console.log(`[Verifying parameters start] Checking parameter names for all workflows under: ${folderPath}...`);
@@ -130,8 +150,6 @@ const run = async () => {
           return;
         }
       }
-      manifest.connections = combinedParameters;
-      writeFile(`./${folderPath}/manifest.json`, JSON.stringify(manifest, null, 4), () => {});
       console.log(`[Verified parameters success] Successfully checked parameter names for all workflows under: ${folderPath}.`);
     }
     console.log("------------Completed verifying multi-worklfow templates parameters------------");
