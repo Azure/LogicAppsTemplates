@@ -22,5 +22,6 @@
     "ingest-index-ai-azure-files-recurrence-rag",
     "analyze-documents-ai-docintelligence",
     "ingest-index-ai-azure-files-schedule-rag",
-    "ingest-index-ai-one-drive-schedule-rag"
+    "ingest-index-ai-one-drive-schedule-rag",
+    "chat-with-documents-ai"
 ]
