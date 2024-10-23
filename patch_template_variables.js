@@ -20,7 +20,7 @@ const patchTemplateVariables = async (folderPath, manifest, isMulti=false) => {
   console.log(`${isMulti ? "  " : ""}Successfully patched parameter and connection names for ${folderPath}.`);
 };
 
-const combineMultiWorkflowConnections = (combinedConnections, workflowConnections, multiWorkflowFolder) => {
+const combineMultiWorkflowConnections = (combinedConnections, workflowConnections) => {
   for (const [workflowConnectionKey, workflowConnection] of Object.entries(workflowConnections)) {
     const existingConnectionWithKey = combinedConnections[workflowConnectionKey];
     if (existingConnectionWithKey) {
@@ -28,15 +28,40 @@ const combineMultiWorkflowConnections = (combinedConnections, workflowConnection
       const isKindDifferent = existingConnectionWithKey.kind !== workflowConnection.kind;
 
       if (isConnectorIdDifferent || isKindDifferent) {
-        console.error(`*Multi-Workflow "${multiWorkflowFolder}" failed validation. Connection with key ${workflowConnectionKey} exists with different values: 
+        console.error(`*Connection validation failed. Connection with key ${workflowConnectionKey} exists with different values: 
           ${
-          isConnectorIdDifferent ? `connectorId: ${existingConnectionWithKey.connectorId}, ${workflowConnection.connectorId}.` : ''
+          isConnectorIdDifferent ? `connectorId: ${existingConnectionWithKey.connectorId}, ${workflowConnection.connectorId}. ` : ''
           }${
           isKindDifferent ? `kind: ${existingConnectionWithKey.kind}, ${workflowConnection.kind}.` : ''}\nPlease make sure the connection keys are unique.`);
         return false;
       }
     }
     combinedConnections[workflowConnectionKey] = workflowConnection;
+  }
+  return true;
+}
+
+const verifyMultiWorkflowParameters = (combinedParameters, workflowParameters) => {
+  for (const workflowParameter of workflowParameters) {
+    const existingParameterWithName = combinedParameters[workflowParameter.name];
+    if (existingParameterWithName) {
+      const isDisplayNameDifferent = existingParameterWithName.displayName !== workflowParameter.displayName;
+      const isTypeDifferent = existingParameterWithName.type !== workflowParameter.type;
+      const isDescriptionDifferent = existingParameterWithName.description !== workflowParameter.description;
+      const isRequiredDifferent = existingParameterWithName.required !== workflowParameter.required;
+
+      if (isDisplayNameDifferent || isTypeDifferent || isDescriptionDifferent || isRequiredDifferent) {
+        console.error(`*Parameter validation failed. Parameters with name ${workflowParameter.name} exists with different values: 
+          ${
+            isDisplayNameDifferent ? `displayName: ${existingParameterWithName.displayName}, ${workflowParameter.displayName}. ` : ''
+          }${
+            isTypeDifferent ? `type: ${existingParameterWithName.type}, ${workflowParameter.type}. ` : ''}${
+              isDescriptionDifferent ? `description: ${existingParameterWithName.description}, ${workflowParameter.description}. ` : ''}${
+                isRequiredDifferent ? `required: ${existingParameterWithName.required}, ${workflowParameter.required}. ` : ''}\nPlease make sure the parameter names are unique.`);
+        return false;
+      }
+    }
+    combinedParameters[workflowParameter.name] = workflowParameter;
   }
   return true;
 }
@@ -72,8 +97,8 @@ const run = async () => {
   }
   console.log("------------Completed patching templates with suffix------------");
 
-  // 2) Combining connections to each root manifest.json - Sequential after patch
   if (Object.keys(multiWorkflowManifests).length > 0) {
+    // 2) Combining connections to each root manifest.json - Sequential after patch
     console.log("------------Starting combining and updating multi-workflow templates connections------------");
     for (const [folderPath, manifest] of Object.entries(multiWorkflowManifests)) {
       console.log(`[Updating connections start] Combining connection names for all workflows under: ${folderPath}...`);
@@ -81,7 +106,7 @@ const run = async () => {
       for (const workflowFolderName of Object.keys(manifest.workflows)) {
         const workflowManifestFilePath = `./${folderPath}/${workflowFolderName}/manifest.json`;
         const workflowManifest = allManifests[workflowManifestFilePath];
-        const didCombineSucceed = combineMultiWorkflowConnections(combinedConnections, workflowManifest.connections, folderPath);
+        const didCombineSucceed = combineMultiWorkflowConnections(combinedConnections, workflowManifest.connections);
         if (!didCombineSucceed) {
           return;
         }
@@ -91,6 +116,25 @@ const run = async () => {
       console.log(`[Updating connections success] Successfully combined and updated manifest for: ${folderPath}.`);
     }
     console.log("------------Completed combining and updating multi-workflow templates connections------------");
+
+    // 3) Checking parameters with keys have the same values
+    console.log("------------Verifying multi-workflow templates parameters------------");
+    for (const [folderPath, manifest] of Object.entries(multiWorkflowManifests)) {
+      console.log(`[Verifying parameters start] Checking parameter names for all workflows under: ${folderPath}...`);
+      const combinedParameters = {};
+      for (const workflowFolderName of Object.keys(manifest.workflows)) {
+        const workflowManifestFilePath = `./${folderPath}/${workflowFolderName}/manifest.json`;
+        const workflowManifest = allManifests[workflowManifestFilePath];
+        const didVerificationSucceed = verifyMultiWorkflowParameters(combinedParameters, workflowManifest.parameters);
+        if (!didVerificationSucceed) {
+          return;
+        }
+      }
+      manifest.connections = combinedParameters;
+      writeFile(`./${folderPath}/manifest.json`, JSON.stringify(manifest, null, 4), () => {});
+      console.log(`[Verified parameters success] Successfully checked parameter names for all workflows under: ${folderPath}.`);
+    }
+    console.log("------------Completed verifying multi-worklfow templates parameters------------");
   }
 };
 
