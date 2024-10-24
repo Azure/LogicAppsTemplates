@@ -85,7 +85,7 @@
                     "content": "@body('Chunk_text')['value'][item()]",
                     "documentName": "@parameters('AISearch_Schema_DocumentName_#workflowname#')",
                     "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
-                    "id": "@concat(parameters('AISearch_Schema_ID'), item())"
+                    "id": "@concat(parameters('AISearch_Schema_ID_#workflowname#'), item())"
                 }
             },
             "runAfter": {

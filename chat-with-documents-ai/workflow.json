@@ -1,0 +1,119 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Return_response_from_OpenAI_to_caller": {
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "statusCode": 200,
+                "body": "@body('Azure_OpenAI_-_Get_chat_completions')?['content']"
+            },
+            "runAfter": {
+                "Azure_OpenAI_-_Get_chat_completions": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "Azure_OpenAI_-_Gets_a_single_embedding": {
+            "type": "ServiceProvider",
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('OpenAIEmbeddingModel_#workflowname#')",
+                    "input": "@triggerBody()?['prompt']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai_#workflowname#",
+                    "operationId": "getSingleEmbedding",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {}
+        },
+        "AI_Search_Vector_search": {
+            "type": "ServiceProvider",
+            "inputs": {
+                "parameters": {
+                    "indexName": "@parameters('AISearchIndex_#workflowname#')",
+                    "searchVector": {
+                        "fieldName": "embeddings",
+                        "vector": "@outputs('Azure_OpenAI_-_Gets_a_single_embedding')['body']['embedding']"
+                    },
+                    "kNearestNeighbors": 3
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "azureaisearch-1_#workflowname#",
+                    "operationId": "vectorSearch",
+                    "serviceProviderId": "/serviceProviders/azureaisearch"
+                }
+            },
+            "runAfter": {
+                "Azure_OpenAI_-_Gets_a_single_embedding": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "Azure_OpenAI_-_Get_chat_completions": {
+            "type": "ServiceProvider",
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('OpenAIChatModel_#workflowname#')",
+                    "messages": [
+                        {
+                            "role": "System",
+                            "content": " @{triggerBody()?['systemMessage']}   @{outputs('Extract_content_from_vectors')}"
+                        },
+                        {
+                            "role": "User",
+                            "content": "@triggerBody()?['prompt']",
+                            "user": "abc"
+                        }
+                    ],
+                    "temperature": 1
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai_#workflowname#",
+                    "operationId": "getChatCompletions",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {
+                "Extract_content_from_vectors": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "Extract_content_from_vectors": {
+            "type": "JavaScriptCode",
+            "inputs": {
+                "code": "var search_results = workflowContext.actions.AI_Search_Vector_search.outputs.body;\r\n\r\n\r\nvar sources = \"\"\r\nfor (let i=0;i<search_results.length;i++)\r\n{\r\n    sources = sources + \"\\n\" + search_results[i]['id'] +\":\" + search_results[i]['content']\r\n}\r\n\r\nvar system_message = system_message + \"\\n\" + \"Sources: \\n\" + sources\r\n\r\nreturn system_message"
+            },
+            "runAfter": {
+                "AI_Search_Vector_search": [
+                    "SUCCEEDED"
+                ]
+            }
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "prompt": {
+                            "type": "string"
+                        },
+                        "systemMessage": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "parameters": {}
+}
