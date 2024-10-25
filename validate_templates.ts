@@ -17,7 +17,6 @@ const baseManifestSchema = z.object({
     }),
     detailsDescription: z.string().optional(),
     tags: z.array(z.string()).optional(),
-    kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
     artifacts: z.array(z.object({ 
         type: z.union([z.literal('workflow'), z.literal('map'), z.literal('schema'), z.literal('assembly')]),
         file: z.string().regex(/^\S+\.\S+$/, {
@@ -60,6 +59,7 @@ const baseManifestSchema = z.object({
 
 const singleManifestSchema = baseManifestSchema.extend({
     skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
+    kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
     details: baseManifestSchema.shape.details.extend({
         Type: z.literal('Workflow'),
         Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event')]),
@@ -103,39 +103,7 @@ const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: s
 
 const allowedCategories = ["Design Patterns", "AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
 
-const manifestNamesSet = new Set(manifestNamesList);
-if (manifestNamesSet.size !== manifestNamesList.length) {
-    console.error(`manifest.json contains ${manifestNamesList.length - manifestNamesSet.size} duplicate Template name(s)`);
-    throw '';
-}
-
-// Check all registered folders in manifest.json exist with another manifest.json
-const registeredNotExisting = manifestNamesList.filter(item => !allManifestDirectories.includes(item));
-if (registeredNotExisting.length) {
-    console.error(`Template(s) registered in manifest.json: ${JSON.stringify(registeredNotExisting)} not found in the repository`);
-    throw '';
-}
-
-// Give warning if all the folders in the repo is registered in the main manifest.json
-const templatesNotRegistered = allManifestDirectories.filter(item => !manifestNamesList.includes(item));
-if (templatesNotRegistered.length) {
-    console.error(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json.`);
-    throw '';
-}
-
-for (const folderName of manifestNamesList) {
-    const manifestFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/manifest.json`), {
-        encoding: 'utf-8'
-    }));
-    const result = singleManifestSchema.safeParse(manifestFile);
-
-    if (!result.success) {
-        console.log(`Template "${folderName}" Failed Validation`);
-        const validationError = fromError(result.error);
-        console.error(validationError.toString());
-        throw '';
-    }
-
+const validateManifest = (folderName: string, isMultiWorkflow, manifestFile) => {
     const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
     const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.prerequisites ?? "");
     const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.description ?? "");
@@ -168,61 +136,104 @@ for (const folderName of manifestNamesList) {
         throw '';
     }
 
-    // Check all artifacts/images listed in manifest.json exist (case sensitive check)
-    const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
-    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, manifestFile.artifacts.map((artifact) => artifact.file));
-    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, [`${manifestFile.images.light}.png`, `${manifestFile.images.dark}.png`]);
+    if (!isMultiWorkflow) {
+        // Check all artifacts/images listed in manifest.json exist (case sensitive check)
+        const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
+        checkFilesExistCaseSensitive(fileNamesInFolder, folderName, manifestFile.artifacts.map((artifact) => artifact.file));
+        checkFilesExistCaseSensitive(fileNamesInFolder, folderName, [`${manifestFile.images.light}.png`, `${manifestFile.images.dark}.png`]);
 
-    const workflowFilePath = manifestFile.artifacts.find((artifact) => artifact.type === "workflow")?.file;
+        const workflowFilePath = manifestFile.artifacts.find((artifact) => artifact.type === "workflow")?.file;
+        
+        if (!workflowFilePath) {
+            console.error(`Template "${folderName}" Failed Validation: workflow file not found`);
+            throw '';
+        }
+        const workflowFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFilePath}`), {
+            encoding: 'utf-8'
+        }));
+        const workflowFileString = JSON.stringify(workflowFile);
+
+        // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
+
+        // const allArtifactsInFolder = readdirSync(`./${folderName}`).filter(file => 
+        //     !file.endsWith(".png") && file !== "manifest.json"
+        // );
+
+        // // Give warning if all the artifacts in the template/manifest.json is not registered
+        // const allRegisteredArtifacts = manifestFile.artifacts.map(artifact => artifact.file);
+        // const artifactsNotRegistered = allArtifactsInFolder.filter(item => !allRegisteredArtifacts.includes(item));
+        // if (artifactsNotRegistered.length) {
+        //     console.error(`Artifacts(s) ${JSON.stringify(artifactsNotRegistered)} found in the repository not registered in ${folderName}/manifest.json.`);
+        //     throw '';
+        // }
+
+        const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
+        const connectionNames = Object.keys(manifestFile.connections);
     
-    if (!workflowFilePath) {
-        console.error(`Template "${folderName}" Failed Validation: workflow file not found`);
-        throw '';
+        const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
+        for (const match of parameterMatches) {
+            if (!parameterNames.includes(match[1])) {
+                console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
+                throw '';
+            }
+        }
+     
+        const connectionReferenceMatches = workflowFileString.matchAll(/"connection":\s*\{\s*"referenceName":\s*"([^"]+)"\}/g);
+        for (const match of connectionReferenceMatches) {
+            if (!connectionNames.includes(match[1])) {
+                console.error(`Workflow "${folderName}" Failed Validation: connection used in "referenceName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
+                throw '';
+            }
+        }
+    
+        const connectionNameMatches = workflowFileString.matchAll(/"connectionName":\s*"([^"]+)"/g);
+        for (const match of connectionNameMatches) {
+            if (!connectionNames.includes(match[1])) {
+                console.error(`Workflow "${folderName}" Failed Validation: connection used in "connectionName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
+                throw '';
+            }
+        }
     }
-    const workflowFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFilePath}`), {
+}
+
+const manifestNamesSet = new Set(manifestNamesList);
+if (manifestNamesSet.size !== manifestNamesList.length) {
+    console.error(`manifest.json contains ${manifestNamesList.length - manifestNamesSet.size} duplicate Template name(s)`);
+    throw '';
+}
+
+// Check all registered folders in manifest.json exist with another manifest.json
+const registeredNotExisting = manifestNamesList.filter(item => !allManifestDirectories.includes(item));
+if (registeredNotExisting.length) {
+    console.error(`Template(s) registered in manifest.json: ${JSON.stringify(registeredNotExisting)} not found in the repository`);
+    throw '';
+}
+
+// Give warning if all the folders in the repo is registered in the main manifest.json
+const templatesNotRegistered = allManifestDirectories.filter(item => !manifestNamesList.includes(item));
+if (templatesNotRegistered.length) {
+    console.error(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json.`);
+    throw '';
+}
+
+for (const folderName of manifestNamesList) {
+    const manifestFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/manifest.json`), {
         encoding: 'utf-8'
     }));
-    const workflowFileString = JSON.stringify(workflowFile);
 
-    const allArtifactsInFolder = readdirSync(`./${folderName}`).filter(file => 
-        !file.endsWith(".png") && file !== "manifest.json"
-    );
+    const isMultiWorkflowTemplateManifest = Object.keys(manifestFile?.workflows ?? {}).length > 0;
+    
+    const result = isMultiWorkflowTemplateManifest ? multiManifestSchema.safeParse(manifestFile) : singleManifestSchema.safeParse(manifestFile);
 
-    // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
-    // // Give warning if all the artifacts in the template/manifest.json is not registered
-    // const allRegisteredArtifacts = manifestFile.artifacts.map(artifact => artifact.file);
-    // const artifactsNotRegistered = allArtifactsInFolder.filter(item => !allRegisteredArtifacts.includes(item));
-    // if (artifactsNotRegistered.length) {
-    //     console.error(`Artifacts(s) ${JSON.stringify(artifactsNotRegistered)} found in the repository not registered in ${folderName}/manifest.json.`);
-    //     throw '';
-    // }
-
-    const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
-    const connectionNames = Object.keys(manifestFile.connections);
-
-    const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
-    for (const match of parameterMatches) {
-        if (!parameterNames.includes(match[1])) {
-            console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
-            throw '';
-        }
-    }
- 
-    const connectionReferenceMatches = workflowFileString.matchAll(/"connection":\s*\{\s*"referenceName":\s*"([^"]+)"\}/g);
-    for (const match of connectionReferenceMatches) {
-        if (!connectionNames.includes(match[1])) {
-            console.error(`Workflow "${folderName}" Failed Validation: connection used in "referenceName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
-            throw '';
-        }
+    if (!result.success) {
+        console.log(`Template "${folderName}" Failed Validation`);
+        const validationError = fromError(result.error);
+        console.error(validationError.toString());
+        throw '';
     }
 
-    const connectionNameMatches = workflowFileString.matchAll(/"connectionName":\s*"([^"]+)"/g);
-    for (const match of connectionNameMatches) {
-        if (!connectionNames.includes(match[1])) {
-            console.error(`Workflow "${folderName}" Failed Validation: connection used in "connectionName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
-            throw '';
-        }
-    }
+
+    validateManifest(folderName, isMultiWorkflowTemplateManifest, manifestFile);
 }
 
 console.log("Test Passed");
