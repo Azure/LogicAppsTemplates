@@ -4,17 +4,15 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import path from 'path';
 import { fromError } from 'zod-validation-error';
 
-const manifestSchema = z.object({
+const baseManifestSchema = z.object({
     title: z.string(),
     description: z.string(),
     prerequisites: z.string().optional(),
-    skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
+    skus: z.array(z.string()),
     details: z.object({
         By: z.string().regex(/^[A-Z].*$/, {
             message: 'By field must start with the first letter capitalized'
         }),
-        Type: z.union([z.literal('Workflow'), z.literal('Other')]),
-        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event')]),
         Category: z.string().optional()
     }),
     detailsDescription: z.string().optional(),
@@ -26,10 +24,7 @@ const manifestSchema = z.object({
             message: 'File field must not contain spaces and must have an extension'
         })
     })),
-    images: z.object({ 
-        light: z.string(),
-        dark: z.string()
-    }),
+    images: z.object({}),
     parameters: z.array(
         z.object({
             name: z.string().regex(/^\S*_#workflowname#$/, {
@@ -55,9 +50,38 @@ const manifestSchema = z.object({
                 message: 'Connections "connectorId" field must start with a forward slash'
             }),
             kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')]),
-        }))
-})
+        })),
+    featuredOperations: z.array(z.object({
+        type: z.string().regex(/^[A-Z].*$/, {
+            message: 'featuredOperations type must start with the first letter capitalized'
+        }),
+    })).optional(),
+});
 
+const singleManifestSchema = baseManifestSchema.extend({
+    skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
+    details: baseManifestSchema.shape.details.extend({
+        Type: z.literal('Workflow'),
+        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event')]),
+    }),
+    images: baseManifestSchema.shape.images.extend({
+        light: z.string(),
+        dark: z.string()
+    }),
+});
+
+const multiManifestSchema = baseManifestSchema.extend({
+    details: baseManifestSchema.shape.details.extend({
+        Type: z.literal('Accelerator')
+    }),
+    skus: z.array(z.literal('standard')),
+    workflows: z.record(
+        z.string(), //TODO: regex for lowercase and - only
+        z.object({
+            name: z.string()    // TODO: add regex
+        })
+    )
+});
 program.parse();
 
 
@@ -103,7 +127,7 @@ for (const folderName of manifestNamesList) {
     const manifestFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/manifest.json`), {
         encoding: 'utf-8'
     }));
-    const result = manifestSchema.safeParse(manifestFile);
+    const result = singleManifestSchema.safeParse(manifestFile);
 
     if (!result.success) {
         console.log(`Template "${folderName}" Failed Validation`);
