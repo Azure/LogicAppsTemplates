@@ -62,7 +62,7 @@ const singleManifestSchema = baseManifestSchema.extend({
     kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
     details: baseManifestSchema.shape.details.extend({
         Type: z.literal('Workflow'),
-        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event')]),
+        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event'), z.literal('Automated'), z.literal('Scheduled')]),
     }),
     images: baseManifestSchema.shape.images.extend({
         light: z.string(),
@@ -234,6 +234,22 @@ for (const folderName of manifestNamesList) {
 
 
     validateManifest(folderName, isMultiWorkflowTemplateManifest, manifestFile);
+
+    if (isMultiWorkflowTemplateManifest) {
+        for (const workflowFolder of Object.keys(manifestFile.workflows)) {
+            const subManifestFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFolder}/manifest.json`), {
+                encoding: 'utf-8'
+            }));
+            const subManifestResult = singleManifestSchema.safeParse(subManifestFile);
+            if (!subManifestResult.success) {
+                console.log(`Template "${folderName}/${workflowFolder}" Failed Validation`);
+                const validationError = fromError(subManifestResult.error);
+                console.error(validationError.toString());
+                throw '';
+            }
+            validateManifest(`${folderName}/${workflowFolder}`, false, subManifestFile);
+        }
+    }
 }
 
 console.log("Test Passed");
