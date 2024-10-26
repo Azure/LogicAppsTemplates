@@ -1,0 +1,43 @@
+{
+    "title": "RAG - Index documents from Sharepoint to AI Search, retrieve and reason with Azure OpenAI LLMs.",
+    "description": "This workflow is for Retreival Augmented Generation (RAG) pattern for data indexing and retrieval. The source of documents is Sharepoint and the vector store is AI Search",
+    "skus": [
+        "standard"
+    ],
+    "detailsDescription": "This workflow is for Retreival Augmented Generation (RAG) pattern for data indexing and retrieval. This has two workflows - \n- The indexing workflow reads documents from Sharepoint whenever a new file is added or updated. It then parses, chunks, generated embeddings and loads those embeddings into AI Search vector store. \n- The retreival workflow uses AI search connector to retreive vectors and then uses Azure Open AI LLMs to reason on the data.",
+    "details": {
+        "By": "Microsoft",
+        "Type": "Accelerator",
+        "Category": "AI"
+    },
+    "artifacts": [],
+    "workflows": {
+        "chat-with-documents-ai": {
+            "name": "Chat_With_Sharepoint_Documents"
+        },
+        "ingest-index-ai-sharepoint-rag": {
+            "name": "Index_From_Sharepoint"
+        }
+    },
+    "images": {},
+    "parameters": [],
+    "connections": {
+        "azureaisearch_#workflowname#": {
+            "connectorId": "/serviceProviders/azureaisearch",
+            "kind": "inapp"
+        },
+        "openai_#workflowname#": {
+            "connectorId": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        "sharepointonline_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
+            "kind": "shared"
+        }
+    },
+    "featuredOperations": [
+        {
+            "type": "ChunkText"
+        }
+    ]
+}

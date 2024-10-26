@@ -1,0 +1,123 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+        "Chunk_text": {
+            "type": "ChunkText",
+            "inputs": {
+                "chunkingStrategy": "TokenSize",
+                "text": "@body('Parse_a_document')?['text']",
+                "EncodingModel": "cl100k_base",
+                "PageOverlapLength": 0,
+                "TokenSize": 5000
+            },
+            "runAfter": {
+                "Parse_a_document": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "Get_file_content": {
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "referenceName": "sharepointonline_#workflowname#"
+                    }
+                },
+                "method": "get",
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharepointSiteAddress_#workflowname#')))}/files/@{encodeURIComponent(triggerBody()?['{Identifier}'])}/content",
+                "queries": {
+                    "inferContentType": true
+                }
+            },
+            "runAfter": {}
+        },
+        "Get_multiple_embeddings": {
+            "type": "ServiceProvider",
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('OpenAIEmbeddingModel_#workflowname#')",
+                    "input": "@body('Chunk_text')?['value']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai_#workflowname#",
+                    "operationId": "getArrayEmbeddings",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {
+                "Chunk_text": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "Index_multiple_documents": {
+            "type": "ServiceProvider",
+            "inputs": {
+                "parameters": {
+                    "indexName": "@parameters('AISearchIndex_#workflowname#')",
+                    "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "azureaisearch_#workflowname#",
+                    "operationId": "indexDocuments",
+                    "serviceProviderId": "/serviceProviders/azureaisearch"
+                }
+            },
+            "runAfter": {
+                "Select_embeddings_and_map_to_AI_Search_schema": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "Parse_a_document": {
+            "type": "ParseDocument",
+            "inputs": {
+                "content": "@body('Get_file_content')"
+            },
+            "runAfter": {
+                "Get_file_content": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "Select_embeddings_and_map_to_AI_Search_schema": {
+            "type": "Select",
+            "inputs": {
+                "from": "@range(0, length(body('Chunk_text')['value']))",
+                "select": {
+                    "content": "@body('Chunk_text')['value'][item()]",
+                    "documentName": "@{triggerBody()?['{Name}']}",
+                    "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                    "id": "@{concat(triggerBody()?['{Name}'], item())}"
+                }
+            },
+            "runAfter": {
+                "Get_multiple_embeddings": [
+                    "SUCCEEDED"
+                ]
+            }
+        }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+        "When_a_file_is_created_(properties_only)": {
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "referenceName": "sharepointonline_#workflowname#"
+                    }
+                },
+                "method": "get",
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharepointSiteAddress_#workflowname#')))}/tables/@{encodeURIComponent(encodeURIComponent(parameters('SharepointLibraryName_#workflowname#')))}/onnewfileitems"
+            },
+            "recurrence": {
+                "frequency": "Minute",
+                "interval": 1
+            },
+            "splitOn": "@triggerBody()?['value']"
+        }
+    }
+}
