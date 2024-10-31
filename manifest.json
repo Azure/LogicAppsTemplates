@@ -2,6 +2,7 @@
     "analyze-images-ai-rag",
     "get-message-ibm-mq-queue-browse-lock-abort",
     "get-message-service-bus-queue-peek-lock-abandon",
+    "get-message-service-bus-queue-peek-lock-renew-sequential-convoy",
     "get-message-service-bus-queue-peek-lock-renew",
     "get-message-service-bus-topic-peek-lock-abandon",
     "get-message-service-bus-topic-peek-lock-renew",
