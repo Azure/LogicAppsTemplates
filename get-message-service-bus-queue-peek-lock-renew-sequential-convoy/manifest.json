@@ -1,7 +1,7 @@
 {
-    "title": "Azure Service Bus (sequential convoy): Get message from a queue with token renewal - Peek lock renew pattern",
+    "title": "Azure Service Bus: Process related messages from a session-enabled queue for the same workflow instance - Sequential convoy pattern",
 
-    "description": "This workflow template triggers when a message is available in a Service Bus session enabled queue. The workflow processes related messages from a specific session on the same workflow instance, creating different workflow instances for each session in the queue.",
+    "description": "This workflow template triggers when a message is available in a Service Bus session enabled queue. The workflow creates a new instances for each session available in the queue, processes related messages from that session in the same workflow instance, one at a time.",
 
     "prerequisites": "Before you can use this template, you need to set up a Service Bus namespace and create a queue with sessions enabled. For more information, see [Create a Service Bus namespace and a queue](https://go.microsoft.com/fwlink/?linkid=2296007) and [Enable message sessions for a Service Bus queue](https://go.microsoft.com/fwlink/?linkid=2296202). You also need to set up your logic app to support stateful connectors, which is required for sessions. For more information, see [Enable stateful mode for stateless built-in connectors in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2296010).",
 
