@@ -34,7 +34,8 @@
             "type": "String",
             "default": "Service Bus queue name",
 
-            "description": "This is a parameter",
+            "description": "The name of the Service Bus queue from where to get the message.",
+
             "required": true
         },
         {
