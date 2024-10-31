@@ -3,7 +3,8 @@
 
     "description": "This workflow template triggers when a message is available in a Service Bus session enabled queue. The workflow processes related messages from a specific session on the same workflow instance, creating different workflow instances for each session in the queue.",
 
-    "prerequisites": "Before you can use this template, you need to configure a Service Bus namespace and create a queue with session enabled. For more information about Service Bus see [Create a new queue on Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-quickstart-portal). You also need to configure your Logic App to support stateful connectors, which is required for sessions. For more information see [Enable stateful mode for stateless built-in connectors in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2296010)",
+    "prerequisites": "Before you can use this template, you need to set up a Service Bus namespace and create a queue with sessions enabled. For more information, see [Create a Service Bus namespace and a queue](https://go.microsoft.com/fwlink/?linkid=2296007) and [Enable message sessions for a Service Bus queue](https://go.microsoft.com/fwlink/?linkid=2296202). You also need to set up your logic app to support stateful connectors, which is required for sessions. For more information, see [Enable stateful mode for stateless built-in connectors in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2296010).",
+
 
     "skus": [
         "standard"
