@@ -32,7 +32,8 @@
             "name": "queueName_#workflowname#",
             "displayName": "Queue Name",
             "type": "String",
-            "default": "This is the name of the queue from which the message will be fetched.",
+            "default": "Service Bus queue name",
+
             "description": "This is a parameter",
             "required": true
         },
