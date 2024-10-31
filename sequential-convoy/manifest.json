@@ -53,7 +53,8 @@
             "displayName": "Delay before next token renewal",
             "type": "Int",
             "default": "3",
-            "description": "This indicates how long to wait for processing before the lock token is renewed. This value should be smaller than the lock token duration of the queue.",
+            "description": "The number of minutes to delay processing before renewing the lock token. Make sure this value is smaller than the queue's lock token duration.",
+
             "required": true
         }
     ],
