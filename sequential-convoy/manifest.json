@@ -40,7 +40,8 @@
         },
         {
             "name": "messageBatchSize_#workflowname#",
-            "displayName": "Message Batch Size",
+            "displayName": "Message batch size",
+
             "type": "Int",
             "default": "50",
             "description": "This indicates how many messages will be fetched in a single batch.",
