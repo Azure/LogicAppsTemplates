@@ -12,7 +12,8 @@
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
-        "Trigger": "Event"
+        "Trigger": "Event",    
+        "Category": "Design Patterns"
     },
     "artifacts": [
         {
