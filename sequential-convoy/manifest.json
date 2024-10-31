@@ -44,7 +44,8 @@
 
             "type": "Int",
             "default": "50",
-            "description": "This indicates how many messages will be fetched in a single batch.",
+            "description": "The number of messages to get as a single batch.",
+
             "required": true
         },
         {
