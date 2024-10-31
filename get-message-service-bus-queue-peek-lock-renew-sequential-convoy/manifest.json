@@ -1,5 +1,5 @@
 {
-    "title": "Azure Service Bus: Sequential convoy pattern",
+    "title": "Azure Service Bus (sequential convoy): Get message from a queue with token renewal - Peek lock renew pattern",
 
     "description": "This workflow template triggers when a message is available in a Service Bus session enabled queue. The workflow processes related messages from a specific session on the same workflow instance, creating different workflow instances for each session in the queue.",
 
