@@ -31,7 +31,8 @@
     "parameters": [
         {
             "name": "queueName_#workflowname#",
-            "displayName": "Queue Name",
+            "displayName": "Queue name",
+
             "type": "String",
             "default": "Service Bus queue name",
 
