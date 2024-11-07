@@ -1,0 +1,43 @@
+{
+    "title": "RAG with SQL - Resume matching with Azure OpenAI",
+    "description": "Leverage Azure SQL DB to store embeddings, perform similarity search, and use Azure OpenAI LLMs to for advance resume matching to identify suitable candidates.",
+    "skus": [
+        "standard"
+    ],
+    "detailsDescription": "This workflow is for Retrieval Augmented Generation (RAG) pattern for data indexing and retrieval using Azure SQL DB. This has two workflows - \n- The indexing workflow reads documents (resumes) from Azure Blob Storage whenever a new document is added or updated. The workflow then parses, chunks, generates embeddings, and loads those embeddings into SQL DB vector table. \n- The retrieval workflow performans similarity search on the stored vectors in SQL BD. It then uses Azure OpenAI LLMs to reason on the data and returns matched resumes based on the specified system prompt and user question.\n This resume matching solution is based on the sample published at the Azure SQL DB Vector Search repository on GitHub [Chat with your Document](https://github.com/Azure-Samples/azure-sql-db-vector-search/tree/main/RAG-with-Documents). You can also find sample documents here.  To use this solution as is, you do need to create the table based on this [table schema](https://github.com/Azure-Samples/azure-sql-db-vector-search/blob/main/RAG-with-Documents/CreateTable.sql).",
+    "details": {
+        "By": "Microsoft",
+        "Type": "Accelerator",
+        "Category": "AI"
+    },
+    "artifacts": [],
+    "workflows": {
+        "chat-with-documents-sql": {
+            "name": "Chat_With_Documents"
+        },
+        "index-ai-blob-sql-rag": {
+            "name": "Index_Data_To_SQL"
+        }
+    },
+    "images": {},
+    "parameters": [],
+    "connections": {
+        "azuresql_#workflowname#": {
+            "connectorId": "/serviceProviders/sql",
+            "kind": "inapp"
+        },
+        "openai_#workflowname#": {
+            "connectorId": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        "azureblob_#workflowname#": {
+            "connectorId": "/serviceProviders/AzureBlob",
+            "kind": "inapp"
+        }
+    },
+    "featuredOperations": [
+        {
+            "type": "ChunkText"
+        }
+    ]
+}
