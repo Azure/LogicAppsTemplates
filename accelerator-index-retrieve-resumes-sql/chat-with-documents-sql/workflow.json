@@ -1,7 +1,22 @@
 {
     "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
     "actions": {
-        "Return_response_from_OpenAI_to_caller": {
+        "Azure_OpenAI_-_Get_an_embedding": {
+            "type": "ServiceProvider",
+            "inputs": {
+                "parameters": {
+                    "deploymentId": "@parameters('OpenAIEmbeddingModel_#workflowname#')",
+                    "input": "@triggerBody()?['question']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "openai_#workflowname#",
+                    "operationId": "getSingleEmbedding",
+                    "serviceProviderId": "/serviceProviders/openai"
+                }
+            },
+            "runAfter": {}
+        },
+        "Response": {
             "type": "Response",
             "kind": "Http",
             "inputs": {
@@ -14,58 +29,43 @@
                 ]
             }
         },
-        "Azure_OpenAI_-_Gets_a_single_embedding": {
+        "SQL_Server_-_Vector_Search": {
             "type": "ServiceProvider",
+            "description": "Use this query to retrieve vector embeddings from your SQL vector table. Update the query based on your SQL table and schema",
             "inputs": {
                 "parameters": {
-                    "deploymentId": "@parameters('OpenAIEmbeddingModel_#workflowname#')",
-                    "input": "@triggerBody()?['prompt']"
+                    "query": "SELECT TOP(2) filename, chunkid, chunk,\n           1-vector_distance('cosine', CAST(@embedding AS VECTOR(1536)), embedding) AS similarity_score,\n           vector_distance('cosine', CAST(@embedding AS VECTOR(1536)), embedding) AS distance_score\n    FROM dbo.resumedocs\n    ORDER BY distance_score ",
+                    "queryParameters": {
+                        "embedding ": "@{body('Azure_OpenAI_-_Get_an_embedding')['embedding']}"
+                    }
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai_#workflowname#",
-                    "operationId": "getSingleEmbedding",
-                    "serviceProviderId": "/serviceProviders/openai"
-                }
-            },
-            "runAfter": {}
-        },
-        "AI_Search_Vector_search": {
-            "type": "ServiceProvider",
-            "inputs": {
-                "parameters": {
-                    "indexName": "@parameters('AISearchIndex_#workflowname#')",
-                    "searchVector": {
-                        "fieldName": "embeddings",
-                        "vector": "@outputs('Azure_OpenAI_-_Gets_a_single_embedding')['body']['embedding']"
-                    },
-                    "kNearestNeighbors": 3
-                },
-                "serviceProviderConfiguration": {
-                    "connectionName": "azureaisearch_#workflowname#",
-                    "operationId": "vectorSearch",
-                    "serviceProviderId": "/serviceProviders/azureaisearch"
+                    "connectionName": "azuresql_#workflowname#",
+                    "operationId": "executeQuery",
+                    "serviceProviderId": "/serviceProviders/sql"
                 }
             },
             "runAfter": {
-                "Azure_OpenAI_-_Gets_a_single_embedding": [
+                "Azure_OpenAI_-_Get_an_embedding": [
                     "SUCCEEDED"
                 ]
             }
         },
         "Azure_OpenAI_-_Get_chat_completions": {
             "type": "ServiceProvider",
+            "description": "Update the system message for the LLM based on your requirements",
             "inputs": {
                 "parameters": {
                     "deploymentId": "@parameters('OpenAIChatModel_#workflowname#')",
                     "messages": [
                         {
                             "role": "System",
-                            "content": " @{triggerBody()?['systemMessage']}   @{outputs('Extract_content_from_vectors')}"
+                            "content": "You are an intelligent & funny assistant who will exclusively answer based on the data provided in the search_results:\n- Use the information from search_results to generate your top 3 responses. If the data is not a perfect match for the user's query, use your best judgment to provide helpful suggestions and include the following format:\n  File: {filename}\n  Chunk ID: {chunkid}\n  Similarity Score: {similarity_score}\n  Add a small snippet from the Relevant Text: {chunktext}\n  Do not use the entire chunk\n- Avoid any other external data sources.\n- Add a summary about why the candidate maybe a goodfit even if exact skills and the role being hired for are not matching , at the end of the recommendations. Ensure you call out which skills match the description and which ones are missing. If the candidate doesnt have prior experience for the hiring role which we may need to pay extra attention to during the interview process.\n- Add a Microsoft related interesting fact about the technology that was searched \n\nsearch_results = @{body('SQL_Server_-_Vector_Search')}"
                         },
                         {
                             "role": "User",
-                            "content": "@triggerBody()?['prompt']",
-                            "user": "abc"
+                            "content": "@triggerBody()?['question']",
+                            "user": "Divya"
                         }
                     ],
                     "temperature": 1
@@ -77,18 +77,7 @@
                 }
             },
             "runAfter": {
-                "Extract_content_from_vectors": [
-                    "SUCCEEDED"
-                ]
-            }
-        },
-        "Extract_content_from_vectors": {
-            "type": "JavaScriptCode",
-            "inputs": {
-                "code": "var search_results = workflowContext.actions.AI_Search_Vector_search.outputs.body;\r\n\r\n\r\nvar sources = \"\"\r\nfor (let i=0;i<search_results.length;i++)\r\n{\r\n    sources = sources + \"\\n\" + search_results[i]['id'] +\":\" + search_results[i]['content']\r\n}\r\n\r\nvar system_message = system_message + \"\\n\" + \"Sources: \\n\" + sources\r\n\r\nreturn system_message"
-            },
-            "runAfter": {
-                "AI_Search_Vector_search": [
+                "SQL_Server_-_Vector_Search": [
                     "SUCCEEDED"
                 ]
             }
@@ -104,16 +93,12 @@
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "prompt": {
-                            "type": "string"
-                        },
-                        "systemMessage": {
+                        "question": {
                             "type": "string"
                         }
                     }
                 }
             }
         }
-    },
-    "parameters": {}
+    }
 }

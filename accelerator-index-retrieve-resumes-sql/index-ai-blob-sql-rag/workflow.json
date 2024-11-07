@@ -16,23 +16,7 @@
                 ]
             }
         },
-        "Get_file_content": {
-            "type": "ApiConnection",
-            "inputs": {
-                "host": {
-                    "connection": {
-                        "referenceName": "sharepointonline_#workflowname#"
-                    }
-                },
-                "method": "get",
-                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharepointSiteAddress_#workflowname#')))}/files/@{encodeURIComponent(triggerBody()?['{Identifier}'])}/content",
-                "queries": {
-                    "inferContentType": true
-                }
-            },
-            "runAfter": {}
-        },
-        "Get_multiple_embeddings": {
+        "Azure_OpenAI_-_Get_multiple_embeddings": {
             "type": "ServiceProvider",
             "inputs": {
                 "parameters": {
@@ -51,49 +35,76 @@
                 ]
             }
         },
-        "Index_multiple_documents": {
-            "type": "ServiceProvider",
+        "Parse_a_document": {
+            "type": "ParseDocument",
             "inputs": {
-                "parameters": {
-                    "indexName": "@parameters('AISearchIndex_#workflowname#')",
-                    "documents": "@body('Select_embeddings_and_map_to_AI_Search_schema')"
-                },
-                "serviceProviderConfiguration": {
-                    "connectionName": "azureaisearch_#workflowname#",
-                    "operationId": "indexDocuments",
-                    "serviceProviderId": "/serviceProviders/azureaisearch"
-                }
+                "content": "@body('Azure_Blob_-_Read_blob_content')?['content']"
             },
             "runAfter": {
-                "Select_embeddings_and_map_to_AI_Search_schema": [
+                "Azure_Blob_-_Read_blob_content": [
                     "SUCCEEDED"
                 ]
             }
         },
-        "Parse_a_document": {
-            "type": "ParseDocument",
+        "Azure_Blob_-_Read_blob_content": {
+            "type": "ServiceProvider",
             "inputs": {
-                "content": "@body('Get_file_content')"
+                "parameters": {
+                    "containerName": "@parameters('BlobPath_#workflowname#')",
+                    "blobName": "@triggerBody()?['name']"
+                },
+                "serviceProviderConfiguration": {
+                    "connectionName": "azureblob_#workflowname#",
+                    "operationId": "readBlob",
+                    "serviceProviderId": "/serviceProviders/AzureBlob"
+                }
             },
-            "runAfter": {
-                "Get_file_content": [
-                    "SUCCEEDED"
-                ]
-            }
+            "runAfter": {}
         },
         "Select_embeddings_and_map_to_AI_Search_schema": {
             "type": "Select",
             "inputs": {
                 "from": "@range(0, length(body('Chunk_text')['value']))",
                 "select": {
-                    "content": "@body('Chunk_text')['value'][item()]",
-                    "documentName": "@{triggerBody()?['{Name}']}",
-                    "embeddings": "@body('Get_multiple_embeddings')['embeddings'][item()]",
-                    "id": "@{concat(triggerBody()?['{Name}'], item())}"
+                    "chunk": "@body('Chunk_text')['value'][item()]",
+                    "filename": "@triggerBody()?['name']",
+                    "embedding": "@body('Azure_OpenAI_-_Get_multiple_embeddings')['embeddings'][item()]",
+                    "chunkid": "@concat(triggerBody()?['name'], item())"
                 }
             },
             "runAfter": {
-                "Get_multiple_embeddings": [
+                "Azure_OpenAI_-_Get_multiple_embeddings": [
+                    "SUCCEEDED"
+                ]
+            }
+        },
+        "For_each": {
+            "type": "Foreach",
+            "foreach": "@body('Select_embeddings_and_map_to_AI_Search_schema')",
+            "actions": {
+                "SQL_-_Insert_vectors_in_table": {
+                    "type": "ServiceProvider",
+                    "description": "This step inserts the vector embeddings, content and other metadata into the SQL vector database. Update the Query and Query parameters based on your SQL table schema",
+                    "inputs": {
+                        "parameters": {
+                            "query": "INSERT INTO resumedocs (chunkid, filename, chunk, embedding)\n    VALUES (@chunkid, @filename, @chunk, CAST(@embedding as VECTOR(1536)))",
+                            "queryParameters": {
+                                "chunkid": "@{item()['chunkid']}",
+                                "filename": "@{item()['filename']}",
+                                "chunk": "@{item()['chunk']}",
+                                "embedding": "@{item()['embedding']}"
+                            }
+                        },
+                        "serviceProviderConfiguration": {
+                            "connectionName": "azuresql_#workflowname#",
+                            "operationId": "executeQuery",
+                            "serviceProviderId": "/serviceProviders/sql"
+                        }
+                    }
+                }
+            },
+            "runAfter": {
+                "Select_embeddings_and_map_to_AI_Search_schema": [
                     "SUCCEEDED"
                 ]
             }
@@ -102,22 +113,18 @@
     "contentVersion": "1.0.0.0",
     "outputs": {},
     "triggers": {
-        "When_a_file_is_created_(properties_only)": {
-            "type": "ApiConnection",
+        "Azure_Blob_-_When_a_blob_is_added_or_updated": {
+            "type": "ServiceProvider",
             "inputs": {
-                "host": {
-                    "connection": {
-                        "referenceName": "sharepointonline_#workflowname#"
-                    }
+                "parameters": {
+                    "path": "@parameters('BlobPath_#workflowname#')"
                 },
-                "method": "get",
-                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharepointSiteAddress_#workflowname#')))}/tables/@{encodeURIComponent(encodeURIComponent(parameters('SharepointLibraryName_#workflowname#')))}/onnewfileitems"
-            },
-            "recurrence": {
-                "frequency": "Minute",
-                "interval": 1
-            },
-            "splitOn": "@triggerBody()?['value']"
+                "serviceProviderConfiguration": {
+                    "connectionName": "azureblob_#workflowname#",
+                    "operationId": "whenABlobIsAddedOrModified",
+                    "serviceProviderId": "/serviceProviders/AzureBlob"
+                }
+            }
         }
     }
 }
