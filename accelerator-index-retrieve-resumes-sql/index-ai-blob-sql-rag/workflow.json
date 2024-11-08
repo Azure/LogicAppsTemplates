@@ -84,7 +84,7 @@
             "actions": {
                 "SQL_-_Insert_vectors_in_table": {
                     "type": "ServiceProvider",
-                    "description": "This step inserts the vector embeddings, content and other metadata into the SQL vector database. Update the Query and Query parameters based on your SQL table schema",
+                    "description": "This step inserts the vector embeddings, content, and other metadata into the SQL vector database. Update the query and query parameters based on your SQL table schema.",
                     "inputs": {
                         "parameters": {
                             "query": "INSERT INTO resumedocs (chunkid, filename, chunk, embedding)\n    VALUES (@chunkid, @filename, @chunk, CAST(@embedding as VECTOR(1536)))",
