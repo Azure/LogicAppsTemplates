@@ -65,7 +65,7 @@
                         {
                             "role": "User",
                             "content": "@triggerBody()?['question']",
-                            "user": "Divya"
+                            "user": "Anon"
                         }
                     ],
                     "temperature": 1
