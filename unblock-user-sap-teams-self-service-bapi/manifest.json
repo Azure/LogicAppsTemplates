@@ -6,7 +6,7 @@
         "SAP","BAPI","RFC","Microsoft Teams","user unblock","self-service"
     ],
     "skus": [
-        "standard"
+        "standard", "consumption"
     ],
     "kinds": [
         "stateful",

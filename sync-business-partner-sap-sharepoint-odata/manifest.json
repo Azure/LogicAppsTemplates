@@ -6,7 +6,7 @@
         "SAP","OData","SharePoint","mass data extraction", "JSON"
     ],
     "skus": [
-        "standard"
+        "standard", "consumption"
     ],
     "kinds": [
         "stateful",
