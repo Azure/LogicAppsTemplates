@@ -151,6 +151,12 @@ const validateManifest = (folderName: string, isMultiWorkflow, manifestFile) => 
         const workflowFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFilePath}`), {
             encoding: 'utf-8'
         }));
+
+        if (workflowFile.definition || workflowFile.kind) {
+            console.error(`Template workflow "./${folderName}/${workflowFilePath}" Failed Validation: workflow.json is invalid - please only keep what's under "definition"`);
+            throw '';
+        }
+
         const workflowFileString = JSON.stringify(workflowFile);
 
         // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
