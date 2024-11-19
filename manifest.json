@@ -26,5 +26,6 @@
     "ingest-index-ai-one-drive-schedule-rag",
     "chat-with-documents-ai",
     "accelerator-index-retrieve-ai-sharepoint-aisearch",
-    "accelerator-index-retrieve-resumes-sql"
+    "accelerator-index-retrieve-resumes-sql",
+    "http-sblogging-errorhandling"
 ]
