@@ -1,0 +1,303 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Scope": {
+                "type": "Scope",
+                "actions": {
+                    "Response": {
+                        "type": "Response",
+                        "kind": "Http",
+                        "inputs": {
+                            "statusCode": 200,
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "correlationId": "@{triggerOutputs()?['headers']?['correlationId']}"
+                            },
+                            "body": {
+                                "Response": "@body('HTTP_Provider')"
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Provider": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "HTTP_Provider": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "https://testprovider.com",
+                            "method": "POST",
+                            "body": "@outputs('ComposeRequest')",
+                            "retryPolicy": {
+                                "type": "none"
+                            }
+                        },
+                        "runAfter": {
+                            "ComposeRequest": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "runtimeConfiguration": {
+                            "contentTransfer": {
+                                "transferMode": "Chunked"
+                            }
+                        }
+                    },
+                    "ComposeRequest": {
+                        "type": "Compose",
+                        "inputs": {
+                            "testField1": "data1",
+                            "testField2": "data2"
+                        }
+                    },
+                    "Request_Message_Logging": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "sbtmonitoringframeworkmessages",
+                                "message": {
+                                    "contentData": "@outputs('ComposeRequest')",
+                                    "userProperties": {
+                                        "application": "@{parameters('logApplication')}",
+                                        "auditTime": "@{utcNow('yyyy-MM-ddThh:mm:ss.fff')}",
+                                        "correlationId": "@{triggerOutputs()?['headers']?['correlationId']}",
+                                        "dataFilterKey": "",
+                                        "dataFilterValue": "",
+                                        "direction": "request",
+                                        "maskFields": "",
+                                        "message": "@{parameters('logMessage')}",
+                                        "operationName": "workflowname",
+                                        "providerName": "providername",
+                                        "resourceName": "@{toLower(workflow()?['name'])}",
+                                        "workflowId": "@{workflow()?['run']?['name']}",
+                                        "resourceType": "@{parameters('logResourceType')}",
+                                        "responseStatusCode": "200",
+                                        "consumerName": "",
+                                        "projectName": "@{triggerOutputs()?['headers']?['projectName']}",
+                                        "apimAPIName": "@{triggerOutputs()?['headers']?['apimAPIName']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "serviceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "ComposeRequest": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Response_Message_Logging": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "sbtmonitoringframeworkmessages",
+                                "message": {
+                                    "contentData": "@body('HTTP_Provider')",
+                                    "userProperties": {
+                                        "application": "@{parameters('logApplication')}",
+                                        "auditTime": "@{utcNow('yyyy-MM-ddThh:mm:ss.fff')}",
+                                        "correlationId": "@{triggerOutputs()?['headers']?['correlationId']}",
+                                        "dataFilterKey": "",
+                                        "dataFilterValue": "",
+                                        "direction": "response",
+                                        "maskFields": "",
+                                        "message": "@{parameters('logMessage')}",
+                                        "operationName": "workflowname",
+                                        "providerName": "providername",
+                                        "resourceName": "@{toLower(workflow()?['name'])}",
+                                        "workflowId": "@{workflow()?['run']?['name']}",
+                                        "resourceType": "@{parameters('logResourceType')}",
+                                        "responseStatusCode": "200",
+                                        "consumerName": "",
+                                        "projectName": "@{triggerOutputs()?['headers']?['projectName']}",
+                                        "apimAPIName": "@{triggerOutputs()?['headers']?['apimAPIName']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "serviceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Provider": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "Catch-Scope": {
+                "type": "Scope",
+                "actions": {
+                    "Compose_error_for_Consumer": {
+                        "type": "Compose",
+                        "inputs": {
+                            "LoggingMessage": {
+                                "Application": "Application Name",
+                                "ApplicationMessage": "Exception during call to Provider",
+                                "Category": "IntegrationLayer",
+                                "DisplayableMessage": "Please contact support",
+                                "EventNumber": 1001,
+                                "HttpFault": {
+                                    "ReasonPhrase": "Internal Server Error",
+                                    "StatusCode": "500"
+                                },
+                                "InnerFault": {
+                                    "Detail": "Your request could not be processed due to an internal error. Please contact the Integration Support team.",
+                                    "Message": "Internal error occurred.",
+                                    "Source": "Scope"
+                                },
+                                "Source": "Azure Integration Services",
+                                "Time": "@{utcNow()}",
+                                "TransactionID": null,
+                                "Type": "Error",
+                                "UniqueId": "@{triggerOutputs()?['headers']?['correlationId']}"
+                            }
+                        }
+                    },
+                    "Filter_array": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@result('Scope')",
+                            "where": "@equals(item()?['status'],'Failed')"
+                        }
+                    },
+                    "For_each": {
+                        "type": "Foreach",
+                        "foreach": "@body('Filter_array')",
+                        "actions": {
+                            "Compose_error_for_Logging": {
+                                "type": "Compose",
+                                "inputs": {
+                                    "LoggingMessage": {
+                                        "Application": "Application Name",
+                                        "ApplicationMessage": "Exception during call to AIM SearchSubmission",
+                                        "Category": "IntegrationLayer",
+                                        "DisplayableMessage": "Please contact support",
+                                        "EventNumber": 1001,
+                                        "HttpFault": {
+                                            "ReasonPhrase": "Internal Server Error",
+                                            "StatusCode": "500"
+                                        },
+                                        "InnerFault": {
+                                            "Detail": "@{item()['name']}-@{item()['outputs']}",
+                                            "Message": "Internal error occurred.",
+                                            "Source": "Scope"
+                                        },
+                                        "Source": "workflowname",
+                                        "Time": "@{utcNow()}",
+                                        "TransactionID": null,
+                                        "Type": "Error",
+                                        "UniqueId": "@{triggerOutputs()?['headers']?['correlationId']}"
+                                    }
+                                }
+                            },
+                            "Failure_Message_Response_Logging": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "sbtmonitoringframeworkmessages",
+                                        "message": {
+                                            "contentData": "@outputs('Compose_error_for_Logging')",
+                                            "userProperties": {
+                                                "application": "@{parameters('logApplication')}",
+                                                "auditTime": "@{utcNow('yyyy-MM-ddThh:mm:ss.fff')}",
+                                                "correlationId": "@{triggerOutputs()?['headers']?['correlationId']}",
+                                                "dataFilterKey": "",
+                                                "dataFilterValue": "",
+                                                "direction": "response",
+                                                "errortype": "application",
+                                                "maskFields": "",
+                                                "message": "@{parameters('logMessage')}",
+                                                "operationName": "workflowname",
+                                                "providerName": "providername",
+                                                "resourceName": "@{toLower(workflow()?['name'])}",
+                                                "resourceType": "@{parameters('logResourceType')}",
+                                                "responseStatusCode": "500",
+                                                "workflowId": "@{workflow()?['run']?['name']}",
+                                                "consumerName": "",
+                                                "projectName": "@{triggerOutputs()?['headers']?['projectName']}",
+                                                "apimAPIName": "@{triggerOutputs()?['headers']?['apimAPIName']}"
+                                            }
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "serviceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose_error_for_Logging": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Filter_array": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "ResponseError-Consumer": {
+                        "type": "Response",
+                        "kind": "Http",
+                        "inputs": {
+                            "statusCode": 500,
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "correlationId": "@{triggerOutputs()?['headers']?['correlationId']}"
+                            },
+                            "body": "@outputs('Compose_error_for_Consumer')"
+                        },
+                        "runAfter": {
+                            "Compose_error_for_Consumer": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Terminate": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed"
+                        },
+                        "runAfter": {
+                            "For_each": [
+                                "SUCCEEDED"
+                            ],
+                            "ResponseError-Consumer": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Scope": [
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_search_submission_request_is_received": {
+                "type": "Request",
+                "kind": "Http"
+            }
+        }
+    },
+    "kind": "Stateful"
+}

@@ -1,0 +1,73 @@
+{
+    "title": "AIS Standard logging and exception handling",
+    "description": "This workflow template defines the standard template for azure logging and exception handling",
+    "prerequisites": "Before you use this template, you need to meet the following prerequisites. 1) An existing service bus connection with required topics/subscrptions. 2) The parameters logApplication, logErrorType, logMessage, logResourceType should be created",
+    "tags": [
+        "Automation"
+    ],
+    "skus": [
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "detailsDescription": "This workflow runs the specified actions that you add to represent business logic. If any errors occur, the workflow uses the 'Scope' action to catch and process those errors, which then terminates the workflow with a detailed error message. Learn more about [exception handling in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2226310).",
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "Automation"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "logApplication",
+            "displayName": "Azure Logic App Name",
+            "type": "String",
+            "default": "",
+            "description": "",
+            "required": true
+        },
+        {
+            "name": "logErrorType",
+            "displayName": "Error type",
+            "type": "String",
+            "default": "application",
+            "description": "",
+            "required": true
+        },
+        {
+            "name": "logMessage",
+            "displayName": "consumer or provider",
+            "type": "String",
+            "default": "provider",
+            "description": "",
+            "required": true
+        },
+        {
+            "name": "logResourceType",
+            "displayName": "Azure Resource Type",
+            "type": "String",
+            "default": "logicappworkflow",
+            "description": "",
+            "required": true
+        }
+      
+    ],
+    "connections": {
+        "serviceBus": {
+            "connectorId": "/serviceProviders/serviceBus",
+            "kind": "inapp"
+    }
+}
+}
