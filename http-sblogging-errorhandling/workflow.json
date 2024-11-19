@@ -180,7 +180,7 @@
                                 "inputs": {
                                     "LoggingMessage": {
                                         "Application": "Application Name",
-                                        "ApplicationMessage": "Exception during call to AIM SearchSubmission",
+                                        "ApplicationMessage": "Exception during call to HTTP Request",
                                         "Category": "IntegrationLayer",
                                         "DisplayableMessage": "Please contact support",
                                         "EventNumber": 1001,
@@ -293,7 +293,7 @@
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
-            "When_search_submission_request_is_received": {
+            "When_HTTP_request_is_received": {
                 "type": "Request",
                 "kind": "Http"
             }
