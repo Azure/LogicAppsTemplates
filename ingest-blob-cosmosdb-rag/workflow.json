@@ -114,7 +114,7 @@
                         "path": "@parameters('Blob_Path_pdf_ingestion_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob_#workflowname#",
+                        "connectionName": "blob-connection_#workflowname#",
                         "operationId": "whenABlobIsAddedOrModified",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
