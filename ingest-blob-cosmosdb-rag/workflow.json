@@ -20,11 +20,11 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_#workflow-name#')",
+                        "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_#workflowname#')",
                         "input": "@take(body('Chunk_text')?['value'], length(body('Chunk_text')['value']))"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "openai_#workflow-name#",
+                        "connectionName": "openai_#workflowname#",
                         "operationId": "getArrayEmbeddings",
                         "serviceProviderId": "/serviceProviders/openai"
                     }
@@ -50,11 +50,11 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "containerName": "@parameters('Blob_Path_pdf_ingestion_#workflow-name#')",
+                        "containerName": "@parameters('Blob_Path_pdf_ingestion_#workflowname#')",
                         "blobName": "@triggerBody()?['name']"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob_#workflow-name#",
+                        "connectionName": "AzureBlob_#workflowname#",
                         "operationId": "readBlob",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
@@ -86,13 +86,13 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "databaseId": "@parameters('CosmosDB_database_#workflow-name#')",
-                        "containerId": "@parameters('CosmosDB_collection_#workflow-name#')",
+                        "databaseId": "@parameters('CosmosDB_database_#workflowname#')",
+                        "containerId": "@parameters('CosmosDB_collection_#workflowname#')",
                         "items": "@body('Select_embeddings_and_map_to_CosmosDB')",
                         "isUpsert": true
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureCosmosDB_#workflow-name#",
+                        "connectionName": "AzureCosmosDB_#workflowname#",
                         "operationId": "BulkCreateOrUpdateDocument",
                         "serviceProviderId": "/serviceProviders/AzureCosmosDB"
                     }
@@ -111,10 +111,10 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@parameters('Blob_Path_pdf_ingestion_#workflow-name#')"
+                        "path": "@parameters('Blob_Path_pdf_ingestion_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob_#workflow-name#",
+                        "connectionName": "AzureBlob_#workflowname#",
                         "operationId": "whenABlobIsAddedOrModified",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
