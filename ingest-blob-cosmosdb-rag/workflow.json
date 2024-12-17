@@ -24,7 +24,7 @@
                         "input": "@take(body('Chunk_text')?['value'], length(body('Chunk_text')['value']))"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "openai_#workflowname#",
+                        "connectionName": "aoai-connection_#workflowname#",
                         "operationId": "getArrayEmbeddings",
                         "serviceProviderId": "/serviceProviders/openai"
                     }
@@ -54,7 +54,7 @@
                         "blobName": "@triggerBody()?['name']"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob_#workflowname#",
+                        "connectionName": "blob-connection_#workflowname#",
                         "operationId": "readBlob",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
@@ -92,7 +92,7 @@
                         "isUpsert": true
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureCosmosDB_#workflowname#",
+                        "connectionName": "cosmosdb-connection_#workflowname#",
                         "operationId": "BulkCreateOrUpdateDocument",
                         "serviceProviderId": "/serviceProviders/AzureCosmosDB"
                     }
