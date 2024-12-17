@@ -17,7 +17,7 @@
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
-        "Category": "AI,RAG,Data"
+        "Category": "AI,RAG"
     },
     "artifacts": [
         {
