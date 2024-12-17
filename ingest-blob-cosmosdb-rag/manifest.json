@@ -45,28 +45,28 @@
             "required": true
         },
         {
-            "name": "CosmosDB_database#workflowname#",
+            "name": "CosmosDB_database_#workflowname#",
             "displayName": "Name of Azure Cosmos DB database",
             "type": "String",
             "description": "Provide the name of the Azure Cosmos DB database",
             "required": true
         },
         {
-            "name": "CosmosDB_collection#workflowname#",
+            "name": "CosmosDB_collection_#workflowname#",
             "displayName": "Name of Azure Cosmos DB collection",
             "type": "String",
             "description": "Provide the name of the Azure Cosmos DB collection",
             "required": true
         },
         {
-            "name": "CosmosDB_vectorpath#workflowname#",
+            "name": "CosmosDB_vectorpath_#workflowname#",
             "displayName": "Path or property of vector embeddings in Azure Cosmos DB data items",
             "type": "String",
             "description": "Provide the path or property of the vector embeddings in the Azure Cosmos DB data items",
             "required": true
         },
         {
-            "name": "CosmosDB_textpath#workflowname#",
+            "name": "CosmosDB_textpath_#workflowname#",
             "displayName": "Property containing the document text in Azure Cosmos DB data items",
             "type": "String",
             "description": "Provide the property containing the document text in the Azure Cosmos DB data items",
