@@ -48,7 +48,7 @@
             "name": "CosmosDB_database_#workflowname#",
             "displayName": "Cosmos DB name",
             "type": "String",
-            "description": "Provide the name of the Azure Cosmos DB database",
+            "description": "Provide the name for the Azure Cosmos DB database.",
             "required": true
         },
         {
