@@ -34,7 +34,7 @@
             "name": "OpenAI_TextEmbedding_Deployment_#workflowname#",
             "displayName": "OpenAI text embedding deployment identifier",
             "type": "String",
-            "description": "Provide the Azure OpenAI deployment model",
+            "description": "Provide the deployment model for Azure OpenAI.",
             "required": true
         },
         {
