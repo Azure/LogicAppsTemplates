@@ -60,7 +60,7 @@
         },
         {
             "name": "CosmosDB_vectorpath_#workflowname#",
-            "displayName": "Path or property of vector embeddings in Azure Cosmos DB data items",
+            "displayName": "Vector embeddings path or property",
             "type": "String",
             "description": "Provide the path or property of the vector embeddings in the Azure Cosmos DB data items",
             "required": true
