@@ -41,7 +41,7 @@
             "name": "Blob_Path_pdf_ingestion_#workflowname#",
             "displayName": "Blob Storage documents path",
             "type": "String",
-            "description": "Provide the blob stoage page where the documents are stored",
+            "description": "Provide the path to the documents in Blob Storage.",
             "required": true
         },
         {
