@@ -67,7 +67,7 @@
         },
         {
             "name": "CosmosDB_textpath_#workflowname#",
-            "displayName": "Property containing the document text in Azure Cosmos DB data items",
+            "displayName": "Property with the document text in data items",
             "type": "String",
             "description": "Provide the property that contains the document text in the Cosmos DB data items.",
             "required": true
