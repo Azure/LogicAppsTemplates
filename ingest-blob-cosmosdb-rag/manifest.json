@@ -55,7 +55,7 @@
             "name": "CosmosDB_collection_#workflowname#",
             "displayName": "Cosmos DB collection name",
             "type": "String",
-            "description": "Provide the name of the Azure Cosmos DB collection",
+            "description": "Provide the name for the Azure Cosmos DB collection.",
             "required": true
         },
         {
