@@ -1,4 +1,4 @@
-import { mkdir, readFileSync, writeFile } from 'fs';
+import { mkdir, readFileSync, rename, writeFile } from 'fs';
 import path from 'path';
 
 const manifestNamesList = JSON.parse(readFileSync(path.resolve('./manifest.json'), {
@@ -39,21 +39,42 @@ const restructureSingleWorkflow = async (folderName, manifestFile) => {
         templateManifest.tags = manifestFile.tags;
     }
 
+    const workflowArtifact = manifestFile.artifacts?.find((artifact) => artifact.type === 'workflow');
+
     const workflowManifest = {
         title: manifestFile.title,
         description: manifestFile.description,
         detailsDescription: manifestFile.detailsDescription,
         prerequisites: manifestFile.prerequisites,
         kinds: manifestFile.kinds,
-        artifacts: manifestFile.artifacts?.filter((artifact) => artifact.type === 'workflow') ?? [],
+        artifacts: workflowArtifact,
         images: manifestFile.images,
         parameters: manifestFile.parameters,
         connections: manifestFile.connections
     };
 
+    // Overwrite template manifest
     writeFile(`./${folderName}/manifest.json`, JSON.stringify(templateManifest, null, 4), () => {});
-    await mkdir(`./${folderName}/${folderName}`, { recursive: true }, () => {});
+    // Create subfolder for workflow
+    mkdir(`./${folderName}/${folderName}`, { recursive: true }, () => {});
+    // Create workflow manifest
     writeFile(`./${folderName}/${folderName}/manifest.json`, JSON.stringify(workflowManifest, null, 4), () => {});
+    // Move images to subfolder
+    for (const imageFileName of Object.values(manifestFile.images)) {
+        rename(`./${folderName}/${imageFileName}.png`, `./${folderName}/${folderName}/${imageFileName}.png`, (err) => {
+            if (err) {
+                console.error('Error moving file:', err);
+                return;
+            }
+        })
+    }
+    // Move workflow to subfolder
+    rename(`./${folderName}/${workflowArtifact.file}`, `./${folderName}/${folderName}/${workflowArtifact.file}`, (err) => {
+        if (err) {
+            console.error('Error moving file:', err);
+            return;
+        }
+    })
 
 }
 
