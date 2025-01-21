@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "patchTemplate": "ts-node patch_template_variables.js",
+    "restructureTemplates": "ts-node restructure_templates.js",
     "test": "tsx validate_templates.ts"
   },
   "keywords": [],
