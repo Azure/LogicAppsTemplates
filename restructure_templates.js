@@ -15,9 +15,9 @@ const restructureSingleWorkflow = async (folderName, manifestFile) => {
         description: manifestFile.description,
         // detailsDescription: manifestFile.detailsDescription, // will fall under workflow manifest
         artifacts: manifestFile.artifacts?.filter((artifact) => artifact.type !== 'workflow') ?? [],
-        skus: manifestFile.skus,
+        skus: manifestFile.skus ?? ["standard"],
         workflows: {
-            [folderName]: getNormWorkflowName(folderName),
+            [folderName]: {name: getNormWorkflowName(folderName)},
         },
         featuredConnectors: Object.values(manifestFile?.connections)?.map((connection) => ({
             id: connection.connectorId,
@@ -41,8 +41,11 @@ const restructureSingleWorkflow = async (folderName, manifestFile) => {
         detailsDescription: manifestFile.detailsDescription,
         prerequisites: manifestFile.prerequisites,
         kinds: manifestFile.kinds,
-        artifacts: workflowArtifact,
-        images: manifestFile.images,
+        artifacts: [workflowArtifact],
+        images: {
+            light: manifestFile.images.light,
+            dark: manifestFile.images.dark
+        },
         parameters: manifestFile.parameters,
         connections: manifestFile.connections
     };
@@ -77,7 +80,7 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
         description: templateManifest.description,
         detailsDescription: templateManifest.detailsDescription,
         artifacts: templateManifest.artifacts,
-        skus: templateManifest.skus,
+        skus: ["standard"],
         workflows: templateManifest.workflows,
         featuredConnectors: Object.values(templateManifest?.connections)?.map((connection) => ({
             id: connection.connectorId,
@@ -102,7 +105,10 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
             prerequisites: workflowManifest.prerequisites,
             kinds: workflowManifest.kinds,
             artifacts: workflowManifest.artifacts,
-            images: workflowManifest.images,
+            images: {
+                light: workflowManifest.images.light,
+                dark: workflowManifest.images.dark
+            },
             parameters: workflowManifest.parameters,
             connections: workflowManifest.connections
         };
