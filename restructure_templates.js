@@ -5,38 +5,32 @@ const manifestNamesList = JSON.parse(readFileSync(path.resolve('./manifest.json'
     encoding: 'utf-8'
 }));
 
+const getNormWorkflowName = (workflowName) => {
+    return workflowName.replace(/-([a-z])/g, (_, letter) => `_${letter.toUpperCase()}`);
+}
+
 const restructureSingleWorkflow = async (folderName, manifestFile) => {
-    const templateManifest = {
+    const updatedTemplateManifest = {
         title: manifestFile.title,
         description: manifestFile.description,
         // detailsDescription: manifestFile.detailsDescription, // will fall under workflow manifest
         artifacts: manifestFile.artifacts?.filter((artifact) => artifact.type !== 'workflow') ?? [],
         skus: manifestFile.skus,
         workflows: {
-            [folderName]: folderName
+            [folderName]: getNormWorkflowName(folderName),
         },
-        featuredConnectors: [
-            // ...(
-            //     manifestFile?.featuredOperations?.map((operation) => {{
-            //         id: operation?.type,
-                    
-            //     }})
-            // )
-            ...(Object.values(manifestFile?.connections)?.map((connection) => ({
-                id: connection.connectorId,
-                kind: connection.kind,
-            })) ?? [])
-        ],
+        featuredConnectors: Object.values(manifestFile?.connections)?.map((connection) => ({
+            id: connection.connectorId,
+            kind: connection.kind,
+        })) ?? [],
         details: {
-            By: manifestFile.details.By,
-            Type: manifestFile.details.Type,
-            Category: manifestFile.details.Category,
-            Trigger: manifestFile.details.Trigger,
+            ...(manifestFile.details ?? {}),
+            Type: "Workflow",
         },
     }
 
     if (manifestFile?.tags) {
-        templateManifest.tags = manifestFile.tags;
+        updatedTemplateManifest.tags = manifestFile.tags;
     }
 
     const workflowArtifact = manifestFile.artifacts?.find((artifact) => artifact.type === 'workflow');
@@ -54,7 +48,7 @@ const restructureSingleWorkflow = async (folderName, manifestFile) => {
     };
 
     // Overwrite template manifest
-    writeFile(`./${folderName}/manifest.json`, JSON.stringify(templateManifest, null, 4), () => {});
+    writeFile(`./${folderName}/manifest.json`, JSON.stringify(updatedTemplateManifest, null, 4), () => {});
     // Create subfolder for workflow
     mkdir(`./${folderName}/${folderName}`, { recursive: true }, () => {});
     // Create workflow manifest
@@ -74,8 +68,58 @@ const restructureSingleWorkflow = async (folderName, manifestFile) => {
             console.error('Error moving file:', err);
             return;
         }
-    })
+    });
+}
 
+const restructureMultiWorkflow = (folderName, templateManifest) => {
+    const updatedTemplateManifest = {
+        title: templateManifest.title,
+        description: templateManifest.description,
+        detailsDescription: templateManifest.detailsDescription,
+        artifacts: templateManifest.artifacts,
+        skus: templateManifest.skus,
+        workflows: templateManifest.workflows,
+        featuredConnectors: Object.values(templateManifest?.connections)?.map((connection) => ({
+            id: connection.connectorId,
+            kind: connection.kind,
+        })) ?? [],
+        details: {
+            ...(templateManifest.details ?? {}),
+            Type: "Accelerator",
+        },
+    };
+
+    const allTagsCombined = [];
+
+    for (const workflowFolder of Object.keys(templateManifest.workflows)) {
+        const workflowManifest = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFolder}/manifest.json`), {
+            encoding: 'utf-8'
+        }));
+        const updatedWorkflowManifest = {
+            title: workflowManifest.title,
+            description: workflowManifest.description,
+            detailsDescription: workflowManifest.detailsDescription,
+            prerequisites: workflowManifest.prerequisites,
+            kinds: workflowManifest.kinds,
+            artifacts: workflowManifest.artifacts,
+            images: workflowManifest.images,
+            parameters: workflowManifest.parameters,
+            connections: workflowManifest.connections
+        };
+        if (workflowManifest?.tags) {
+            allTagsCombined.push(...workflowManifest.tags);
+        }
+        // Overwrite workflow manifest
+        writeFile(`./${folderName}/${workflowFolder}/manifest.json`, JSON.stringify(updatedWorkflowManifest, null, 4), () => {});
+    }
+
+    const allUniqueTags = [...new Set(allTagsCombined)];
+    if (allUniqueTags.length > 0) {
+        updatedTemplateManifest.tags = allUniqueTags;
+    }
+
+    // Overwrite template manifest
+    writeFile(`./${folderName}/manifest.json`, JSON.stringify(updatedTemplateManifest, null, 4), () => {});
 }
 
 const run = async () => {
@@ -84,17 +128,17 @@ const run = async () => {
             encoding: 'utf-8'
         }));
 
-        if (folderName === 'chat-with-documents-ai') {
-            restructureSingleWorkflow('chat-with-documents-ai', manifestFile)
-        }
-
-        // const isMultiWorkflowTemplate = Object.keys(manifestFile?.workflows ?? {}).length > 0;
-
-        // if (isMultiWorkflowTemplate) {
-        //     await restructureSingleWorkflow(folderName, manifestFile);
-        // } else {
-        //     await restructureSingleWorkflow(folderName, manifest);
+        // if (folderName === 'chat-with-documents-ai') {
+        //     restructureSingleWorkflow('chat-with-documents-ai', manifestFile)
         // }
+
+        const isMultiWorkflowTemplate = Object.keys(manifestFile?.workflows ?? {}).length > 0;
+
+        if (isMultiWorkflowTemplate) {
+            await restructureMultiWorkflow(folderName, manifestFile);
+        } else {
+            await restructureSingleWorkflow(folderName, manifestFile);
+        }
     }
 }
 
