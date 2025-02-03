@@ -1,64 +1,63 @@
 {
     "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
     "actions": {
-        "Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)_1": {
-            "description": "The document/Image provided in this action can also be pulled from non-rest data sources using other Logic Apps connectors and actions.",
+        "Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)": {
+            "type": "ApiConnection",
+            "description": "You can provide the file content of the image or URL as provided in the action. The document/Image can also be pulled from non-rest data sources using other Logic Apps connectors and actions.",
             "inputs": {
-                "headers": {
-                    "inputFileUrl": "https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/rest-api/layout.png"
-                },
                 "host": {
                     "connection": {
-                        "referenceName": "formrecognizer_#workflowname#"
+                        "referenceName": "formrecognizer"
                     }
                 },
                 "method": "post",
-                "path": "/documentintelligence/documentModels/@{encodeURIComponent('prebuilt-read')}:analyze",
+                "headers": {
+                    "inputFileUrl": "https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/rest-api/layout.png"
+                },
+                "path": "/connectorinternaldocumentintelligence/documentModels/@{encodeURIComponent('prebuilt-layout')}:analyze",
                 "queries": {
-                    "api-version": "2024-02-29-preview"
+                    "api-version": "2024-11-30"
                 }
             },
-            "runAfter": {},
-            "type": "ApiConnection"
+            "runAfter": {}
         },
-        "Azure_OpenAI_-_Get_chat_completions": {
-            "description": "Update the Messages array with your own system prompts and user questions",
+        "Get_chat_completions": {
+            "type": "ServiceProvider",
             "inputs": {
                 "parameters": {
-                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#')",
+                    "deploymentId": "@parameters('OpenAI_TextEmbedding_Deployment_Identifier_docIntelligence",
                     "messages": [
                         {
-                            "content": "You are an AI assistant that answers questions. You will be provided markdown content based on which you can answer the questions",
-                            "role": "System"
+                            "role": "System",
+                            "content": "You are an AI assistant that answers questions. You will be provided markdown content based on which you can answer the questions"
                         },
                         {
-                            "content": "Here are the questions - 1. What is the confirmation ID and booking date.  2.) What is estimated time of departure by tone late spoken.  3. What is the Name and email on booking Here is markdown - @{body('Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)_1')?['analyzeResult']?['content']}",
                             "role": "User",
+                            "content": "Here are the questions - 1. What is the confirmation ID and booking date.  2.) What is estimated time of departure by tone late spoken.  3. What is the Name and email on booking Here is markdown - @{body('Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)')?['analyzeResult']?['content']}",
                             "user": "LA"
                         }
                     ],
                     "temperature": 1
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai_#workflowname#",
+                    "connectionName": "openai",
                     "operationId": "getChatCompletions",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
             },
             "runAfter": {
-                "Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)_1": [
+                "Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)": [
                     "SUCCEEDED"
                 ]
-            },
-            "type": "ServiceProvider"
+            }
         }
     },
     "contentVersion": "1.0.0.0",
     "outputs": {},
     "triggers": {
         "When_a_HTTP_request_is_received": {
-            "kind": "Http",
-            "type": "Request"
+            "type": "Request",
+            "kind": "Http"
         }
     }
 }
