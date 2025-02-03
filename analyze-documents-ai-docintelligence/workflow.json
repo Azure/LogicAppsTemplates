@@ -3,7 +3,7 @@
     "actions": {
         "Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)": {
             "type": "ApiConnection",
-            "description": "You can provide the file content of the image or URL as provided in the action. The document/Image can also be pulled from non-rest data sources using other Logic Apps connectors and actions.",
+            "description": "You can provide the content file or the content file's URL path as specified by the Azure AI Document Intelligence action. The document or image also can be pulled from non-REST data sources by using other connectors or operations.",
             "inputs": {
                 "host": {
                     "connection": {
