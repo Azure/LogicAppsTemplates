@@ -29,7 +29,7 @@
                     "messages": [
                         {
                             "role": "System",
-                            "content": "You are an AI assistant that answers questions. You will be provided markdown content based on which you can answer the questions"
+                            "content": "You are an AI assistant that answers questions. You will be provided Markdown content that you can use to answer the questions."
                         },
                         {
                             "role": "User",
