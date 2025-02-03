@@ -33,7 +33,7 @@
                         },
                         {
                             "role": "User",
-                            "content": "Here are the questions - 1. What is the confirmation ID and booking date.  2.) What is estimated time of departure by tone late spoken.  3. What is the Name and email on booking Here is markdown - @{body('Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)')?['analyzeResult']?['content']}",
+                            "content": "Here are the questions: \n- What are the confirmation ID and booking date? \n- What is the estimated departure time by tone late spoken? \n- What are the name and email on the booking?\n\nHere is the Markdown: \n\n'@{body('Analyze_Document_for_Prebuilt_or_Custom_models_(v4.x_API)')?['analyzeResult']?['content']}'",
                             "user": "LA"
                         }
                     ],
