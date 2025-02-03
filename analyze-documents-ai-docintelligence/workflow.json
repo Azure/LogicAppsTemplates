@@ -7,7 +7,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "referenceName": "formrecognizer"
+                        "referenceName": "formrecognizer_#workflowname#"
                     }
                 },
                 "method": "post",
@@ -40,7 +40,7 @@
                     "temperature": 1
                 },
                 "serviceProviderConfiguration": {
-                    "connectionName": "openai",
+                    "connectionName": "openai_#workflowname#",
                     "operationId": "getChatCompletions",
                     "serviceProviderId": "/serviceProviders/openai"
                 }
