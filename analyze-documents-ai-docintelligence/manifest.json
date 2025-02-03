@@ -34,7 +34,7 @@
             "name": "OpenAIModel_#workflowname#",
             "displayName": "OpenAI Model for Chat",
             "type": "String",
-            "description": "Provide the Azure OpenAI deployment model to chat with your documents",
+            "description": "Provide the Azure OpenAI deployment model to use for chatting with your documents.",
             "required": true
         }
         
