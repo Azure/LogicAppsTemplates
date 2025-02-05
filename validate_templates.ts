@@ -31,7 +31,7 @@ const templateManifestSchema = z.object({
     featuredConnectors: z.array(
         z.object({
             id: z.string().regex(/^\/.*/, {
-                message: 'Connections "connectorId" field must start with a forward slash'
+                message: 'Connections "id" field must start with a forward slash'
             }),
             kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')])
         })
@@ -242,6 +242,18 @@ const validateWorkflowManifest = (folderName: string, workflowManifest) => {
     }
 }
 
+const checkTitleDescriptionToBeEqual = (folderName, templateManifest, workflowManifest) => {
+    if (templateManifest.title !== workflowManifest.title) {
+        console.error(`Template "${folderName}" Failed Validation: Template title and Workflow title must be identical`);
+        throw '';
+    }
+
+    if (templateManifest.description !== workflowManifest.description) {
+        console.error(`Template "${folderName}" Failed Validation: Template description and Workflow description must be identical`);
+        throw '';
+    }
+}
+
 const manifestNamesSet = new Set(manifestNamesList);
 if (manifestNamesSet.size !== manifestNamesList.length) {
     console.error(`manifest.json contains ${manifestNamesList.length - manifestNamesSet.size} duplicate Template name(s)`);
@@ -278,16 +290,23 @@ for (const folderName of manifestNamesList) {
 
     validateTemplateManifest(folderName, templateManifest);
 
+    const isWorkflowTemplate = templateManifest.details.Type === "Workflow";
+
     let unregistered_featuredConnectors = [...(templateManifest?.featuredConnectors ?? [])];
 
     for (const workflowFolder of Object.keys(templateManifest.workflows)) {
         const workflowManifest = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFolder}/manifest.json`), {
             encoding: 'utf-8'
         }));
-        const subManifestResult = workflowManifestSchema.safeParse(workflowManifest);
-        if (!subManifestResult.success) {
+
+        if (isWorkflowTemplate) {
+            checkTitleDescriptionToBeEqual(folderName, templateManifest, workflowManifest);
+        }
+
+        const workflowManifestResult = workflowManifestSchema.safeParse(workflowManifest);
+        if (!workflowManifestResult.success) {
             console.log(`Workflow Manifest "${folderName}/${workflowFolder}" Failed Validation`);
-            const validationError = fromError(subManifestResult.error);
+            const validationError = fromError(workflowManifestResult.error);
             console.error(validationError.toString());
             throw '';
         }
