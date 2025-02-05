@@ -9,7 +9,7 @@ const getNormWorkflowName = (workflowName) => {
     return workflowName.replace(/-([a-z])/g, (_, letter) => `_${letter.toUpperCase()}`);
 }
 
-const restructureSingleWorkflow = (folderName, manifestFile) => {
+const restructureSingleWorkflow = async (folderName, manifestFile) => {
     const updatedTemplateManifest = {
         title: manifestFile.title,
         description: manifestFile.description,
@@ -141,7 +141,7 @@ const run = async () => {
             restructureMultiWorkflow(folderName, manifestFile);
         // NOTE: restructureSingleWorkflow is not idempotent - checking if it has been run before
         } else if (manifestFileWorkflowsCount === 0) {
-            restructureSingleWorkflow(folderName, manifestFile);
+            await restructureSingleWorkflow(folderName, manifestFile);
         }
     }
 }

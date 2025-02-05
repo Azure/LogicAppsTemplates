@@ -3,6 +3,7 @@
     "description": "This workflow template triggers on a recurring schedule and extracts business partners from SAP ERP or S/4HANA Cloud. The workflow supports processing downstream SAP master data in Microsoft 365 and uses the publicly available SAP [S/4HANA public cloud sandbox](https://go.microsoft.com/fwlink/?linkid=2282241), and produces JSON. When you use this template, use the URL and authentication scheme for your own SAP system. For more information, see [Get started with SAP and Microsoft integration scenarios](https://go.microsoft.com/fwlink/?linkid=2282033).",
     "artifacts": [],
     "skus": [
+        "consumption",
         "standard"
     ],
     "workflows": {
