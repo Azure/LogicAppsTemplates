@@ -9,7 +9,7 @@ const getNormWorkflowName = (workflowName) => {
     return workflowName.replace(/-([a-z])/g, (_, letter) => `_${letter.toUpperCase()}`);
 }
 
-const restructureSingleWorkflow = async (folderName, manifestFile) => {
+const restructureSingleWorkflow = (folderName, manifestFile) => {
     const updatedTemplateManifest = {
         title: manifestFile.title,
         description: manifestFile.description,
@@ -82,7 +82,7 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
         artifacts: templateManifest.artifacts,
         skus: ["standard"],
         workflows: templateManifest.workflows,
-        featuredConnectors: Object.values(templateManifest?.connections)?.map((connection) => ({
+        featuredConnectors: templateManifest?.featuredConnectors ?? Object.values(templateManifest?.connections)?.map((connection) => ({
             id: connection.connectorId,
             kind: connection.kind,
         })) ?? [],
@@ -92,7 +92,7 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
         },
     };
 
-    const allTagsCombined = [];
+    const allTagsCombined = templateManifest?.tags ?? [];
 
     for (const workflowFolder of Object.keys(templateManifest.workflows)) {
         const workflowManifest = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFolder}/manifest.json`), {
@@ -134,16 +134,14 @@ const run = async () => {
             encoding: 'utf-8'
         }));
 
-        // if (folderName === 'chat-with-documents-ai') {
-        //     restructureSingleWorkflow('chat-with-documents-ai', manifestFile)
-        // }
+        const manifestFileWorkflowsCount = Object.keys(manifestFile?.workflows ?? {}).length;
 
-        const isMultiWorkflowTemplate = Object.keys(manifestFile?.workflows ?? {}).length > 0;
-
-        if (isMultiWorkflowTemplate) {
-            await restructureMultiWorkflow(folderName, manifestFile);
-        } else {
-            await restructureSingleWorkflow(folderName, manifestFile);
+        // NOTE: restructureMultiWorkflow is idempotent
+        if (manifestFileWorkflowsCount > 1) {
+            restructureMultiWorkflow(folderName, manifestFile);
+        // NOTE: restructureSingleWorkflow is not idempotent - checking if it has been run before
+        } else if (manifestFileWorkflowsCount === 0) {
+            restructureSingleWorkflow(folderName, manifestFile);
         }
     }
 }
