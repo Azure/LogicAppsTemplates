@@ -192,26 +192,4 @@
             "defaultValue": {}
         }
     }
-},
-"parameters": {
-    "$connections": {
-        "type": "Object",
-        "value": {
-            "onedriveforbusiness_#workflowname#": {
-                "id": "/subscriptions/2ba690bf-a85f-4cbc-b4cb-3bfead7e2f97/providers/Microsoft.Web/locations/northeurope/managedApis/onedriveforbusiness",
-                "connectionId": "/subscriptions/2ba690bf-a85f-4cbc-b4cb-3bfead7e2f97/resourceGroups/brbenn_NEurope/providers/Microsoft.Web/connections/onedriveforbusiness",
-                "connectionName": "onedriveforbusiness"
-            },
-            "azureopenai_#workflowname#": {
-                "id": "/subscriptions/2ba690bf-a85f-4cbc-b4cb-3bfead7e2f97/providers/Microsoft.Web/locations/northeurope/managedApis/azureopenai",
-                "connectionId": "/subscriptions/2ba690bf-a85f-4cbc-b4cb-3bfead7e2f97/resourceGroups/brbenn_NEurope/providers/Microsoft.Web/connections/azureopenai",
-                "connectionName": "azureopenai"
-            },
-            "azureaisearch_#workflowname#": {
-                "id": "/subscriptions/2ba690bf-a85f-4cbc-b4cb-3bfead7e2f97/providers/Microsoft.Web/locations/northeurope/managedApis/azureaisearch",
-                "connectionId": "/subscriptions/2ba690bf-a85f-4cbc-b4cb-3bfead7e2f97/resourceGroups/brbenn_NEurope/providers/Microsoft.Web/connections/azureaisearch",
-                "connectionName": "azureaisearch"
-            }
-        }
-    }
 }
