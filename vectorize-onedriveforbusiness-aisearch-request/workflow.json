@@ -14,7 +14,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['onedriveforbusiness']['connectionId']"
+                        "name": "@parameters('$connections')['onedriveforbusiness_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
@@ -30,7 +30,7 @@
             "type": "Query",
             "inputs": {
                 "from": "@body('List_files_in_root_folder')",
-                "where": "@equals(item()?['NameNoExt'],parameters('FolderName'))"
+                "where": "@equals(item()?['NameNoExt'],parameters('FolderName_#workflowname#'))"
             }
         },
         "List_files_in_folder": {
@@ -46,7 +46,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['onedriveforbusiness']['connectionId']"
+                        "name": "@parameters('$connections')['onedriveforbusiness_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
@@ -65,7 +65,7 @@
                     "inputs": {
                         "host": {
                             "connection": {
-                                "name": "@parameters('$connections')['onedriveforbusiness']['connectionId']"
+                                "name": "@parameters('$connections')['onedriveforbusiness_#workflowname#']['connectionId']"
                             }
                         },
                         "method": "get",
@@ -112,14 +112,14 @@
                     "inputs": {
                         "host": {
                             "connection": {
-                                "name": "@parameters('$connections')['azureopenai']['connectionId']"
+                                "name": "@parameters('$connections')['azureopenai_#workflowname#']['connectionId']"
                             }
                         },
                         "method": "post",
                         "body": {
                             "input": "@body('Chunk_text')?['value']"
                         },
-                        "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel'))}/multipleEmbeddings",
+                        "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel_#workflowname#'))}/multipleEmbeddings",
                         "queries": {
                             "api-version": "2023-05-15"
                         }
@@ -135,14 +135,14 @@
                     "inputs": {
                         "host": {
                             "connection": {
-                                "name": "@parameters('$connections')['azureaisearch']['connectionId']"
+                                "name": "@parameters('$connections')['azureaisearch_#workflowname#']['connectionId']"
                             }
                         },
                         "method": "post",
                         "body": "@body('Select_embeddings_and_map_to_Index')",
                         "path": "/indexDocuments",
                         "queries": {
-                            "indexName": "@parameters('AISearchIndexName')"
+                            "indexName": "@parameters('AISearchIndexName_#workflowname#')"
                         }
                     }
                 },
@@ -175,15 +175,15 @@
     },
     "outputs": {},
     "parameters": {
-        "FolderName": {
+        "FolderName_#workflowname#": {
             "defaultValue": "",
             "type": "String"
         },
-        "AISearchIndexName": {
+        "AISearchIndexName_#workflowname#": {
             "defaultValue": "",
             "type": "String"
         },
-        "OpenAIModel": {
+        "OpenAIModel_#workflowname#": {
             "defaultValue": "",
             "type": "String"
         },
