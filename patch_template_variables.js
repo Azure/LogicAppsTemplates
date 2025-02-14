@@ -166,14 +166,16 @@ const updateConnections = async (manifest, workflow) => {
       connection.connectorId = sanitizeConnectorId(connection.connectorId);
     }
 
-    if (!name.endsWith(workflowSuffix)) {
+    if (name.endsWith(workflowSuffix)) {
+      const oldName = name?.split(workflowSuffix)?.[0];
+      workflow = workflow.replaceAll(`"${oldName}"`, `"${name}"`);
+      workflow = workflow.replaceAll(`'${oldName}'`, `'${name}'`);
+    } else {
       const newName = `${name}${workflowSuffix}`;
-
       workflow = workflow.replaceAll(`"${name}"`, `"${newName}"`);
+      workflow = workflow.replaceAll(`'${name}'`, `'${newName}'`);
       updatedConnections[newName] = connection;
       delete updatedConnections[name];
-    } else {
-      updatedConnections[name] = connection;
     }
   }
 
