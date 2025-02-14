@@ -1,0 +1,86 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Scope-Try": {
+                "type": "Scope",
+                "actions": {
+                    "Execute_JavaScript_Code": {
+                        "type": "JavaScriptCode",
+                        "inputs": {
+                            "code": "  // Parse the input JSON data\r\n  \r\n  var inputJson = workflowContext.trigger.outputs.body.ContentData;\r\n\r\n  // Transform the input data to the desired output format\r\n  var outputJson = {\r\n    events: inputJson.records.map(record => ({\r\n      text: JSON.stringify(record)\r\n    }))\r\n  };\r\n  \r\n\r\nreturn outputJson;\r\n",
+                            "explicitDependencies": {
+                                "includeTrigger": true
+                            }
+                        }
+                    },
+                    "HTTP-Trigger-to-Log-Destination": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@parameters('Log-Destination-URI_#workflowname#')",
+                            "method": "POST",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "body": "@outputs('Execute_JavaScript_Code')"
+                        },
+                        "runAfter": {
+                            "Execute_JavaScript_Code": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "runtimeConfiguration": {
+                            "contentTransfer": {
+                                "transferMode": "Chunked"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "Scope-Catch": {
+                "type": "Scope",
+                "actions": {
+                    "Optional-Notification_[README]": {
+                        "type": "Compose",
+                        "inputs": "Replace this action with an alternative action like Office 365 Outlook Email, Microsoft Teams Notification, or other preferred notification methods when a failure occurs in sending your logs to your log management server."
+                    }
+                },
+                "runAfter": {
+                    "Scope-Try": [
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_Azure_VMware_Solution_logs_are_available_in_Event_Hub": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "eventhubs_#workflowname#"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/@{encodeURIComponent(parameters('Event-Hub-Name_#workflowname#'))}/events/batch/head",
+                    "queries": {
+                        "contentType": "application/json",
+                        "consumerGroupName": "$Default",
+                        "maximumEventsCount": 50
+                    }
+                },
+                "recurrence": {
+                    "interval": 1,
+                    "frequency": "Minute"
+                },
+                "splitOn": "@triggerBody()"
+            }
+        }
+    },
+    "kind": "Stateful"
+}
