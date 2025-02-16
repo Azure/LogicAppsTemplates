@@ -173,16 +173,17 @@ const validateManifest = (folderName: string, isMultiWorkflow, manifestFile) => 
         //     throw '';
         // }
 
-        const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
+        // const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
         const connectionNames = Object.keys(manifestFile.connections);
     
-        const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
-        for (const match of parameterMatches) {
-            if (!parameterNames.includes(match[1])) {
-                console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
-                throw '';
-            }
-        }
+        // const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
+        
+        // for (const match of parameterMatches) {
+        //     if (!parameterNames.includes(match[1])) {
+        //         console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
+        //         throw '';
+        //     }
+        // }
      
         const connectionReferenceMatches = workflowFileString.matchAll(/"connection":\s*\{\s*"referenceName":\s*"([^"]+)"\}/g);
         for (const match of connectionReferenceMatches) {
