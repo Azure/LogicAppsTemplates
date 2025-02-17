@@ -1,0 +1,276 @@
+{
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "Sliding_Window": {
+                "recurrence": {
+                    "interval": 20,
+                    "frequency": "Minute",
+                    "startTime": "@parameters('StartTime_#workflowname#')"
+                },
+                "evaluatedRecurrence": {
+                    "interval": 20,
+                    "frequency": "Minute",
+                    "startTime": "2024-09-18T14:00:00Z"
+                },
+                "type": "SlidingWindow"
+            }
+        },
+        "actions": {
+            "List_files_in_root_folder": {
+                "runAfter": {
+                    "Initialize_variable_-_FileList": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['onedriveforbusiness']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/datasets/default/folders"
+                }
+            },
+            "Filter_list_to_only_select_the_folder_user_provided": {
+                "runAfter": {
+                    "List_files_in_root_folder": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Query",
+                "inputs": {
+                    "from": "@body('List_files_in_root_folder')",
+                    "where": "@equals(item()?['NameNoExt'],parameters('OneDriveFolderName_#workflowname#'))"
+                }
+            },
+            "List_files_in_folder": {
+                "runAfter": {
+                    "Filter_list_to_only_select_the_folder_user_provided": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['onedriveforbusiness']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/datasets/default/foldersV2/@{encodeURIComponent(encodeURIComponent(outputs('Filter_list_to_only_select_the_folder_user_provided')['body'][0]['Id']))}",
+                    "queries": {
+                        "skipToken": "",
+                        "top": 20
+                    }
+                },
+                "runtimeConfiguration": {
+                    "paginationPolicy": {
+                        "minimumItemCount": 100000
+                    }
+                }
+            },
+            "Is_this_first_run": {
+                "actions": {
+                    "Pick_all_files_for_indexing": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FileList",
+                            "value": "@body('List_files_in_folder')?['value']"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "List_files_in_folder": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Filter_list_and_pick_files_added_or_updated_in_the_time_window": {
+                            "type": "Query",
+                            "inputs": {
+                                "from": "@body('List_files_in_folder')?['value']",
+                                "where": "@greater(item()?['LastModified'], triggerOutputs()['windowStartTime'])"
+                            }
+                        },
+                        "Pick_only_new_or_updated_files": {
+                            "runAfter": {
+                                "Filter_list_and_pick_files_added_or_updated_in_the_time_window": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "FileList",
+                                "value": "@body('Filter_list_and_pick_files_added_or_updated_in_the_time_window')"
+                            }
+                        }
+                    }
+                },
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@triggerOutputs()['sequenceNumber']",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "type": "If"
+            },
+            "Initialize_variable_-_FileList": {
+                "runAfter": {},
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "FileList",
+                            "type": "array"
+                        }
+                    ]
+                }
+            },
+            "For_each": {
+                "foreach": "@variables('FileList')",
+                "actions": {
+                    "Chunk_text": {
+                        "runAfter": {
+                            "Parse_a_document": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "ChunkText",
+                        "inputs": {
+                            "chunkingStrategy": "TokenSize",
+                            "text": "@body('Parse_a_document')?['text']",
+                            "encodingModel": "cl100k_base",
+                            "tokenSize": 5000,
+                            "pageOverlapLength": 0
+                        }
+                    },
+                    "Parse_a_document": {
+                        "runAfter": {
+                            "Get_file_content_using_path": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "ParseDocument",
+                        "inputs": {
+                            "content": "test"
+                        }
+                    },
+                    "Get_multiple_embeddings": {
+                        "runAfter": {
+                            "Chunk_text": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "name": "@parameters('$connections')['azureopenai']['connectionId']"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "input": "@body('Chunk_text')?['value']"
+                            },
+                            "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel_#workflowname#'))}/multipleEmbeddings",
+                            "queries": {
+                                "api-version": "2023-05-15"
+                            }
+                        }
+                    },
+                    "Index_multiple_documents": {
+                        "runAfter": {
+                            "Select_embeddings_and_map_to_Index": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "name": "@parameters('$connections')['azureaisearch']['connectionId']"
+                                }
+                            },
+                            "method": "post",
+                            "body": "@body('Select_embeddings_and_map_to_Index')",
+                            "path": "/indexDocuments",
+                            "queries": {
+                                "indexName": "@parameters('IndexName_#workflowname#')"
+                            }
+                        }
+                    },
+                    "Get_file_content_using_path": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "name": "@parameters('$connections')['onedriveforbusiness']['connectionId']"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/datasets/default/GetFileContentByPath",
+                            "queries": {
+                                "path": "@{items('For_each')?['Path']}",
+                                "inferContentType": true
+                            }
+                        }
+                    },
+                    "Select_embeddings_and_map_to_Index": {
+                        "runAfter": {
+                            "Get_multiple_embeddings": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "Select",
+                        "inputs": {
+                            "from": "@range(0, length(body('Chunk_text')['value']))",
+                            "select": {
+                                "chunk": "@{body('Chunk_text')['value'][item()]}",
+                                "title": "@{items('For_each')?['NameNoExt']}",
+                                "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                                "parent_id": "@{items('For_each')?['Path']}",
+                                "chunk_id": "@{concat(items('For_each')?['NameNoExt'], item())}"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Is_this_first_run": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Foreach"
+            }
+        },
+        "outputs": {},
+        "parameters": {
+            "OneDriveFolderName_#workflowname#": {
+                "defaultValue": "",
+                "type": "String"
+            },
+            "IndexName_#workflowname#": {
+                "defaultValue": "",
+                "type": "String"
+            },
+            "OpenAIModel_#workflowname#": {
+                "defaultValue": "",
+                "type": "String"
+            },
+            "StartTime_#workflowname#": {
+                "defaultValue": "",
+                "type": "String"
+            },
+            "$connections": {
+                "type": "Object",
+                "defaultValue": {}
+            }
+        }
+    }
