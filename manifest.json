@@ -30,5 +30,6 @@
     "ingest-blob-cosmosdb-rag",
     "vectorize-onedriveforbusiness-aisearch-request",
     "vectorize-onedrive-aisearch-request",
-    "vectorize-onedriveforbusiness-aisearch-schedule"
+    "vectorize-onedriveforbusiness-aisearch-schedule",
+    "vectorize-onedrive-aisearch-schedule"
 ]
