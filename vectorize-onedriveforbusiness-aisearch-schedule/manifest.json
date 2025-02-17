@@ -14,7 +14,7 @@
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
-        "Trigger": "Schedule",
+        "Trigger": "Recurrence",
         "Category": "AI,RAG"
     },
     "artifacts": [
