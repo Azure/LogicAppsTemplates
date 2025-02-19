@@ -28,5 +28,10 @@
     "accelerator-index-retrieve-ai-sharepoint-aisearch",
     "accelerator-index-retrieve-resumes-sql",
     "ingest-blob-cosmosdb-rag", 
-    "send-avs-logs-to-log-server"
+    "send-avs-logs-to-log-server",
+    "ingest-blob-cosmosdb-rag",
+    "vectorize-onedriveforbusiness-aisearch-request",
+    "vectorize-onedrive-aisearch-request",
+    "vectorize-onedriveforbusiness-aisearch-schedule",
+    "vectorize-onedrive-aisearch-schedule"
 ]
