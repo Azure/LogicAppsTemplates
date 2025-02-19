@@ -8,7 +8,7 @@
                     "Execute_JavaScript_Code": {
                         "type": "JavaScriptCode",
                         "inputs": {
-                            "code": "  // Parse the input JSON data\r\n  \r\n  var inputJson = workflowContext.trigger.outputs.body.ContentData;\r\n\r\n  // Transform the input data to the desired output format\r\n  var outputJson = {\r\n    events: inputJson.records.map(record => ({\r\n      text: JSON.stringify(record)\r\n    }))\r\n  };\r\n  \r\n\r\nreturn outputJson;\r\n",
+                            "code": "  // Parse the input JSON data\r\n  \r\n  var inputJson = workflowContext.trigger.outputs.body.ContentData;\r\n\r\n  // Transform the input data into the desired output format\r\n  var outputJson = {\r\n    events: inputJson.records.map(record => ({\r\n      text: JSON.stringify(record)\r\n    }))\r\n  };\r\n  \r\n\r\nreturn outputJson;\r\n",
                             "explicitDependencies": {
                                 "includeTrigger": true
                             }
@@ -43,7 +43,7 @@
                 "actions": {
                     "Optional-Notification_[README]": {
                         "type": "Compose",
-                        "inputs": "Replace this action with an alternative action like Office 365 Outlook Email, Microsoft Teams Notification, or other preferred notification methods when a failure occurs in sending your logs to your log management server."
+                        "inputs": "Replace this action with the preferred notification action, for example, email sent from Office 365 Outlook, message sent from Microsoft Teams, and so on, when a failure happens while sending your logs to your logs management server."
                     }
                 },
                 "runAfter": {
