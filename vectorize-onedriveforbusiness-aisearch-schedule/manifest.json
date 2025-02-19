@@ -61,11 +61,11 @@
     "connections": {
         "azureaisearch_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureaisearch",
-            "kind": "inapp"
+            "kind": "shared"
         },
         "azureopenai_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
-            "kind": "inapp"
+            "kind": "shared"
         },
         "onedriveforbusiness_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
