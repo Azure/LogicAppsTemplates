@@ -31,9 +31,9 @@
     "parameters": [
         {
             "name": "Event-Hub-Name_#workflowname#",
-            "displayName": "Event Hub Name",
+            "displayName": "Event hub name",
             "type": "String",
-            "default": "Event Hub Name",
+            "default": "Name for your event hub",
             "description": "The name for the Event Hub where the Azure VMware Solution logs live.",
             "required": true
         },
