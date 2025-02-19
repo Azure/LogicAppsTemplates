@@ -27,7 +27,7 @@
                 "inputs": {
                     "host": {
                         "connection": {
-                            "name": "@parameters('$connections')['onedrive']['connectionId']"
+                            "name": "@parameters('$connections')['onedrive_#workflowname#']['connectionId']"
                         }
                     },
                     "method": "get",
@@ -56,7 +56,7 @@
                 "inputs": {
                     "host": {
                         "connection": {
-                            "name": "@parameters('$connections')['onedrive']['connectionId']"
+                            "name": "@parameters('$connections')['onedrive_#workflowname#']['connectionId']"
                         }
                     },
                     "method": "get",
@@ -173,7 +173,7 @@
                         "inputs": {
                             "host": {
                                 "connection": {
-                                    "name": "@parameters('$connections')['azureopenai']['connectionId']"
+                                    "name": "@parameters('$connections')['azureopenai_#workflowname#']['connectionId']"
                                 }
                             },
                             "method": "post",
@@ -196,7 +196,7 @@
                         "inputs": {
                             "host": {
                                 "connection": {
-                                    "name": "@parameters('$connections')['azureaisearch']['connectionId']"
+                                    "name": "@parameters('$connections')['azureaisearch_#workflowname#']['connectionId']"
                                 }
                             },
                             "method": "post",
@@ -212,7 +212,7 @@
                         "inputs": {
                             "host": {
                                 "connection": {
-                                    "name": "@parameters('$connections')['onedrive']['connectionId']"
+                                    "name": "@parameters('$connections')['onedrive_#workflowname#']['connectionId']"
                                 }
                             },
                             "method": "get",
