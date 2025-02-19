@@ -27,5 +27,9 @@
     "chat-with-documents-ai",
     "accelerator-index-retrieve-ai-sharepoint-aisearch",
     "accelerator-index-retrieve-resumes-sql",
-    "ingest-blob-cosmosdb-rag"
+    "ingest-blob-cosmosdb-rag",
+    "vectorize-onedriveforbusiness-aisearch-request",
+    "vectorize-onedrive-aisearch-request",
+    "vectorize-onedriveforbusiness-aisearch-schedule",
+    "vectorize-onedrive-aisearch-schedule"
 ]
