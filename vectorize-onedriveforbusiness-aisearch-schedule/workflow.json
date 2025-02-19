@@ -203,7 +203,7 @@
                             "body": "@body('Select_embeddings_and_map_to_Index')",
                             "path": "/indexDocuments",
                             "queries": {
-                                "indexName": "@parameters('IndexName_#workflowname#')"
+                                "indexName": "@parameters('AISearchIndexName_#workflowname#')"
                             }
                         }
                     },
@@ -256,7 +256,7 @@
                 "defaultValue": "",
                 "type": "String"
             },
-            "IndexName_#workflowname#": {
+            "AISearchIndexName_#workflowname#": {
                 "defaultValue": "",
                 "type": "String"
             },
