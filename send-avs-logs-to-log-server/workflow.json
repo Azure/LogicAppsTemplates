@@ -58,7 +58,7 @@
         "contentVersion": "1.0.0.0",
         "outputs": {},
         "triggers": {
-            "When_Azure_VMware_Solution_logs_are_available_in_Event_Hub": {
+            "When_Azure_VMware_Solution_logs_are_available_in_event_hub": {
                 "type": "ApiConnection",
                 "inputs": {
                     "host": {
