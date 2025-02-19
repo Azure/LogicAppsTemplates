@@ -43,7 +43,7 @@
                 "actions": {
                     "Optional-Notification_[README]": {
                         "type": "Compose",
-                        "inputs": "Replace this action with the preferred notification action, for example, email sent from Office 365 Outlook, message sent from Microsoft Teams, and so on, when a failure happens while sending your logs to your logs management server."
+                        "inputs": "Replace this action with the preferred notification action, for example, email sent from Office 365 Outlook, message sent from Microsoft Teams, and so on, when a failure happens while sending your logs to your log management server."
                     }
                 },
                 "runAfter": {
