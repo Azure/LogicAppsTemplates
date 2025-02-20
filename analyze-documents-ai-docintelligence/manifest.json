@@ -1,7 +1,7 @@
 {
-    "title": "Document Intelligence: Interact and Analyze complex documents using Document Intelligence and Azure OpenAI",
+    "title": "Document Intelligence: Analyze complex documents using Document Intelligence and Azure OpenAI",
     "description": "This workflow uses Forms Recognizer connector to covert complex documents into markdown and Azure Open AI connector to analyze the image content, and provides response to specific questions, based on that image.",
-    "prerequisites": "To use this template, you need to configure an Azure Open AI instance and an embedding model. Learn more [here](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo).You also need to [create an Azure AI service or Document Intelligent resource](https://learn.microsoft.com/azure/ai-services/document-intelligence/quickstarts/get-started-sdks-rest-api?view=doc-intel-4.0.0&pivots=programming-language-csharp), and use the keys and endpoint to create connection. ",
+    "prerequisites": "To use this template, you need to meet the following requirements: \n- Configure an Azure Open AI instance and an embedding model. For more information, see [Create a chat with your data logic app project](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo). \n - [Create an Azure AI service or Document Intelligence resource](https://go.microsoft.com/fwlink/?linkid=2302318). You then use the keys and endpoint to create a connection.",
     "detailsDescription": "",
     "tags": [
         "RAG-Document-Ingestion"
@@ -31,10 +31,10 @@
     },
     "parameters": [
         {
-            "name": "OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#",
-            "displayName": "OpenAI text embedding deployment identifier",
+            "name": "OpenAIModel_#workflowname#",
+            "displayName": "OpenAI Model for Chat",
             "type": "String",
-            "description": "Provide the Azure OpenAI deployment model",
+            "description": "Provide the Azure OpenAI deployment model to use for chatting with your documents.",
             "required": true
         }
         
