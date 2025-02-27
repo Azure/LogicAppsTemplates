@@ -1,24 +1,12 @@
 {
     "title": "RAG - Chat with your documents",
     "description": "This is a retrieval workflow (based on RAG) and takes in prompt and System Message and returns answer to the prompt.",
+    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template is triggered via a Request. The request should include the prompt or the question and the System Message. The prompt is in text so using Azure OpenAI embedding model, the prompt is converted to vector and then used to query vectors from AI Search. The retreived results are provided as an input along with System message to Azure OpenAI Chat completions API, along with the Chat model. The response from OpenAI is returned back.",
     "prerequisites": "Before you use this template, you need to ensure the following pre-requisites are configured. \n- Azure OpenAI instance with an [embedding model](https://learn.microsoft.com/azure/ai-services/openai/concepts/models?tabs=python-secure#embeddings-models) and a [chat model](https://learn.microsoft.com/azure/ai-services/openai/concepts/models?tabs=python-secure).  \n- Azure AI Search instance with your documents and the corresponding [index](https://learn.microsoft.com/en-us/azure/search/search-how-to-create-search-index?tabs=portal) . The index needs to be loaded with the documents, which can be done in [AI Search](https://learn.microsoft.com/en-us/azure/search/search-how-to-load-search-index?tabs=sdk-dotnet) or using [Logic Apps](https://techcommunity.microsoft.com/t5/azure-integration-services-blog/document-ingestion-for-gen-ai-applications-using-logic-apps-from/ba-p/4250675) ",
-    "tags": [
-        "RAG-Document-Ingestion"
-    ],
-    "skus": [
-        "standard"
-    ],
     "kinds": [
         "stateful",
         "stateless"
     ],
-    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template is triggered via a Request. The request should include the prompt or the question and the System Message. The prompt is in text so using Azure OpenAI embedding model, the prompt is converted to vector and then used to query vectors from AI Search. The retreived results are provided as an input along with System message to Azure OpenAI Chat completions API, along with the Chat model. The response from OpenAI is returned back.",
-    "details": {
-        "By": "Microsoft",
-        "Type": "Workflow",
-        "Trigger": "Request",
-        "Category": "AI,RAG"
-    },
     "artifacts": [
         {
             "type": "workflow",

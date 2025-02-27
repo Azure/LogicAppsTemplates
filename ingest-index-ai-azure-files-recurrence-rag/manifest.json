@@ -1,76 +1,36 @@
 {
     "title": "Azure File: Ingest and index documents at a schedule using Azure OpenAI and Azure AI Search - RAG pattern",
     "description": "This workflow runs at configured schedule, reads new or updated files from Azure File storage. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
-    "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo).",
-    "tags": [
-        "RAG-Document-Ingestion"
-    ],
+    "artifacts": [],
     "skus": [
         "standard"
     ],
-    "kinds": [
-        "stateful",
-        "stateless"
+    "workflows": {
+        "ingest-index-ai-azure-files-recurrence-rag": {
+            "name": "ingest_Index_Ai_Azure_Files_Recurrence_Rag"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "/serviceProviders/azureaisearch",
+            "kind": "inapp"
+        },
+        {
+            "id": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        {
+            "id": "/serviceProviders/AzureFile",
+            "kind": "inapp"
+        }
     ],
-    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template processes and indexes a document using Azure OpenAI and Azure AI Search. The workflow is based on Recurrence trigger that is configured to run every 5 minutes (which you can update as per your needs). Every time the trigger runs, the workflow pulls the files that are added or updated in the configured time window. The documents go through the ingestions steps including parsing of the content, and chunking of the content based on token size. The workflow then processes each chunk to generate embeddings through an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search. Finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis. This template is built on AI building blocks in Azure Logic Apps, and includes the Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built-in actions for document parsing and chunking. [Learn more](https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
         "Category": "AI,RAG"
     },
-    "artifacts": [
-        {
-            "type": "workflow",
-            "file": "workflow.json"
-        }
-    ],
-    "images": {
-        "light": "workflow-light",
-        "dark": "workflow-dark"
-    },
-    "parameters": [
-        {
-            "name": "AISearch_Index_Name_#workflowname#",
-            "displayName": "AISearch index mame",
-            "type": "String",
-            "description": "Provide the AI search index name to use for mapping OpenAI embeddings.",
-            "required": true
-        },
-        {
-            "name": "OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#",
-            "displayName": "OpenAI text embedding deployment identifier",
-            "type": "String",
-            "description": "Provide the Azure OpenAI deployment model to generate embeddings.",
-            "required": true
-        },
-        {
-            "name": "AzureFile_FolderName_#workflowname#",
-            "displayName": "Azure File storage Folder Name",
-            "type": "String",
-            "description": "Provide the folder name in your Azure File Storage from where the files to be ingested will be read",
-            "required": true
-        }
-        
-    ],
-    "connections": {
-        "azureaisearch-1_#workflowname#": {
-            "connectorId": "/serviceProviders/azureaisearch",
-            "kind": "inapp"
-        },
-        "openai-1_#workflowname#": {
-            "connectorId": "/serviceProviders/openai",
-            "kind": "inapp"
-        },
-        "AzureFile_#workflowname#": {
-            "connectorId": "/serviceProviders/AzureFile",
-            "kind": "inapp"
-        }
-    },
-    "featuredOperations": [
-        {
-            "type": "ChunkText"
-        }
+    "tags": [
+        "RAG-Document-Ingestion"
     ]
-
 }
