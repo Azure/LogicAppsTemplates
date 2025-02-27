@@ -4,26 +4,70 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import path from 'path';
 import { fromError } from 'zod-validation-error';
 
-const baseManifestSchema = z.object({
+const allowedCategories = ["Design Patterns", "AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
+
+const templateManifestSchema = z.object({
     title: z.string(),
     description: z.string(),
-    prerequisites: z.string().optional(),
-    skus: z.array(z.string()),
-    details: z.object({
-        By: z.string().regex(/^[A-Z].*$/, {
-            message: 'By field must start with the first letter capitalized'
-        }),
-        Category: z.string().optional()
-    }),
     detailsDescription: z.string().optional(),
-    tags: z.array(z.string()).optional(),
     artifacts: z.array(z.object({ 
-        type: z.union([z.literal('workflow'), z.literal('map'), z.literal('schema'), z.literal('assembly')]),
+        type: z.union([z.literal('map'), z.literal('schema'), z.literal('assembly')]),
         file: z.string().regex(/^\S+\.\S+$/, {
             message: 'File field must not contain spaces and must have an extension'
         })
     })),
-    images: z.object({}),
+    skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
+    workflows: z.record(
+        z.string().regex(/^[a-z-]+$/, {
+            message: 'Workflow key must only contain lowercase letters and hyphens'
+        }),
+        z.object({
+            name: z.string().transform((val) => 
+                val.replace(/-([a-z])/g, (_, letter) => `_${letter.toUpperCase()}`)
+                   .replace(/^[a-z]/, (letter) => letter.toUpperCase())
+            ),
+        })
+    ),
+    featuredConnectors: z.array(
+        z.object({
+            id: z.string().regex(/^\/.*/, {
+                message: 'Connections "id" field must start with a forward slash'
+            }),
+            kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')])
+        })
+    ),
+    details: z.object({
+        By: z.string().regex(/^[A-Z].*$/, {
+            message: 'By field must start with the first letter capitalized'
+        }),
+        Type: z.union([z.literal('Workflow'), z.literal('Accelerator')]),
+        Category: z.string().optional(),
+        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event'), z.literal('Automated'), z.literal('Scheduled')]).optional(),
+
+    }),
+    tags: z.array(z.string()).optional(),
+});
+
+const workflowManifestSchema = z.object({
+    title: z.string(),
+    description: z.string(),
+    detailsDescription: z.string().optional(),
+    prerequisites: z.string().optional(),
+    kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
+    artifacts: z.array(z.object({ 
+        type: z.literal('workflow'),
+        file: z.string().regex(/^\S+\.\S+$/, {
+            message: 'Workflow File field must not contain spaces and must have an extension'
+        })
+    })),
+    images: z.object({
+        light: z.string().regex(/^[a-z-_]+$/, {
+            message: 'Image field must only contain lowercase letters, hyphens, and underscore'
+        }),
+        dark: z.string().regex(/^[a-z-_]+$/, {
+            message: 'Image field must only contain lowercase letters, hyphens, and underscore'
+        })
+    }),
     parameters: z.array(
         z.object({
             name: z.string().regex(/^\S*_#workflowname#$/, {
@@ -49,41 +93,10 @@ const baseManifestSchema = z.object({
                 message: 'Connections "connectorId" field must start with a forward slash'
             }),
             kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')]),
-        })),
-    featuredOperations: z.array(z.object({
-        type: z.string().regex(/^[A-Z].*$/, {
-            message: 'featuredOperations type must start with the first letter capitalized'
-        }),
-    })).optional(),
+        })),    
 });
 
-const singleManifestSchema = baseManifestSchema.extend({
-    skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
-    kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
-    details: baseManifestSchema.shape.details.extend({
-        Type: z.literal('Workflow'),
-        Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event'), z.literal('Automated'), z.literal('Scheduled')]),
-    }),
-    images: baseManifestSchema.shape.images.extend({
-        light: z.string(),
-        dark: z.string()
-    }),
-});
-
-const multiManifestSchema = baseManifestSchema.extend({
-    details: baseManifestSchema.shape.details.extend({
-        Type: z.literal('Accelerator')
-    }),
-    skus: z.array(z.literal('standard')),
-    workflows: z.record(
-        z.string().regex(/^[a-z-]+$/, "Only lowercase letters and hyphens are allowed"),
-        z.object({
-            name: z.string().regex(/^[A-Za-z-]+$/, "Only letters and hyphens are allowed"),
-        })
-    )
-});
 program.parse();
-
 
 const manifestNamesList: string[] = JSON.parse(readFileSync(path.resolve('./manifest.json'), {
     encoding: 'utf-8'
@@ -101,119 +114,143 @@ const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: s
     }
 }
 
-const allowedCategories = ["Design Patterns", "AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
+const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
 
-const validateManifest = (folderName: string, isMultiWorkflow, manifestFile) => {
-    const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
-    const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.prerequisites ?? "");
-    const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.description ?? "");
-    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(manifestFile?.detailsDescription ?? "");
+const validateTemplateManifest = (folderName: string, templateManifest) => {
+    const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(templateManifest?.description ?? "");
+    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(templateManifest?.detailsDescription ?? "");
     
-    if (prerequisitesInvalidPattern.success) {
-    console.error(`Template "${folderName}" Failed Validation: prerequisites link is invalid, ensure no space between the [text] and the (link)`);
-    throw '';
-    }
     if (descriptionInvalidPattern.success) {
-    console.error(`Template "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
-    throw '';
+        console.error(`Template Manifest "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
+        throw '';
     }
     if (detailsDescriptionInvalidPattern.success) {
-    console.error(`Template "${folderName}" Failed Validation: detailsDescription link is invalid, ensure no space between the [text] and the (link)`);
-    throw '';
-    }
-
-    if (manifestFile.details?.Category) {
-        for (const category of manifestFile.details?.Category?.split(",") ?? []) {
-            if (!allowedCategories.includes(category)) {
-                console.error(`Template "${folderName}" Failed Validation: Category "${category}" is invalid`);
-                throw '';
-            }
-        }
-    }
-
-    if (manifestFile.tags?.some((tag) => tag.includes(","))) {
-        console.error(`Template "${folderName}" Failed Validation: Tags should be separate strings, not one string separated by ","`);
+        console.error(`Template Manifest "${folderName}" Failed Validation: detailsDescription link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
     }
 
-    if (!isMultiWorkflow) {
-        // Check all artifacts/images listed in manifest.json exist (case sensitive check)
-        const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
-        checkFilesExistCaseSensitive(fileNamesInFolder, folderName, manifestFile.artifacts.map((artifact) => artifact.file));
-        checkFilesExistCaseSensitive(fileNamesInFolder, folderName, [`${manifestFile.images.light}.png`, `${manifestFile.images.dark}.png`]);
+    const workflowsCount = Object.keys(templateManifest?.workflows ??{}).length;
+    const workflowTypeByCount = workflowsCount === 1 ? "Workflow" : workflowsCount > 1 ? "Accelerator" : undefined;
+    if (templateManifest.details.Type !== workflowTypeByCount) {
+        console.error(`Template Manifest "${folderName}" Failed Validation: ${
+            workflowsCount ? `There are ${workflowsCount} workflows, please ensure "details.Type" is ${workflowTypeByCount}` : "None of the workflows are registered in the manifest.json."
+        }`);
+        throw '';
+    }
 
-        const workflowFilePath = manifestFile.artifacts.find((artifact) => artifact.type === "workflow")?.file;
-        
-        if (!workflowFilePath) {
-            console.error(`Template "${folderName}" Failed Validation: workflow file not found`);
-            throw '';
+    if (templateManifest.details?.Category) {
+        for (const category of templateManifest.details?.Category?.split(",") ?? []) {
+            if (!allowedCategories.includes(category)) {
+                console.error(`Template Manifest "${folderName}" Failed Validation: Category "${category}" is invalid`);
+                throw '';
+            }
         }
-        const workflowFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFilePath}`), {
-            encoding: 'utf-8'
-        }));
+    }
 
-        if (workflowFile.definition || workflowFile.kind) {
-            console.error(`Template workflow "./${folderName}/${workflowFilePath}" Failed Validation: workflow.json is invalid - please only keep what's under "definition"`);
-            throw '';
-        }
+    if (templateManifest.tags?.some((tag) => tag.includes(","))) {
+        console.error(`Template Manifest "${folderName}" Failed Validation: Tags should be separate strings, not one string separated by ","`);
+        throw '';
+    }
 
-        const workflowFileString = JSON.stringify(workflowFile);
+    // Check all artifacts/images listed in manifest.json exist (case sensitive check)
+    const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
+    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, templateManifest.artifacts.map((artifact) => artifact.file));
 
-        // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
+    // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
 
-        // const allArtifactsInFolder = readdirSync(`./${folderName}`).filter(file => 
-        //     !file.endsWith(".png") && file !== "manifest.json"
-        // );
+    // const allArtifactsInFolder = readdirSync(`./${folderName}`).filter(file => 
+    //     !file.endsWith(".png") && file !== "manifest.json"
+    // );
 
-        // // Give warning if all the artifacts in the template/manifest.json is not registered
-        // const allRegisteredArtifacts = manifestFile.artifacts.map(artifact => artifact.file);
-        // const artifactsNotRegistered = allArtifactsInFolder.filter(item => !allRegisteredArtifacts.includes(item));
-        // if (artifactsNotRegistered.length) {
-        //     console.error(`Artifacts(s) ${JSON.stringify(artifactsNotRegistered)} found in the repository not registered in ${folderName}/manifest.json.`);
-        //     throw '';
-        // }
+    // // Give warning if all the artifacts in the template/manifest.json is not registered
+    // const allRegisteredArtifacts = manifestFile.artifacts.map(artifact => artifact.file);
+    // const artifactsNotRegistered = allArtifactsInFolder.filter(item => !allRegisteredArtifacts.includes(item));
+    // if (artifactsNotRegistered.length) {
+    //     console.error(`Artifacts(s) ${JSON.stringify(artifactsNotRegistered)} found in the repository not registered in ${folderName}/manifest.json.`);
+    //     throw '';
+    // }
+}
 
-        const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
-        const connectionNames = Object.keys(manifestFile.connections);
+const getUnusedConnectors = (workflowConnections, featuredConnectors) => {
+    return featuredConnectors.filter(value => !workflowConnections.some((item: any) => item.connectorId === value.id && item.kind === value.kind));
+}
+
+const validateWorkflowManifest = (folderName: string, workflowManifest) => {
+    const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.prerequisites ?? "");
+    const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.description ?? "");
+    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.detailsDescription ?? "");
     
-        const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*(?!\$connections)([^"]+)\s*'\)/g);
-        for (const match of parameterMatches) {
-            if (!parameterNames.includes(match[1])) {
-                console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
-                throw '';
-            }
-        }
+    if (prerequisitesInvalidPattern.success) {
+        console.error(`Workflow Manifest "${folderName}" Failed Validation: prerequisites link is invalid, ensure no space between the [text] and the (link)`);
+        throw '';
+    }
+    if (descriptionInvalidPattern.success) {
+        console.error(`Workflow Manifest "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
+        throw '';
+    }
+    if (detailsDescriptionInvalidPattern.success) {
+        console.error(`Workflow Manifest "${folderName}" Failed Validation: detailsDescription link is invalid, ensure no space between the [text] and the (link)`);
+        throw '';
+    }
 
-        const connectionReferenceMatches = workflowFileString.matchAll(/"connection":\s*\{\s*"referenceName":\s*"([^"]+)"\}/g);
-        for (const match of connectionReferenceMatches) {
-            if (!connectionNames.includes(match[1])) {
-                console.error(`Workflow "${folderName}" Failed Validation: connection used in "referenceName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
-                throw '';
-            }
-        }
-    
-        const connectionNameMatches = workflowFileString.matchAll(/"connectionName":\s*"([^"]+)"/g);
-        for (const match of connectionNameMatches) {
-            if (!connectionNames.includes(match[1])) {
-                console.error(`Workflow "${folderName}" Failed Validation: connection used in "connectionName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
-                throw '';
-            }
-        }
+    // Check all artifacts/images listed in manifest.json exist (case sensitive check)
+    const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
+    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, workflowManifest.artifacts.map((artifact) => artifact.file));
+    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, [`${workflowManifest.images.light}.png`, `${workflowManifest.images.dark}.png`]);
 
-        const parameterConnectionsMatches = [...workflowFileString.matchAll(/@parameters\('\$connections'\)\['([^']+)'\]\['connectionId'\]/g)];
+    const workflowFilePath = workflowManifest.artifacts.find((artifact) => artifact.type === "workflow")?.file;
+    if (!workflowFilePath) {
+        console.error(`Workflow Manifest "${folderName}" Failed Validation: workflow file not found`);
+        throw '';
+    }
+    const workflowFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFilePath}`), {
+        encoding: 'utf-8'
+    }));
 
-        // If skus is not defined, it supports both
-        if (parameterConnectionsMatches?.length && (isMultiWorkflow || (manifestFile?.skus?.includes("standard") ?? true))) {
-            console.error(`Workflow "${folderName}" Failed Validation: @parameters('$connections') is invalid for standard workflows. Either remove the @parameters('$connections') or set the sku to "consumption" in manifest.json`);
+    if (workflowFile.definition || workflowFile.kind) {
+        console.error(`Workflow "./${folderName}/${workflowFilePath}" Failed Validation: workflow.json is invalid - please only keep what's under "definition"`);
+        throw '';
+    }
+
+    const workflowFileString = JSON.stringify(workflowFile);
+
+    const parameterNames =  workflowManifest.parameters.map(parameter => parameter.name);
+    const connectionNames = Object.keys(workflowManifest.connections);
+
+    const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
+    for (const match of parameterMatches) {
+        if (!parameterNames.includes(match[1])) {
+            console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
             throw '';
         }
-
-        for (const match of parameterConnectionsMatches) {
-            if (!connectionNames.includes(match[1])) {
-                console.error(`Workflow "${folderName}" Failed Validation: @parameters('$connections') "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
-                throw '';
-            }
+    }
+    
+    const connectionReferenceMatches = workflowFileString.matchAll(/"connection":\s*\{\s*"referenceName":\s*"([^"]+)"\}/g);
+    for (const match of connectionReferenceMatches) {
+        if (!connectionNames.includes(match[1])) {
+            console.error(`Workflow "${folderName}" Failed Validation: connection used in "referenceName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
+            throw '';
         }
+    }
+
+    const connectionNameMatches = workflowFileString.matchAll(/"connectionName":\s*"([^"]+)"/g);
+    for (const match of connectionNameMatches) {
+        if (!connectionNames.includes(match[1])) {
+            console.error(`Workflow "${folderName}" Failed Validation: connection used in "connectionName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
+            throw '';
+        }
+    }
+}
+
+const checkTitleDescriptionToBeEqual = (folderName, templateManifest, workflowManifest) => {
+    if (templateManifest.title !== workflowManifest.title) {
+        console.error(`Template "${folderName}" Failed Validation: Template title and Workflow title must be identical`);
+        throw '';
+    }
+
+    if (templateManifest.description !== workflowManifest.description) {
+        console.error(`Template "${folderName}" Failed Validation: Template description and Workflow description must be identical`);
+        throw '';
     }
 }
 
@@ -238,38 +275,49 @@ if (templatesNotRegistered.length) {
 }
 
 for (const folderName of manifestNamesList) {
-    const manifestFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/manifest.json`), {
+    const templateManifest = JSON.parse(readFileSync(path.resolve(`./${folderName}/manifest.json`), {
         encoding: 'utf-8'
     }));
 
-    const isMultiWorkflowTemplateManifest = Object.keys(manifestFile?.workflows ?? {}).length > 0;
-    
-    const result = isMultiWorkflowTemplateManifest ? multiManifestSchema.safeParse(manifestFile) : singleManifestSchema.safeParse(manifestFile);
+    const result = templateManifestSchema.safeParse(templateManifest);
 
     if (!result.success) {
-        console.log(`Template "${folderName}" Failed Validation`);
+        console.log(`Template Manifest "${folderName}" Failed Validation`);
         const validationError = fromError(result.error);
         console.error(validationError.toString());
         throw '';
     }
 
+    validateTemplateManifest(folderName, templateManifest);
 
-    validateManifest(folderName, isMultiWorkflowTemplateManifest, manifestFile);
+    const isWorkflowTemplate = templateManifest.details.Type === "Workflow";
 
-    if (isMultiWorkflowTemplateManifest) {
-        for (const workflowFolder of Object.keys(manifestFile.workflows)) {
-            const subManifestFile = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFolder}/manifest.json`), {
-                encoding: 'utf-8'
-            }));
-            const subManifestResult = singleManifestSchema.safeParse(subManifestFile);
-            if (!subManifestResult.success) {
-                console.log(`Template "${folderName}/${workflowFolder}" Failed Validation`);
-                const validationError = fromError(subManifestResult.error);
-                console.error(validationError.toString());
-                throw '';
-            }
-            validateManifest(`${folderName}/${workflowFolder}`, false, subManifestFile);
+    let unregistered_featuredConnectors = [...(templateManifest?.featuredConnectors ?? [])];
+
+    for (const workflowFolder of Object.keys(templateManifest.workflows)) {
+        const workflowManifest = JSON.parse(readFileSync(path.resolve(`./${folderName}/${workflowFolder}/manifest.json`), {
+            encoding: 'utf-8'
+        }));
+
+        if (isWorkflowTemplate) {
+            checkTitleDescriptionToBeEqual(folderName, templateManifest, workflowManifest);
         }
+
+        const workflowManifestResult = workflowManifestSchema.safeParse(workflowManifest);
+        if (!workflowManifestResult.success) {
+            console.log(`Workflow Manifest "${folderName}/${workflowFolder}" Failed Validation`);
+            const validationError = fromError(workflowManifestResult.error);
+            console.error(validationError.toString());
+            throw '';
+        }
+        validateWorkflowManifest(`${folderName}/${workflowFolder}`, workflowManifest);
+
+        unregistered_featuredConnectors = getUnusedConnectors(Object.values(workflowManifest.connections), unregistered_featuredConnectors);
+    }
+
+    if (unregistered_featuredConnectors?.length) {
+        console.error(`Template Manifest "${folderName}" Failed Validation: Featured connectors ${JSON.stringify(unregistered_featuredConnectors)} are not used in any workflow`);
+        throw '';
     }
 }
 
