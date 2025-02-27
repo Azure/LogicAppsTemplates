@@ -1,0 +1,33 @@
+{
+    "title": "Azure VMware Solution: Export private cloud logs to log management solution",
+    "description": "This workflow template triggers when log messages from an Azure VMware Solution private cloud are available in your event hub. The workflow processes and sends these messages to the endpoint for the specified log management tool, such as VMware Aria Operations for Logs.",
+    "artifacts": [],
+    "skus": [
+        "consumption",
+        "standard"
+    ],
+    "workflows": {
+        "send-avs-logs-to-log-server": {
+            "name": "send_Avs_Logs_To_Log_Server"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "/subscriptions/#subscription#/resourceGroups/#resourceGroup#/providers/Microsoft.Web/connections/eventhubs",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Event"
+    },
+    "tags": [
+        "Azure VMware Solution",
+        "AVS",
+        "syslogs",
+        "logs",
+        "Azure Event Hubs",
+        "Aria Operations for Logs"
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "title": "Vectorize files on request from OneDrive for Business to AI Search",
+    "description": "This workflow template triggers when the Request trigger receives a request and vectorizes files from a Microsoft OneDrive for Business folder and writes them to the Azure AI Search vector store.",
+    "artifacts": [],
+    "skus": [
+        "consumption"
+    ],
+    "workflows": {
+        "vectorize-onedriveforbusiness-aisearch-request": {
+            "name": "vectorize_Onedriveforbusiness_Aisearch_Request"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureaisearch",
+            "kind": "shared"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
+            "kind": "shared"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI,RAG"
+    },
+    "tags": [
+        "RAG-Document-Ingestion"
+    ]
+}

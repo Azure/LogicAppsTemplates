@@ -1,0 +1,36 @@
+{
+    "title": "Vectorize files on a schedule from OneDrive for Business to AI Search",
+    "description": "This workflow template runs using the schedule-based Recurrence trigger and vectorizes files from a  Microsoft OneDrive for Business folder and writes them to the AI Search vector store.",
+    "artifacts": [],
+    "skus": [
+        "consumption"
+    ],
+    "workflows": {
+        "vectorize-onedriveforbusiness-aisearch-schedule": {
+            "name": "vectorize_Onedriveforbusiness_Aisearch_Schedule"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureaisearch",
+            "kind": "shared"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
+            "kind": "shared"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Recurrence",
+        "Category": "AI,RAG"
+    },
+    "tags": [
+        "RAG-Document-Ingestion"
+    ]
+}
