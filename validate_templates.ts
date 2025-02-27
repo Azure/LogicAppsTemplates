@@ -175,7 +175,7 @@ const getUnusedConnectors = (workflowConnections, featuredConnectors) => {
     return featuredConnectors.filter(value => !workflowConnections.some((item: any) => item.connectorId === value.id && item.kind === value.kind));
 }
 
-const validateWorkflowManifest = (folderName: string, workflowManifest) => {
+const validateWorkflowManifest = (folderName: string, isWorkflowTemplate: boolean, templateSkus: string[] | undefined, workflowManifest) => {
     const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.prerequisites ?? "");
     const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.description ?? "");
     const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.detailsDescription ?? "");
@@ -217,7 +217,7 @@ const validateWorkflowManifest = (folderName: string, workflowManifest) => {
     const parameterNames =  workflowManifest.parameters.map(parameter => parameter.name);
     const connectionNames = Object.keys(workflowManifest.connections);
 
-    const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*([^"]+)\s*'\)/g);
+    const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*(?!\$connections)([^"]+)\s*'\)/g);
     for (const match of parameterMatches) {
         if (!parameterNames.includes(match[1])) {
             console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
@@ -237,6 +237,21 @@ const validateWorkflowManifest = (folderName: string, workflowManifest) => {
     for (const match of connectionNameMatches) {
         if (!connectionNames.includes(match[1])) {
             console.error(`Workflow "${folderName}" Failed Validation: connection used in "connectionName": "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
+            throw '';
+        }
+    }
+
+    const parameterConnectionsMatches = [...workflowFileString.matchAll(/@parameters\('\$connections'\)\['([^']+)'\]\['connectionId'\]/g)];
+
+    // If skus is not defined, it supports both
+    if (parameterConnectionsMatches?.length && (!isWorkflowTemplate || (templateSkus?.includes("standard") ?? true))) {
+        console.error(`Workflow "${folderName}" Failed Validation: @parameters('$connections') is invalid for standard workflows. Either remove the @parameters('$connections') or set the sku to "consumption" in manifest.json`);
+        throw '';
+    }
+
+    for (const match of parameterConnectionsMatches) {
+        if (!connectionNames.includes(match[1])) {
+            console.error(`Workflow "${folderName}" Failed Validation: @parameters('$connections') "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
             throw '';
         }
     }
@@ -310,7 +325,7 @@ for (const folderName of manifestNamesList) {
             console.error(validationError.toString());
             throw '';
         }
-        validateWorkflowManifest(`${folderName}/${workflowFolder}`, workflowManifest);
+        validateWorkflowManifest(`${folderName}/${workflowFolder}`, isWorkflowTemplate, templateManifest.skus, workflowManifest);
 
         unregistered_featuredConnectors = getUnusedConnectors(Object.values(workflowManifest.connections), unregistered_featuredConnectors);
     }
