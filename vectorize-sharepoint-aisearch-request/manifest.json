@@ -68,7 +68,7 @@
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
             "kind": "shared"
         },
-        "onedrive_#workflowname#": {
+        "sharepointonline_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
             "kind": "shared"
         }
