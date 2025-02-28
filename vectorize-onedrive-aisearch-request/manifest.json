@@ -61,7 +61,7 @@
             "kind": "shared"
         },
         "onedrive_#workflowname#": {
-            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedrive",
             "kind": "shared"
         }
     },
