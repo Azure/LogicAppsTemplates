@@ -51,10 +51,10 @@
         },
         {
             "name": "StartTime_#workflowname#",
-            "displayName": "Trigger start time (Optional)",
+            "displayName": "Trigger start time",
             "type": "String", 
             "description": "Provide the trigger start time in UTC format YYYY-MM-DDThh:mm:ssZ. For example, 'September 18, 2024' at '2:00 PM' is '2024-09-18T14:00:00Z'. Without a start time, the workflow immediately starts.",
-            "required": false
+            "required": true
         }
         
     ],
