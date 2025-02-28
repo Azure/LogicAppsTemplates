@@ -212,7 +212,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                        "name": "@parameters('$connections')['sharepointonline_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
