@@ -43,17 +43,10 @@
             "required": true
         },
         {
-            "name": "SharepointSiteAddress_#workflowname#",
-            "displayName": "Sharepoint site address",
+            "name": "FolderName_#workflowname#",
+            "displayName": "OneDrive for Business folder name",
             "type": "String",
-            "description": "Provide the Sharepoint site address",
-            "required": true
-        },
-        {
-            "name": "SharepointLibraryName_#workflowname#",
-            "displayName": "Sharepoint library name",
-            "type": "String",
-            "description": "Provide the Sharepoint library name for your chosen site address",
+            "description": "Provide the OneDrive for Business folder name to read the files.",
             "required": true
         },
         {
@@ -74,8 +67,8 @@
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
             "kind": "shared"
         },
-        "sharepointonline_#workflowname#": {
-            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
+        "onedriveforbusiness_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
             "kind": "shared"
         }
     },
