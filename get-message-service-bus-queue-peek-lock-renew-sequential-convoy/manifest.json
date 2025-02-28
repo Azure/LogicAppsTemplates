@@ -1,25 +1,71 @@
 {
     "title": "Azure Service Bus: Process related messages from a session-enabled queue for the same workflow instance - Sequential convoy pattern",
+
     "description": "This workflow template triggers when a message is available in a Service Bus session-enabled queue. The execution engine creates a workflow instance for each session in the queue. Each workflow instance then sequentially processes related messages from each session.",
-    "artifacts": [],
+
+
+    "prerequisites": "Before you can use this template, you need to set up a Service Bus namespace and create a queue with sessions enabled. For more information, see [Create a Service Bus namespace and a queue](https://go.microsoft.com/fwlink/?linkid=2296007) and [Enable message sessions for a Service Bus queue](https://go.microsoft.com/fwlink/?linkid=2296202). You also need to set up your logic app to support stateful connectors, which is required for sessions. For more information, see [Enable stateful mode for stateless built-in connectors in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2296010).",
+
+
     "skus": [
         "standard"
     ],
-    "workflows": {
-        "get-message-service-bus-queue-peek-lock-renew-sequential-convoy": {
-            "name": "get_Message_Service_Bus_Queue_Peek_Lock_Renew_Sequential_Convoy"
-        }
-    },
-    "featuredConnectors": [
-        {
-            "id": "/serviceProviders/serviceBus",
-            "kind": "inapp"
-        }
+    "kinds": [
+        "stateful",
+        "stateless"
     ],
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
-        "Trigger": "Event",
+        "Trigger": "Event",    
         "Category": "Design Patterns"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "snapshot_light",
+        "dark": "snapshot_dark"
+    },
+    "parameters": [
+        {
+            "name": "queueNameSession_#workflowname#",
+            "displayName": "Queue name",
+
+            "type": "String",
+            "default": "Service Bus session enabled queue name",
+
+            "description": "The name of the session enabled Service Bus queue from where to get the message.",
+
+            "required": true
+        },
+        {
+            "name": "messageBatchSize_#workflowname#",
+            "displayName": "Message batch size",
+
+            "type": "Int",
+            "default": "50",
+            "description": "The number of messages to get as a single batch.",
+
+            "required": true
+        },
+        {
+            "name": "delayInMinutes_#workflowname#",
+            "displayName": "Delay before next token renewal",
+            "type": "Int",
+            "default": "3",
+            "description": "The number of minutes to delay processing before renewing the lock token. Make sure this value is smaller than the queue's lock token duration.",
+
+            "required": true
+        }
+    ],
+    "connections": {
+        "serviceBus_#workflowname#": {
+            "connectorId": "/serviceProviders/serviceBus",
+            "kind": "inapp"
+        }
     }
 }

@@ -1,25 +1,52 @@
 {
     "title": "Azure Service Bus: Get message from a queue - Peek lock abandon pattern",
     "description": "This workflow template triggers when a message is available in a Service Bus queue. The workflow gets the message from the queue and locks the message for processing. The message is deleted from the queue after processing completes. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing.",
-    "artifacts": [],
+    "prerequisites": "Before you use this template, you need to create or set up an existing Service Bus namespace, and create a queue. For more information, see [Create a Service Bus namespace and queue](https://go.microsoft.com/fwlink/?linkid=2282508).",
     "skus": [
         "standard"
     ],
-    "workflows": {
-        "get-message-service-bus-queue-peek-lock-abandon": {
-            "name": "get_Message_Service_Bus_Queue_Peek_Lock_Abandon"
-        }
-    },
-    "featuredConnectors": [
-        {
-            "id": "/serviceProviders/serviceBus",
-            "kind": "inapp"
-        }
+    "kinds": [
+        "stateful",
+        "stateless"
     ],
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
-        "Trigger": "Event",
+        "Trigger": "Event",    
         "Category": "Design Patterns"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "snapshot-light",
+        "dark": "snapshot-dark"
+    },
+    "parameters": [
+        {
+            "name": "queueName_#workflowname#",
+            "displayName": "Queue name",
+            "type": "String",
+            "default": "Service Bus queue name",
+            "description": "The name for the Service Bus queue from where to get the message.",
+            "required": true
+        },
+        {
+            "name": "messageBatchSize_#workflowname#",
+            "displayName": "Message batch size",
+            "type": "Int",
+            "default": "50",
+            "description": "The number of messages to get as a single batch.",
+            "required": true
+        }
+    ],
+    "connections": {
+        "serviceBus_#workflowname#": {
+            "connectorId": "/serviceProviders/serviceBus",
+            "kind": "inapp"
+        }
     }
 }

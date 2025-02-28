@@ -1,7 +1,29 @@
 {
     "title": "Azure Business Process Tracking: Send alert",
     "description": "This workflow template lets you detect failed stages in Azure Business Process Tracking so that you can notify key business stakeholders using Microsoft Teams. The workflow queries the specified database in an Azure Data Explorer instance and returns any records that contain a failed stage status. For more information, see [Create business process](https://go.microsoft.com/fwlink/?linkid=2282030).",
+    "prerequisites": "Before you use this template, you need to meet the following prerequisites. 1) An existing 'Business Process Tracking' resource deployed Azure that emits data to a Data Explorer instance. 2) An Azure Storage account that includes a table with a field named 'LastAlertedProcessed'. 3) In the Azure portal, upload the XSLT map and LML file from the template folder to the Maps folder in your logic app resource. You can find the Maps folder under Artifacts on your logic app menu. Other artifacts in the template folder exist for your reference, for example, if you want to edit the data transformations.",
+    "tags": [
+        "Automation"
+    ],
+    "skus": [
+        "standard"
+    ],
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "detailsDescription": "This workflow template queries for business process data in an Azure Data Explorer instance and returns any records that contain a failed stage status.",
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "Automation"
+    },
     "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        },
         {
             "type": "map",
             "file": "BPKQL-to-Teams.lml"
@@ -19,35 +41,71 @@
             "file": "team.json"
         }
     ],
-    "skus": [
-        "standard"
-    ],
-    "workflows": {
-        "send-alerts-business-process-tracking": {
-            "name": "send_Alerts_Business_Process_Tracking"
-        }
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
     },
-    "featuredConnectors": [
+    "parameters": [
         {
-            "id": "/serviceProviders/azureTables",
+            "name": "Azure-TableName_#workflowname#",
+            "displayName": "Azure table name",
+            "type": "String",
+            "description": "The name of the table that stores the timestamp for the workflow's last run.",
+            "required": true
+        },
+        {
+            "name": "Kusto-DBName_#workflowname#",
+            "displayName": "Kusto database name",
+            "type": "String",
+            "description": "The name of the database that stores transactions from Azure Business Process Tracking.",
+            "required": true
+        },
+        {
+            "name": "Kusto-TableName_#workflowname#",
+            "displayName": "Kusto table name",
+            "type": "String",
+            "description": "The name of the table that stores transactions from Azure Business Process Tracking, for example, 'CityPowerAndLight-TroubleTicketProcessing'.",
+            "required": true
+        },
+        {
+            "name": "Teams-Recipient_#workflowname#",
+            "displayName": "Microsoft Teams recipient",
+            "type": "String",
+            "description": "The email address for the person or distribution list that receives notifications through Microsoft Teams.",
+            "required": true
+        },
+        {
+            "name": "Kusto-URL_#workflowname#",
+            "displayName": "Kusto connection runtime URL for Business Process Tracking instance",
+            "type": "String",
+            "description": "The URL in the URI field on the Overview page for your Azure Data Explorer instance.",
+            "required": true
+        }
+      
+    ],
+    "connections": {
+        "AISearch_#workflowname#": {
+            "connectorId": "/serviceProviders/azureTables",
             "kind": "inapp"
         },
-        {
-            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",
+        "teams_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",
             "kind": "shared"
         },
-        {
-            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/kusto",
+        "kusto-1_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/kusto",
             "kind": "shared"
         }
-    ],
-    "details": {
-        "By": "Microsoft",
-        "Type": "Workflow",
-        "Trigger": "Request",
-        "Category": "Automation"
     },
-    "tags": [
-        "Automation"
+   "featuredOperations": [
+        {
+            "type": "XSLT"
+        },
+        {
+            "type":"Recurrence"
+
+        }
+
     ]
+
 }
