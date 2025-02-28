@@ -43,7 +43,7 @@
                 "type": "Query",
                 "inputs": {
                     "from": "@body('List_files_in_root_folder')",
-                    "where": "@equals(item()?['NameNoExt'],parameters('OneDriveFolderName_#workflowname#'))"
+                    "where": "@equals(item()?['NameNoExt'],parameters('FolderName_#workflowname#'))"
                 }
             },
             "List_files_in_folder": {
@@ -252,7 +252,7 @@
         },
         "outputs": {},
         "parameters": {
-            "OneDriveFolderName_#workflowname#": {
+            "FolderName_#workflowname#": {
                 "defaultValue": "",
                 "type": "String"
             },
