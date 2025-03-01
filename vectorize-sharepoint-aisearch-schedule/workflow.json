@@ -78,7 +78,7 @@
                                 "body": {
                                     "input": "@body('Chunk_text')?['value']"
                                 },
-                                "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModelDeployment_#workflowname#'))}/multipleEmbeddings",
+                                "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel_#workflowname#'))}/multipleEmbeddings",
                                 "queries": {
                                     "api-version": "2023-05-15"
                                 }
@@ -246,7 +246,7 @@
             "defaultValue": "Divya-Test",
             "type": "String"
         },
-        "OpenAIModelDeployment_#workflowname#": {
+        "OpenAIModel_#workflowname#": {
             "defaultValue": "text-embedding",
             "type": "String"
         },
