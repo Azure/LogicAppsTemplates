@@ -1,55 +1,34 @@
 {
+    "id": "send-avs-logs-to-log-server",
     "title": "Azure VMware Solution: Export private cloud logs to log management solution",
     "description": "This workflow template triggers when log messages from an Azure VMware Solution private cloud are available in your event hub. The workflow processes and sends these messages to the endpoint for the specified log management tool, such as VMware Aria Operations for Logs.",
-    "prerequisites": "Before you can use this template, you need to have an Azure VMware Solution private cloud instance and have your private cloud log messages sent to an Azure Event Hubs namespace. For more information about setting up your Azure VMware Solution private cloud, see [Deploy and configure Azure VMware Solution](https://go.microsoft.com/fwlink/?linkid=2305015). For more information about sending your logs to Azure Event Hubs, see [Configure VMware syslogs - Stream to Azure Event Hubs](https://go.microsoft.com/fwlink/?linkid=2305111).",
-    "tags": [
-        "Azure VMware Solution","AVS","syslogs","logs","Azure Event Hubs","Aria Operations for Logs"
-    ],
+    "artifacts": [],
     "skus": [
         "consumption",
         "standard"
     ],
-    "kinds": [
-        "stateful",
-        "stateless"
+    "workflows": {
+        "default": {
+            "name": "send_Avs_Logs_To_Log_Server"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "/subscriptions/#subscription#/resourceGroups/#resourceGroup#/providers/Microsoft.Web/connections/eventhubs",
+            "kind": "shared"
+        }
     ],
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Event"
     },
-    "artifacts": [
-        {
-            "type": "workflow",
-            "file": "workflow.json"
-        }
-    ],
-    "images": {
-        "light": "workflow-light",
-        "dark": "workflow-dark"
-    },
-    "parameters": [
-        {
-            "name": "Event-Hub-Name_#workflowname#",
-            "displayName": "Event hub name",
-            "type": "String",
-            "default": "Name for your event hub",
-            "description": "The name for your event hub where the Azure VMware Solution logs exist.",
-            "required": true
-        },
-        {
-            "name": "Log-Destination-URI_#workflowname#",
-            "displayName": "Log destination URI",
-            "type": "String",
-            "default": "https://<your-log-destination-endpoint>.example.com:1234",
-            "description": "The endpoint URI for the log management server where you want to send the logs.",
-            "required": true
-        }
-    ],
-    "connections": {
-        "eventhubs_#workflowname#": {
-            "connectorId": "/subscriptions/#subscription#/resourceGroups/#resourceGroup#/providers/Microsoft.Web/connections/eventhubs",
-            "kind": "shared"
-        }
-    }
+    "tags": [
+        "Azure VMware Solution",
+        "AVS",
+        "syslogs",
+        "logs",
+        "Azure Event Hubs",
+        "Aria Operations for Logs"
+    ]
 }
