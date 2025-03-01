@@ -1,5 +1,5 @@
 {
-    "title": "Vectorize files on request from Sharepoint Online to AI Search",
+    "title": "Vectorize files on request from SharePoint Online to AI Search",
     "description": "This workflow template triggers when the Request trigger receives a request and vectorizes files from a Microsoft Sharepoint library and writes them to the Azure AI Search vector store.",
     "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. The index schema is based on the [Azure AI Search indexer default schema](https://go.microsoft.com/fwlink/?linkid=2305401).",
     "tags": [
