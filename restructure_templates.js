@@ -33,13 +33,14 @@ const featuredOperationsToConnectors = (featuredOperations) => {
 
 const restructureSingleWorkflow = (folderName, manifestFile) => {
     const updatedTemplateManifest = {
+        id: folderName,
         title: manifestFile.title,
         description: manifestFile.description,
         // detailsDescription: manifestFile.detailsDescription, // will fall under workflow manifest
         artifacts: manifestFile.artifacts?.filter((artifact) => artifact.type !== 'workflow') ?? [],
         skus: manifestFile.skus ?? ["standard"],
         workflows: {
-            [folderName]: {name: getNormWorkflowName(folderName)},
+            default: {name: getNormWorkflowName(folderName)},
         },
         featuredConnectors: [
             ...featuredOperationsToConnectors(manifestFile?.featuredOperations),
@@ -61,6 +62,7 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
     const workflowArtifact = manifestFile.artifacts?.find((artifact) => artifact.type === 'workflow');
 
     const workflowManifest = {
+        id: "default",
         title: manifestFile.title,
         description: manifestFile.description,
         detailsDescription: manifestFile.detailsDescription,
@@ -101,6 +103,7 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
 
 const restructureMultiWorkflow = (folderName, templateManifest) => {
     const updatedTemplateManifest = {
+        id: folderName,
         title: templateManifest.title,
         description: templateManifest.description,
         detailsDescription: templateManifest.detailsDescription,
@@ -127,6 +130,7 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
             encoding: 'utf-8'
         }));
         const updatedWorkflowManifest = {
+            id: workflowFolder,
             title: workflowManifest.title,
             description: workflowManifest.description,
             detailsDescription: workflowManifest.detailsDescription,

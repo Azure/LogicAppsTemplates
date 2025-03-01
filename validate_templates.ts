@@ -7,6 +7,7 @@ import { fromError } from 'zod-validation-error';
 const allowedCategories = ["Design Patterns", "AI", "B2B", "EDI", "Approval", "RAG", "Automation", "BizTalk Migration", "Mainframe Modernization"];
 
 const templateManifestSchema = z.object({
+    id: z.string(),
     title: z.string(),
     description: z.string(),
     detailsDescription: z.string().optional(),
@@ -30,10 +31,10 @@ const templateManifestSchema = z.object({
     ),
     featuredConnectors: z.array(
         z.object({
-            id: z.string().regex(/^\/.*/, {
-                message: 'Connections "id" field must start with a forward slash'
+            id: z.string().regex(/^(\/.*|connectionProviders.*)$/, {
+                message: 'Connections "id" field must start with a forward slash or with "connectionProviders" (builtin connectors)'
             }),
-            kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')])
+            kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom'), z.literal('builtin')])
         })
     ),
     details: z.object({
@@ -49,6 +50,7 @@ const templateManifestSchema = z.object({
 });
 
 const workflowManifestSchema = z.object({
+    id: z.string(),
     title: z.string(),
     description: z.string(),
     detailsDescription: z.string().optional(),
@@ -172,7 +174,7 @@ const validateTemplateManifest = (folderName: string, templateManifest) => {
 }
 
 const getUnusedConnectors = (workflowConnections, featuredConnectors) => {
-    return featuredConnectors.filter(value => !workflowConnections.some((item: any) => item.connectorId === value.id && item.kind === value.kind));
+    return featuredConnectors.filter(value => value.kind !== "builtin" && !workflowConnections.some((item: any) => item.connectorId === value.id && item.kind === value.kind));
 }
 
 const validateWorkflowManifest = (folderName: string, isWorkflowTemplate: boolean, templateSkus: string[] | undefined, workflowManifest) => {
@@ -269,6 +271,13 @@ const checkTitleDescriptionToBeEqual = (folderName, templateManifest, workflowMa
     }
 }
 
+const checkFolderNameEqualToId = (folderName: string, manifestId: string, relativePath: string, manifestType: "Workflow" | "Template") => {
+    if (manifestId !== folderName) {
+        console.error(`${manifestType} Manifest "${relativePath}" Failed Validation: ${manifestType} manifest id and folder name must be identical`);
+        throw '';
+    }
+}
+
 const manifestNamesSet = new Set(manifestNamesList);
 if (manifestNamesSet.size !== manifestNamesList.length) {
     console.error(`manifest.json contains ${manifestNamesList.length - manifestNamesSet.size} duplicate Template name(s)`);
@@ -307,6 +316,8 @@ for (const folderName of manifestNamesList) {
 
     const isWorkflowTemplate = templateManifest.details.Type === "Workflow";
 
+    checkFolderNameEqualToId(folderName, templateManifest.id, `${folderName}/manifest.json`, "Workflow");
+
     let unregistered_featuredConnectors = [...(templateManifest?.featuredConnectors ?? [])];
 
     for (const workflowFolder of Object.keys(templateManifest.workflows)) {
@@ -316,6 +327,9 @@ for (const folderName of manifestNamesList) {
 
         if (isWorkflowTemplate) {
             checkTitleDescriptionToBeEqual(folderName, templateManifest, workflowManifest);
+            if (workflowFolder !== 'default' || workflowManifest.id !== 'default') {
+                console.error(`Workflow Manifest "${folderName}/${workflowFolder}" Failed Validation: Workflow folder name and workflow manifest id must be "default" for single workflow template`);
+            }
         }
 
         const workflowManifestResult = workflowManifestSchema.safeParse(workflowManifest);
@@ -325,6 +339,8 @@ for (const folderName of manifestNamesList) {
             console.error(validationError.toString());
             throw '';
         }
+
+        checkFolderNameEqualToId(workflowFolder, workflowManifest.id, `${folderName}/${workflowFolder}/manifest.json`, "Workflow");
         validateWorkflowManifest(`${folderName}/${workflowFolder}`, isWorkflowTemplate, templateManifest.skus, workflowManifest);
 
         unregistered_featuredConnectors = getUnusedConnectors(Object.values(workflowManifest.connections), unregistered_featuredConnectors);
