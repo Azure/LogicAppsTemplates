@@ -66,9 +66,9 @@
                 "inputs": {
                     "from": "@range(0, length(body('Chunk_text')['value']))\r\n",
                     "select": {
-                        "@{parameters('CosmosDB_textpath')}": "@body('Chunk_text')['value'][item()]",
+                        "@{parameters('CosmosDB_textpath_#workflowname#')}": "@body('Chunk_text')['value'][item()]",
                         "documentName": "@triggerBody()?['name']",
-                        "@{parameters('CosmosDB_vectorpath')}": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                        "@{parameters('CosmosDB_vectorpath_#workflowname#')}": "@body('Get_multiple_embeddings')['embeddings'][item()]",
                         "sourceFile": "@triggerBody()?['name']",
                         "fileType": "@slice(triggerBody()?['name'],-3)",
                         "id": "@guid()",

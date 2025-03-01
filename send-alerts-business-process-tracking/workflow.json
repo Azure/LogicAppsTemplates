@@ -44,7 +44,7 @@
                 },
                 "Compose-KQLQuery": {
                     "description": "Compose a query against the Azure Data Explorer database table for your Business Process Tracking instance using Kusto Query Language. This action queries for any records with a failed status that is newer than the timestamp stored in Azure Table Storage.",
-                    "inputs": "@{parameters('Kusto-TableName')}\n| order by eventTimestamp desc \n| where eventStatus == \"failure\" and eventTimestamp > todatetime(\"@{outputs('Compose-LastTimeStamp')}\")",
+                    "inputs": "@{parameters('Kusto-TableName_#workflowname#')}\n| order by eventTimestamp desc \n| where eventStatus == \"failure\" and eventTimestamp > todatetime(\"@{outputs('Compose-LastTimeStamp')}\")",
                     "runAfter": {
                         "Compose-LastTimeStamp": [
                             "SUCCEEDED"
@@ -68,7 +68,7 @@
                             "actions": {
                                 "Compose-BusinessProcessDetailsQuery": {
                                     "description": "Construct a query based on the 'correlationId' or your own 'Transaction Id'.",
-                                    "inputs": "@{parameters('Kusto-TableName')}\n| order by eventTimestamp asc\n| where correlationId == \"@{item()['correlationId']}\"\n",
+                                    "inputs": "@{parameters('Kusto-TableName_#workflowname#')}\n| order by eventTimestamp asc\n| where correlationId == \"@{item()['correlationId']}\"\n",
                                     "type": "Compose"
                                 },
                                 "Create_HTML_table_BP_Details": {

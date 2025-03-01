@@ -176,7 +176,7 @@ const validateManifest = (folderName: string, isMultiWorkflow, manifestFile) => 
         const parameterNames =  manifestFile.parameters.map(parameter => parameter.name);
         const connectionNames = Object.keys(manifestFile.connections);
     
-        const parameterMatches = workflowFileString.matchAll(/@parameters\('\s*(?!\$connections)([^"]+)\s*'\)/g);
+        const parameterMatches = workflowFileString.matchAll(/parameters\('\s*(?!\$connections)([^"']+)\s*'\)/g);
         for (const match of parameterMatches) {
             if (!parameterNames.includes(match[1])) {
                 console.error(`Workflow "${folderName}" Failed Validation: parameter "${match[1]}" not found in manifest.json. Hint: Make sure the parameter name is in the format <parameterName>_#workflowname#`);
@@ -200,17 +200,17 @@ const validateManifest = (folderName: string, isMultiWorkflow, manifestFile) => 
             }
         }
 
-        const parameterConnectionsMatches = [...workflowFileString.matchAll(/@parameters\('\$connections'\)\['([^']+)'\]\['connectionId'\]/g)];
+        const parameterConnectionsMatches = [...workflowFileString.matchAll(/parameters\('\$connections'\)\['([^']+)'\]\['connectionId'\]/g)];
 
         // If skus is not defined, it supports both
         if (parameterConnectionsMatches?.length && (isMultiWorkflow || (manifestFile?.skus?.includes("standard") ?? true))) {
-            console.error(`Workflow "${folderName}" Failed Validation: @parameters('$connections') is invalid for standard workflows. Either remove the @parameters('$connections') or set the sku to "consumption" in manifest.json`);
+            console.error(`Workflow "${folderName}" Failed Validation: parameters('$connections') is invalid for standard workflows. Either remove the parameters('$connections') or set the sku to "consumption" in manifest.json`);
             throw '';
         }
 
         for (const match of parameterConnectionsMatches) {
             if (!connectionNames.includes(match[1])) {
-                console.error(`Workflow "${folderName}" Failed Validation: @parameters('$connections') "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
+                console.error(`Workflow "${folderName}" Failed Validation: parameters('$connections') "${match[1]}" not found in manifest.json. Hint: Make sure the connection name is in the format <connectionName>_#workflowname#`);
                 throw '';
             }
         }
