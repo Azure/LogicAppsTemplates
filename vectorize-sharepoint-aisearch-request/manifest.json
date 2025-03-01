@@ -52,7 +52,7 @@
         },
         {
             "name": "SharepointLibraryName_#workflowname#",
-            "displayName": "Sharepoint library name",
+            "displayName": "SharePoint library name",
             "type": "String",
             "description": "Provide the SharePoint library name for your chosen site address.",
             "required": true
