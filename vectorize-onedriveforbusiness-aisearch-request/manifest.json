@@ -46,7 +46,7 @@
             "name": "OpenAIModel_#workflowname#",
             "displayName": "Azure OpenAI deployment model name",
             "type": "String",
-            "description": "Provide the Azure OpenAI deployment model name to generate embeddings.",
+            "description": "Provide your Azure OpenAI deployment model name to generate embeddings.",
             "required": true
         }
         
