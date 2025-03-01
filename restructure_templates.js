@@ -9,6 +9,28 @@ const getNormWorkflowName = (workflowName) => {
     return workflowName.replace(/-([a-z])/g, (_, letter) => `_${letter.toUpperCase()}`);
 }
 
+const connectorIdForBuiltInOperations = {
+    chunktext: "connectionProviders/dataOperationNew",
+    scope: "connectionProviders/control",
+    xslt: "connectionProviders/xmlOperations",
+    recurrence: "connectionProviders/schedule",
+    request: "connectionProviders/request",
+}
+
+const featuredOperationsToConnectors = (featuredOperations) => {
+    return featuredOperations?.map((featuredOperation) => {
+        const connectorIdForOperation = connectorIdForBuiltInOperations[featuredOperation.type.toLowerCase()];
+        if (!connectorIdForOperation) {
+            console.error('Connector Id is unknown for this operation :', featuredOperation.type);
+            return;
+        }
+        return {
+            id: connectorIdForOperation,
+            kind: "builtin",
+        };
+    }) ?? [];
+}
+
 const restructureSingleWorkflow = (folderName, manifestFile) => {
     const updatedTemplateManifest = {
         title: manifestFile.title,
@@ -19,10 +41,13 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
         workflows: {
             [folderName]: {name: getNormWorkflowName(folderName)},
         },
-        featuredConnectors: Object.values(manifestFile?.connections)?.map((connection) => ({
-            id: connection.connectorId,
-            kind: connection.kind,
-        })) ?? [],
+        featuredConnectors: [
+            ...featuredOperationsToConnectors(manifestFile?.featuredOperations),
+            ...(Object.values(manifestFile?.connections)?.map((connection) => ({
+                id: connection.connectorId,
+                kind: connection.kind,
+            })) ?? [])
+        ],
         details: {
             ...(manifestFile.details ?? {}),
             Type: "Workflow",
@@ -53,12 +78,12 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
     // Overwrite template manifest
     writeFile(`./${folderName}/manifest.json`, JSON.stringify(updatedTemplateManifest, null, 4), () => {});
     // Create subfolder for workflow
-    mkdir(`./${folderName}/${folderName}`, { recursive: true }, () => {});
+    mkdir(`./${folderName}/default`, { recursive: true }, () => {});
     // Create workflow manifest
-    writeFile(`./${folderName}/${folderName}/manifest.json`, JSON.stringify(workflowManifest, null, 4), () => {});
+    writeFile(`./${folderName}/default/manifest.json`, JSON.stringify(workflowManifest, null, 4), () => {});
     // Move images to subfolder
     for (const imageFileName of Object.values(manifestFile.images)) {
-        rename(`./${folderName}/${imageFileName}.png`, `./${folderName}/${folderName}/${imageFileName}.png`, (err) => {
+        rename(`./${folderName}/${imageFileName}.png`, `./${folderName}/default/${imageFileName}.png`, (err) => {
             if (err) {
                 console.error('Error moving file:', err);
                 return;
@@ -66,7 +91,7 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
         })
     }
     // Move workflow to subfolder
-    rename(`./${folderName}/${workflowArtifact.file}`, `./${folderName}/${folderName}/${workflowArtifact.file}`, (err) => {
+    rename(`./${folderName}/${workflowArtifact.file}`, `./${folderName}/default/${workflowArtifact.file}`, (err) => {
         if (err) {
             console.error('Error moving file:', err);
             return;
@@ -82,10 +107,13 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
         artifacts: templateManifest.artifacts,
         skus: ["standard"],
         workflows: templateManifest.workflows,
-        featuredConnectors: templateManifest?.featuredConnectors ?? Object.values(templateManifest?.connections)?.map((connection) => ({
-            id: connection.connectorId,
-            kind: connection.kind,
-        })) ?? [],
+        featuredConnectors: [
+            ...featuredOperationsToConnectors(templateManifest?.featuredOperations),
+            ...(templateManifest?.featuredConnectors ?? Object.values(templateManifest?.connections)?.map((connection) => ({
+                id: connection.connectorId,
+                kind: connection.kind,
+            })) ?? [])
+        ],
         details: {
             ...(templateManifest.details ?? {}),
             Type: "Accelerator",
