@@ -1,6 +1,6 @@
 {
     "title": "Vectorize files on a schedule from Sharepoint Online to AI Search",
-    "description": "This workflow template runs using the schedule-based Recurrence trigger and vectorizes files from a  Microsoft Sharepoint Online library and writes them to the AI Search vector store.",
+    "description": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from a Microsoft SharePoint Online library, and writes the files to the AI Search vector store.",
     "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. The index schema is based on the [Azure AI Search indexer default schema](https://go.microsoft.com/fwlink/?linkid=2305401).",
     "tags": [
         "RAG-Document-Ingestion"
