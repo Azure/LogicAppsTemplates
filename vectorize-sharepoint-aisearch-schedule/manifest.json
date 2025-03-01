@@ -29,13 +29,6 @@
     },
     "parameters": [
         {
-            "name": "FolderName_#workflowname#",
-            "displayName": "OneDrive for Business folder name",
-            "type": "String",
-            "description": "Provide the OneDrive for Business folder name to read the files.",
-            "required": true
-        },
-        {
             "name": "AISearchIndexName_#workflowname#",
             "displayName": "AI Search index name",
             "type": "String",
@@ -47,6 +40,20 @@
             "displayName": "Azure OpenAI deployment model name",
             "type": "String",
             "description": "Provide your Azure OpenAI deployment model name to generate embeddings.",
+            "required": true
+        },
+        {
+            "name": "SharepointSiteAddress_#workflowname#",
+            "displayName": "Sharepoint site address",
+            "type": "String",
+            "description": "Provide the Sharepoint site address",
+            "required": true
+        },
+        {
+            "name": "SharepointLibraryName_#workflowname#",
+            "displayName": "Sharepoint library name",
+            "type": "String",
+            "description": "Provide the Sharepoint library name for your chosen site address",
             "required": true
         },
         {
