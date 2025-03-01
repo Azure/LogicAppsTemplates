@@ -146,7 +146,7 @@
                     }
                 },
                 "method": "get",
-                "path": "/trigger/beta/teams/@{encodeURIComponent(parameters('TeamsTeamID'))}/channels/@{encodeURIComponent(parameters('TeamsChannelID'))}/messages",
+                "path": "/trigger/beta/teams/@{encodeURIComponent(parameters('TeamsTeamID_#workflowname#'))}/channels/@{encodeURIComponent(parameters('TeamsChannelID_#workflowname#'))}/messages",
                 "queries": {
                     "$top": 50
                 }
