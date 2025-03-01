@@ -54,7 +54,7 @@
             "name": "SharepointLibraryName_#workflowname#",
             "displayName": "Sharepoint library name",
             "type": "String",
-            "description": "Provide the Sharepoint library name for your chosen site address",
+            "description": "Provide the SharePoint library name for your chosen site address.",
             "required": true
         }
         
