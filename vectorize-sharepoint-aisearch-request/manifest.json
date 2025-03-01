@@ -45,7 +45,7 @@
         },
         {
             "name": "SharepointSiteAddress_#workflowname#",
-            "displayName": "Sharepoint site address",
+            "displayName": "SharePoint site address",
             "type": "String",
             "description": "Provide the Sharepoint site address",
             "required": true
