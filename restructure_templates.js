@@ -70,7 +70,7 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
         description: manifestFile.description,
         detailsDescription: manifestFile.detailsDescription,
         prerequisites: manifestFile.prerequisites,
-        kinds: manifestFile.kinds,
+        kinds: (manifestFile.kinds?.length > 0) ? manifestFile.kinds : undefined,
         artifacts: [workflowArtifact],
         images: {
             light: manifestFile.images.light,
@@ -138,7 +138,7 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
             description: workflowManifest.description,
             detailsDescription: workflowManifest.detailsDescription,
             prerequisites: workflowManifest.prerequisites,
-            kinds: workflowManifest.kinds,
+            kinds: (workflowManifest.kinds?.length > 0) ? workflowManifest.kinds : undefined,
             artifacts: workflowManifest.artifacts,
             images: {
                 light: workflowManifest.images.light,

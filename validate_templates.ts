@@ -44,7 +44,6 @@ const templateManifestSchema = z.object({
         Type: z.union([z.literal('Workflow'), z.literal('Accelerator')]),
         Category: z.string().optional(),
         Trigger: z.union([z.literal('Request'), z.literal('Recurrence'), z.literal('Event'), z.literal('Automated'), z.literal('Scheduled')]).optional(),
-
     }),
     tags: z.array(z.string()).optional(),
 });
@@ -55,13 +54,13 @@ const workflowManifestSchema = z.object({
     description: z.string(),
     detailsDescription: z.string().optional(),
     prerequisites: z.string().optional(),
-    kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])),
+    kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])).optional(),
     artifacts: z.array(z.object({ 
         type: z.literal('workflow'),
         file: z.string().regex(/^\S+\.\S+$/, {
             message: 'Workflow File field must not contain spaces and must have an extension'
         })
-    })),
+    })).optional(),
     images: z.object({
         light: z.string().regex(/^[a-z-_]+$/, {
             message: 'Image field must only contain lowercase letters, hyphens, and underscore'
@@ -156,7 +155,7 @@ const validateTemplateManifest = (folderName: string, templateManifest) => {
 
     // Check all artifacts/images listed in manifest.json exist (case sensitive check)
     const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
-    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, templateManifest.artifacts.map((artifact) => artifact.file));
+    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, templateManifest?.artifacts?.map((artifact) => artifact.file) ?? []);
 
     // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
 
@@ -197,7 +196,7 @@ const validateWorkflowManifest = (folderName: string, isWorkflowTemplate: boolea
 
     // Check all artifacts/images listed in manifest.json exist (case sensitive check)
     const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
-    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, workflowManifest.artifacts.map((artifact) => artifact.file));
+    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, workflowManifest?.artifacts?.map((artifact) => artifact.file) ?? []);
     checkFilesExistCaseSensitive(fileNamesInFolder, folderName, [`${workflowManifest.images.light}.png`, `${workflowManifest.images.dark}.png`]);
 
     const workflowFilePath = workflowManifest.artifacts.find((artifact) => artifact.type === "workflow")?.file;
