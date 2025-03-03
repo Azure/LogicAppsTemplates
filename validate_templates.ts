@@ -16,7 +16,7 @@ const templateManifestSchema = z.object({
         file: z.string().regex(/^\S+\.\S+$/, {
             message: 'File field must not contain spaces and must have an extension'
         })
-    })),
+    })).optional(),
     skus: z.array(z.union([z.literal('standard'), z.literal('consumption')])),
     workflows: z.record(
         z.string().regex(/^[a-z-]+$/, {

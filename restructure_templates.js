@@ -6,8 +6,10 @@ const manifestNamesList = JSON.parse(readFileSync(path.resolve('./manifest.json'
 }));
 
 const getNormWorkflowName = (workflowName) => {
-    return workflowName.replace(/-([a-z])/g, (_, letter) => `_${letter.toUpperCase()}`);
-}
+    return workflowName
+        .replace(/-([a-z])/g, (_, letter) => `_${letter.toUpperCase()}`)
+        .replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
+};
 
 const connectorIdForBuiltInOperations = {
     chunktext: "connectionProviders/dataOperationNew",
@@ -32,12 +34,13 @@ const featuredOperationsToConnectors = (featuredOperations) => {
 }
 
 const restructureSingleWorkflow = (folderName, manifestFile) => {
+    const nonWorkflowArtifacts = manifestFile.artifacts?.filter((artifact) => artifact.type !== 'workflow') ?? undefined;
     const updatedTemplateManifest = {
         id: folderName,
         title: manifestFile.title,
         description: manifestFile.description,
         // detailsDescription: manifestFile.detailsDescription, // will fall under workflow manifest
-        artifacts: manifestFile.artifacts?.filter((artifact) => artifact.type !== 'workflow') ?? [],
+        artifacts: (nonWorkflowArtifacts?.length > 0) ? nonWorkflowArtifacts : undefined,
         skus: manifestFile.skus ?? ["standard"],
         workflows: {
             default: {name: getNormWorkflowName(folderName)},
@@ -107,7 +110,7 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
         title: templateManifest.title,
         description: templateManifest.description,
         detailsDescription: templateManifest.detailsDescription,
-        artifacts: templateManifest.artifacts,
+        artifacts: (templateManifest.artifacts?.length > 0) ? templateManifest.artifacts : undefined,
         skus: ["standard"],
         workflows: templateManifest.workflows,
         featuredConnectors: [
