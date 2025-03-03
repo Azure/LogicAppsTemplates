@@ -156,7 +156,7 @@ const validateTemplateManifest = (folderName: string, templateManifest) => {
 
     // Check all artifacts/images listed in manifest.json exist (case sensitive check)
     const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
-    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, templateManifest?.artifacts?.map((artifact) => artifact.file) ?? []);
+    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, templateManifest.artifacts.map((artifact) => artifact.file));
 
     // Note: Disabled the check for now as we have "sample" artifacts that don't fall under the defined artifact types
 
@@ -197,7 +197,7 @@ const validateWorkflowManifest = (folderName: string, isWorkflowTemplate: boolea
 
     // Check all artifacts/images listed in manifest.json exist (case sensitive check)
     const fileNamesInFolder = readdirSync(path.resolve(`./${folderName}`));
-    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, workflowManifest?.artifacts?.map((artifact) => artifact.file) ?? []);
+    checkFilesExistCaseSensitive(fileNamesInFolder, folderName, workflowManifest.artifacts.map((artifact) => artifact.file));
     checkFilesExistCaseSensitive(fileNamesInFolder, folderName, [`${workflowManifest.images.light}.png`, `${workflowManifest.images.dark}.png`]);
 
     const workflowFilePath = workflowManifest.artifacts.find((artifact) => artifact.type === "workflow")?.file;
