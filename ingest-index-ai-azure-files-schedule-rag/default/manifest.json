@@ -1,0 +1,65 @@
+{
+    "id": "default",
+    "title": "Document Ingestion at a schedule from Azure File shares to AI Search",
+    "description": "The workflow does an initial ingestion of all files in File Share and then subsequently reads new or updated files at the configured schedule from Azure File shares. The files are processed and indexed using Azure OpenAI and Azure AI Search.",
+    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template processes and indexes a document using Azure OpenAI and Azure AI Search. The workflow uses Recurrence trigger and runs at the configured schedule, and then reads the new or updated files from the specified folder. Note - The workflow takes start time as a parameter which it uses to determine the first run of the workflow - in the first run all the files in the folder are ingested. In the subsequent runs, only the new or updated files are ingested. For the newly added or updated documents, the workflow parses the content, and chunks the text based on token size. The workflow then processes each chunk to generate embeddings through an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search. Finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis. This template is built on AI building blocks in Azure Logic Apps, and includes the Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built-in actions for document parsing and chunking. [Learn more](https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
+    "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo).",
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "SearchIndex_#workflowname#",
+            "displayName": "AISearch index name",
+            "type": "String",
+            "description": "Provide the Azure AI search index name.",
+            "required": true
+        },
+        {
+            "name": "OpenAIDeployment_#workflowname#",
+            "displayName": "Azure OpenAI text embedding deployment model name",
+            "type": "String",
+            "description": "Provide the Azure OpenAI embedding deployment model name to generate embeddings.",
+            "required": true
+        },
+        {
+            "name": "AzureFileShareName_#workflowname#",
+            "displayName": "Azure File share name",
+            "type": "String",
+            "description": "Provide the Azure File share name.",
+            "required": true
+        },
+        {
+            "name": "StartTime_#workflowname#",
+            "displayName": "Start Time for Ingestion (Recurrence Trigger)",
+            "type": "String",
+            "description": "Provide the start time in UTC for ingestion. Use the format - YYYY-MM-DDThh:mm:ssZ. For example:  September 18, 2017 at 2:00 PM would be 2017-09-18T14:00:00Z.",
+            "required": true
+        }
+    ],
+    "connections": {
+        "azureaisearch_#workflowname#": {
+            "connectorId": "/serviceProviders/azureaisearch",
+            "kind": "inapp"
+        },
+        "openai_#workflowname#": {
+            "connectorId": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        "AzureFile_#workflowname#": {
+            "connectorId": "/serviceProviders/AzureFile",
+            "kind": "inapp"
+        }
+    }
+}
