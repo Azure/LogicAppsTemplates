@@ -1,0 +1,258 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "Sliding_Window": {
+            "recurrence": {
+                "interval": 20,
+                "frequency": "Minute"
+            },
+            "evaluatedRecurrence": {
+                "interval": 20,
+                "frequency": "Minute"
+            },
+            "type": "SlidingWindow"
+        }
+    },
+    "actions": {
+        "For_each_item_in_the_library": {
+            "foreach": "@variables('FileList')",
+            "actions": {
+                "If_this_is_a_File": {
+                    "actions": {
+                        "Get_file_content": {
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['sharepointonline_#workflowname#']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharepointSiteAddress_#workflowname#')))}/files/@{encodeURIComponent(item()?['{Identifier}'])}/content",
+                                "queries": {
+                                    "inferContentType": true
+                                }
+                            }
+                        },
+                        "Parse_a_document": {
+                            "runAfter": {
+                                "Get_file_content": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseDocument",
+                            "inputs": {
+                                "content": "@body('Get_file_content')"
+                            }
+                        },
+                        "Chunk_text": {
+                            "runAfter": {
+                                "Parse_a_document": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ChunkText",
+                            "inputs": {
+                                "chunkingStrategy": "TokenSize",
+                                "text": "@body('Parse_a_document')?['text']",
+                                "encodingModel": "cl100k_base",
+                                "tokenSize": 5000,
+                                "pageOverlapLength": 0
+                            }
+                        },
+                        "Azure_OpenAI_-_Get_multiple_embeddings": {
+                            "runAfter": {
+                                "Chunk_text": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureopenai_#workflowname#']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "body": {
+                                    "input": "@body('Chunk_text')?['value']"
+                                },
+                                "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel_#workflowname#'))}/multipleEmbeddings",
+                                "queries": {
+                                    "api-version": "2023-05-15"
+                                }
+                            }
+                        },
+                        "Select_embeddings_and_map_to_Index": {
+                            "runAfter": {
+                                "Azure_OpenAI_-_Get_multiple_embeddings": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Select",
+                            "inputs": {
+                                "from": "@range(0, length(body('Chunk_text')['value']))",
+                                "select": {
+                                    "chunk": "@{body('Chunk_text')['value'][item()]}",
+                                    "title": "@{items('For_each_item_in_the_library')['{Name}']}",
+                                    "text_vector": "@body('Azure_OpenAI_-_Get_multiple_embeddings')['embeddings'][item()]",
+                                    "parent_id": "@{items('For_each_item_in_the_library')['{FullPath}']}",
+                                    "chunk_id": "@{concat(items('For_each_item_in_the_library')['{Name}'], item())}"
+                                }
+                            }
+                        },
+                        "Index_multiple_documents": {
+                            "runAfter": {
+                                "Select_embeddings_and_map_to_Index": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureaisearch_#workflowname#']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "body": "@body('Select_embeddings_and_map_to_Index')",
+                                "path": "/indexDocuments",
+                                "queries": {
+                                    "indexName": "@parameters('AISearchIndexName_#workflowname#')"
+                                }
+                            }
+                        }
+                    },
+                    "else": {
+                        "actions": {
+                            "No_action_needed_for_Folder": {
+                                "type": "Compose",
+                                "inputs": "No action needed for Folder"
+                            }
+                        }
+                    },
+                    "expression": {
+                        "and": [
+                            {
+                                "equals": [
+                                    "@items('For_each_item_in_the_library')['{IsFolder}']",
+                                    false
+                                ]
+                            }
+                        ]
+                    },
+                    "type": "If"
+                }
+            },
+            "runAfter": {
+                "Is_this_first_run": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Foreach"
+        },
+        "Is_this_first_run": {
+            "actions": {
+                "Pick_all_files_for_indexing": {
+                    "type": "SetVariable",
+                    "inputs": {
+                        "name": "FileList",
+                        "value": "@body('Get_files_properties_for_all_items_in_the_library')?['value']"
+                    }
+                }
+            },
+            "runAfter": {
+                "Get_files_properties_for_all_items_in_the_library": [
+                    "Succeeded"
+                ]
+            },
+            "else": {
+                "actions": {
+                    "Filter_list_and_pick_files_added_or_updated_in_the_time_window": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@body('Get_files_properties_for_all_items_in_the_library')?['value']",
+                            "where": "@greater(item()?['Modified'],triggerOutputs()['windowStartTime'])"
+                        }
+                    },
+                    "Pick_only_new_or_updated_files": {
+                        "runAfter": {
+                            "Filter_list_and_pick_files_added_or_updated_in_the_time_window": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FileList",
+                            "value": "@body('Filter_list_and_pick_files_added_or_updated_in_the_time_window')"
+                        }
+                    }
+                }
+            },
+            "expression": {
+                "and": [
+                    {
+                        "equals": [
+                            "@triggerOutputs()['sequenceNumber']",
+                            0
+                        ]
+                    }
+                ]
+            },
+            "type": "If"
+        },
+        "Get_files_properties_for_all_items_in_the_library": {
+            "runAfter": {
+                "Initialize_variable": [
+                    "Succeeded"
+                ]
+            },
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['sharepointonline_#workflowname#']['connectionId']"
+                    }
+                },
+                "method": "get",
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharepointSiteAddress_#workflowname#')))}/tables/@{encodeURIComponent(encodeURIComponent(parameters('SharepointLibraryName_#workflowname#')))}/getfileitems"
+            }
+        },
+        "Initialize_variable": {
+            "runAfter": {},
+            "type": "InitializeVariable",
+            "inputs": {
+                "variables": [
+                    {
+                        "name": "FileList",
+                        "type": "array"
+                    }
+                ]
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "AISearchIndexName_#workflowname#": {
+            "defaultValue": "indexer1-divya",
+            "type": "String"
+        },
+        "SharepointSiteAddress_#workflowname#": {
+            "defaultValue": "https://microsoft.sharepoint.com/teams/LogicApps",
+            "type": "String"
+        },
+        "SharepointLibraryName_#workflowname#": {
+            "defaultValue": "Divya-Test",
+            "type": "String"
+        },
+        "OpenAIModel_#workflowname#": {
+            "defaultValue": "text-embedding",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}

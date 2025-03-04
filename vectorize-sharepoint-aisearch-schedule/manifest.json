@@ -1,6 +1,6 @@
 {
-    "title": "Vectorize files on a schedule from Sharepoint Online to AI Search",
-    "description": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from a Microsoft SharePoint Online library, and writes the files to the AI Search vector store.",
+    "title": "Vectorize files on a schedule from OneDrive for Business to AI Search",
+    "description": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from a Microsoft SharePoint Online folder, and writes the files to the AI Search vector store.",
     "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. The index schema is based on the [Azure AI Search indexer default schema](https://go.microsoft.com/fwlink/?linkid=2305401).",
     "tags": [
         "RAG-Document-Ingestion"
@@ -43,10 +43,17 @@
             "required": true
         },
         {
-            "name": "FolderName_#workflowname#",
-            "displayName": "OneDrive for Business folder name",
+            "name": "SharepointSiteAddress_#workflowname#",
+            "displayName": "Sharepoint site address",
             "type": "String",
-            "description": "Provide the OneDrive for Business folder name to read the files.",
+            "description": "Provide the Sharepoint site address",
+            "required": true
+        },
+        {
+            "name": "SharepointLibraryName_#workflowname#",
+            "displayName": "Sharepoint library name",
+            "type": "String",
+            "description": "Provide the Sharepoint library name for your chosen site address",
             "required": true
         },
         {
@@ -67,8 +74,8 @@
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
             "kind": "shared"
         },
-        "onedriveforbusiness_#workflowname#": {
-            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedriveforbusiness",
+        "sharepointonline_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
             "kind": "shared"
         }
     },
