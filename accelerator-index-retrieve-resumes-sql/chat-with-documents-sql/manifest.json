@@ -1,24 +1,13 @@
 {
+    "id": "chat-with-documents-sql",
     "title": "Chat with your documents - RAG pattern",
-    "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when the workflow receives a prompt and a system message. The workflow converts the prompt to a vector, uses the result to query a vector table, sends the result and system message to the Azure OpenAI Chat Completions API, and returns an answer to the prompt.",
+    "summary": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when the workflow receives a prompt and a system message. The workflow converts the prompt to a vector, uses the result to query a vector table, sends the result and system message to the Azure OpenAI Chat Completions API, and returns an answer to the prompt.",
+    "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers by receiving a request that is a prompt or question in text form. With the Azure OpenAI embedding model, the workflow converts the prompt to a vector and uses the result to query an Azure SQL DB vector table. The workflow sends the result and system message to the Azure OpenAI Chat Completions API along with the chat model. Finally, the workflow returns the response from Azure OpenAI to the prompt.",
     "prerequisites": "Before you use this template, you need the following prerequisites: \n- Azure OpenAI instance with an [embedding model](https://learn.microsoft.com/azure/ai-services/openai/concepts/models?tabs=python-secure#embeddings-models) and a [chat model](https://learn.microsoft.com/azure/ai-services/openai/concepts/models?tabs=python-secure).  \n- Azure SQL DB table with Vector data type, [your documents, and the content](https://github.com/Azure-Samples/azure-sql-db-vector-search/tree/main/RAG-with-Documents) . The table must load with the documents by using the workflow named **index-ai-blob-sql-rag** for document indexing, provided in this accelerator.",
-    "tags": [
-        "RAG-Document-Ingestion"
-    ],
-    "skus": [
-        "standard"
-    ],
     "kinds": [
         "stateful",
         "stateless"
     ],
-    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers by receiving a request that is a prompt or question in text form. With the Azure OpenAI embedding model, the workflow converts the prompt to a vector and uses the result to query an Azure SQL DB vector table. The workflow sends the result and system message to the Azure OpenAI Chat Completions API along with the chat model. Finally, the workflow returns the response from Azure OpenAI to the prompt.",
-    "details": {
-        "By": "Microsoft",
-        "Type": "Workflow",
-        "Trigger": "Request",
-        "Category": "AI,RAG"
-    },
     "artifacts": [
         {
             "type": "workflow",

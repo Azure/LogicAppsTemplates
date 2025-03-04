@@ -1,0 +1,60 @@
+{
+    "id": "default",
+    "title": "Azure Service Bus: Get message from a topic subscription with token renewal - Peek lock renew pattern",
+    "summary": "This workflow template triggers when a message is available in a Service Bus topic subscription. The workflow gets the message from the topic subscription, locks the message for processing, and renews the lock token until processing completes. The message is deleted from the topic subscription after processing completes. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing.",
+    "prerequisites": "Before you can use this template, you need to configure a Service Bus namespace and create a topic and a subscription. Before you use this template, you need to create or set up an existing Service Bus namespace with a topic and a subscription. For more information, see [Create a Service Bus namespace, topic, and subscription](https://go.microsoft.com/fwlink/?linkid=2282342).",
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "snapshot-light",
+        "dark": "snapshot-dark"
+    },
+    "parameters": [
+        {
+            "name": "topicName_#workflowname#",
+            "displayName": "Topic name",
+            "type": "String",
+            "default": "Service Bus topic name",
+            "description": "The name for the Service Bus topic from where to get the message.",
+            "required": true
+        },
+        {
+            "name": "subscriptionName_#workflowname#",
+            "displayName": "Subscription name",
+            "type": "String",
+            "default": "Service Bus topic subscription name",
+            "description": "The name for the Service Bus topic subscription from where to get the message.",
+            "required": true
+        },
+        {
+            "name": "messageBatchSize_#workflowname#",
+            "displayName": "Message batch size",
+            "type": "Int",
+            "default": "50",
+            "description": "The number of messages to get as a single batch.",
+            "required": true
+        },
+        {
+            "name": "delayInMinutes_#workflowname#",
+            "displayName": "Delay before next token renewal",
+            "type": "Int",
+            "default": "3",
+            "description": "The number of minutes to delay processing before renewing the lock token. Make sure this value is smaller than the queue's lock token duration.",
+            "required": true
+        }
+    ],
+    "connections": {
+        "serviceBus_#workflowname#": {
+            "connectorId": "/serviceProviders/serviceBus",
+            "kind": "inapp"
+        }
+    }
+}
