@@ -1,40 +1,81 @@
 {
-    "id": "vectorize-onedrive-aisearch-schedule",
     "title": "Vectorize files on a schedule from OneDrive to AI Search",
     "description": "This workflow template runs using the schedule-based Recurrence trigger and vectorizes files from a  Microsoft OneDrive folder and writes them to the AI Search vector store.",
+    "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. The index schema is based on the [Azure AI Search indexer default schema](https://go.microsoft.com/fwlink/?linkid=2305401).",
+    "tags": [
+        "RAG-Document-Ingestion"
+    ],
     "skus": [
         "consumption"
     ],
-    "workflows": {
-        "default": {
-            "name": "Vectorize_Onedrive_Aisearch_Schedule"
-        }
-    },
-    "featuredConnectors": [
-        {
-            "id": "connectionProviders/dataOperationNew",
-            "kind": "builtin"
-        },
-        {
-            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureaisearch",
-            "kind": "shared"
-        },
-        {
-            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
-            "kind": "shared"
-        },
-        {
-            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedrive",
-            "kind": "shared"
-        }
+    "kinds": [
     ],
+    "detailsDescription": "This workflow template processes and indexes a document using Azure OpenAI and Azure AI Search. The workflow uses the scheduled-based Recurrence trigger, which you can set up to run using a specific interval and frequency. The workflow gets the document, parses the content, and chunks the text based on token size. The workflow then processes each chunk to generate embeddings through an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search. Finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis. This template is built on AI building blocks in Azure Logic Apps, and includes the Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built-in actions for document parsing and chunking. For more information, see [Connect to Azure AI services from workflows in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2304933).",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Recurrence",
         "Category": "AI,RAG"
     },
-    "tags": [
-        "RAG-Document-Ingestion"
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "FolderName_#workflowname#",
+            "displayName": "OneDrive folder name",
+            "type": "String",
+            "description": "Provide the name for the OneDrive folder with files to read.",
+            "required": true
+        },
+        {
+            "name": "AISearchIndexName_#workflowname#",
+            "displayName": "AI Search index name",
+            "type": "String",
+            "description": "Provide the name for the Azure AI Search index to use for mapping OpenAI embeddings.",
+            "required": true
+        },
+        {
+            "name": "OpenAIModel_#workflowname#",
+            "displayName": "Azure OpenAI deployment model name",
+            "type": "String",
+            "description": "Provide your Azure OpenAI deployment model name to generate embeddings.",
+            "required": true
+        },
+        {
+            "name": "StartTime_#workflowname#",
+            "displayName": "Trigger start time (Optional)",
+            "type": "String", 
+            "description": "Provide the trigger start time in UTC format YYYY-MM-DDThh:mm:ssZ. For example, 'September 18, 2024' at '2:00 PM' is '2024-09-18T14:00:00Z'. Without a start time, the workflow immediately starts.",
+            "required": false
+        }
+        
+    ],
+    "connections": {
+        "azureaisearch_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureaisearch",
+            "kind": "shared"
+        },
+        "azureopenai_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
+            "kind": "shared"
+        },
+        "onedrive_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/onedrive",
+            "kind": "shared"
+        }
+    },
+    "featuredOperations": [
+        {
+            "type": "ChunkText"
+        }
     ]
+
 }
