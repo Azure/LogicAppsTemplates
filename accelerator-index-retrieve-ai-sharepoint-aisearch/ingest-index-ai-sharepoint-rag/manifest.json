@@ -1,24 +1,13 @@
 {
+    "id": "ingest-index-ai-sharepoint-rag",
     "title": "Document Ingestion from Sharepoint to AI Search",
     "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when a file is added to SharePoint Online. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
+    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template processes and indexes a document using Azure OpenAI and Azure AI Search. The workflow triggers when a file is added to SharePoint, fetches the document from a specified endpoint, parses the content, and chunks the text based on token size. The workflow then processes each chunk to generate embeddings through an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search. Finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis. This template is built on AI building blocks in Azure Logic Apps, and includes the Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built-in actions for document parsing and chunking. [Learn more](https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
     "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo).",
-    "tags": [
-        "RAG-Document-Ingestion"
-    ],
-    "skus": [
-        "standard"
-    ],
     "kinds": [
         "stateful",
         "stateless"
     ],
-    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template processes and indexes a document using Azure OpenAI and Azure AI Search. The workflow triggers when a file is added to SharePoint, fetches the document from a specified endpoint, parses the content, and chunks the text based on token size. The workflow then processes each chunk to generate embeddings through an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search. Finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis. This template is built on AI building blocks in Azure Logic Apps, and includes the Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built-in actions for document parsing and chunking. [Learn more](https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
-    "details": {
-        "By": "Microsoft",
-        "Type": "Workflow",
-        "Trigger": "Request",
-        "Category": "AI,RAG"
-    },
     "artifacts": [
         {
             "type": "workflow",
@@ -72,10 +61,5 @@
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
             "kind": "shared"
         }
-    },
-    "featuredOperations": [
-        {
-            "type": "ChunkText"
-        }
-    ]
+    }
 }
