@@ -1,24 +1,74 @@
 {
-    "id": "get-message-ibm-mq-queue-browse-lock-abort",
     "title": "IBM MQ: Get message from a queue - Browse lock pattern",
-    "summary": "This workflow template triggers when a message arrives in the queue for an IBM MQ server. The workflow gets the message from the queue and locks the message for processing. After processing completes, the message is deleted from the queue. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing. For more information, see [Connect to an IBM MQ server from a workflow in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282332).",
+    "description": "This workflow template triggers when a message arrives in the queue for an IBM MQ server. The workflow gets the message from the queue and locks the message for processing. After processing completes, the message is deleted from the queue. This pattern helps you make sure that the workflow processes the message only once and that the message doesn't get lost if a failure happens during processing. For more information, see [Connect to an IBM MQ server from a workflow in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282332).",
+    "prerequisites": "Before you use this template, you need to enable state preservation on the IBM MQ built-in connector and virtual network integration. For more information, see [Enable stateful mode for stateless built-in connectors in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2282411).",
     "skus": [
         "standard"
     ],
-    "workflows": {
-        "default": {
-            "name": "Get_Message_Ibm_Mq_Queue_Browse_Lock_Abort"
-        }
-    },
-    "featuredConnectors": [
-        {
-            "id": "/serviceProviders/mq",
-            "kind": "inapp"
-        }
+    "kinds": [
+        "stateful",
+        "stateless"
     ],
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Event"
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "snapshot-light",
+        "dark": "snapshot-dark"
+    },
+    "parameters": [
+        {
+            "name": "queueName_#workflowname#",
+            "displayName": "Queue name",
+            "type": "String",
+            "description": "The name for the IBM MQ queue from where to read the message.",
+            "required": true
+        },
+        {
+            "name": "maxMessageCount_#workflowname#",
+            "displayName": "Max message count",
+            "type": "Int",
+            "default": "200",
+            "description": "The maximum number of messages per received batch. The recommendation is 200 messages.",
+            "required": false
+        },
+        {
+            "name": "waitInterval_#workflowname#",
+            "displayName": "Wait interval",
+            "type": "Int",
+            "default": "15",
+            "description": "The wait time in seconds before IBM MQ returns from a GET call without a message. The recommendation is 15-30 seconds.",
+            "required": false
+        },
+        {
+            "name": "timeoutInterval_#workflowname#",
+            "displayName": "Timeout interval",
+            "type": "Int",
+            "default": "5",
+            "description": "The timeout period in seconds before aborting browse-locked messages. The default is 1800 seconds.",
+            "required": false
+        },
+        {
+            "name": "pollingInterval_#workflowname#",
+            "displayName": "Polling interval",
+            "type": "Int",
+            "default": "1",
+            "description": "The trigger's polling interval in seconds. To optimize resources and response time, set the 'Wait interval' value to 15-30 seconds and the 'Polling interval' value to 1 second. This setup minimizes network exchanges during slow periods, but allows a quick response time during high load periods.​",
+            "required": false
+        }
+    ],
+    "connections": {
+        "mq_#workflowname#": {
+            "connectorId": "/serviceProviders/mq",
+            "kind": "inapp"
+        }
     }
 }
