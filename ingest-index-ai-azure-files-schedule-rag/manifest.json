@@ -1,7 +1,7 @@
 {
     "id": "ingest-index-ai-azure-files-schedule-rag",
     "title": "Document Ingestion at a schedule from Azure File shares to AI Search",
-    "description": "The workflow does an initial ingestion of all files in File Share and then subsequently reads new or updated files at the configured schedule from Azure File shares. The files are processed and indexed using Azure OpenAI and Azure AI Search.",
+    "summary": "The workflow does an initial ingestion of all files in File Share and then subsequently reads new or updated files at the configured schedule from Azure File shares. The files are processed and indexed using Azure OpenAI and Azure AI Search.",
     "skus": [
         "standard"
     ],

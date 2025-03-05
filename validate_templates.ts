@@ -9,8 +9,8 @@ const allowedCategories = ["Design Patterns", "AI", "B2B", "EDI", "Approval", "R
 const templateManifestSchema = z.object({
     id: z.string(),
     title: z.string(),
-    description: z.string(),
-    detailsDescription: z.string().optional(),
+    summary: z.string(),
+    description: z.string().optional(),
     artifacts: z.array(z.object({ 
         type: z.union([z.literal('map'), z.literal('schema'), z.literal('assembly')]),
         file: z.string().regex(/^\S+\.\S+$/, {
@@ -51,8 +51,8 @@ const templateManifestSchema = z.object({
 const workflowManifestSchema = z.object({
     id: z.string(),
     title: z.string(),
-    description: z.string(),
-    detailsDescription: z.string().optional(),
+    summary: z.string(),
+    description: z.string().optional(),
     prerequisites: z.string().optional(),
     kinds: z.array(z.union([z.literal('stateful'), z.literal('stateless')])).optional(),
     artifacts: z.array(z.object({ 
@@ -118,15 +118,15 @@ const checkFilesExistCaseSensitive = (fileNamesInFolder: string[], folderName: s
 const invalidLinkPatternMD = z.string().regex(/^.*\[\S+\]\s+\(\S+\).*$/);
 
 const validateTemplateManifest = (folderName: string, templateManifest) => {
-    const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(templateManifest?.description ?? "");
-    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(templateManifest?.detailsDescription ?? "");
+    const summaryInvalidPattern = invalidLinkPatternMD.safeParse(templateManifest?.summary ?? "");
+    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(templateManifest?.description ?? "");
     
-    if (descriptionInvalidPattern.success) {
-        console.error(`Template Manifest "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
+    if (summaryInvalidPattern.success) {
+        console.error(`Template Manifest "${folderName}" Failed Validation: summary link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
     }
     if (detailsDescriptionInvalidPattern.success) {
-        console.error(`Template Manifest "${folderName}" Failed Validation: detailsDescription link is invalid, ensure no space between the [text] and the (link)`);
+        console.error(`Template Manifest "${folderName}" Failed Validation: description link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
     }
 
@@ -178,19 +178,19 @@ const getUnusedConnectors = (workflowConnections, featuredConnectors) => {
 
 const validateWorkflowManifest = (folderName: string, isWorkflowTemplate: boolean, templateSkus: string[] | undefined, workflowManifest) => {
     const prerequisitesInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.prerequisites ?? "");
-    const descriptionInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.description ?? "");
-    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.detailsDescription ?? "");
+    const summaryInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.summary ?? "");
+    const detailsDescriptionInvalidPattern = invalidLinkPatternMD.safeParse(workflowManifest?.description ?? "");
     
     if (prerequisitesInvalidPattern.success) {
         console.error(`Workflow Manifest "${folderName}" Failed Validation: prerequisites link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
     }
-    if (descriptionInvalidPattern.success) {
-        console.error(`Workflow Manifest "${folderName}" Failed Validation: detail link is invalid, ensure no space between the [text] and the (link)`);
+    if (summaryInvalidPattern.success) {
+        console.error(`Workflow Manifest "${folderName}" Failed Validation: summary link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
     }
     if (detailsDescriptionInvalidPattern.success) {
-        console.error(`Workflow Manifest "${folderName}" Failed Validation: detailsDescription link is invalid, ensure no space between the [text] and the (link)`);
+        console.error(`Workflow Manifest "${folderName}" Failed Validation: description link is invalid, ensure no space between the [text] and the (link)`);
         throw '';
     }
 
@@ -264,8 +264,8 @@ const checkTitleDescriptionToBeEqual = (folderName, templateManifest, workflowMa
         throw '';
     }
 
-    if (templateManifest.description !== workflowManifest.description) {
-        console.error(`Template "${folderName}" Failed Validation: Template description and Workflow description must be identical`);
+    if (templateManifest.summary !== workflowManifest.summary) {
+        console.error(`Template "${folderName}" Failed Validation: Template summary and Workflow summary must be identical`);
         throw '';
     }
 }

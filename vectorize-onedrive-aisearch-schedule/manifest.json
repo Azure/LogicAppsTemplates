@@ -1,7 +1,7 @@
 {
     "id": "vectorize-onedrive-aisearch-schedule",
     "title": "Vectorize files on a schedule from OneDrive to AI Search",
-    "description": "This workflow template runs using the schedule-based Recurrence trigger and vectorizes files from a  Microsoft OneDrive folder and writes them to the AI Search vector store.",
+    "summary": "This workflow template runs using the schedule-based Recurrence trigger and vectorizes files from a  Microsoft OneDrive folder and writes them to the AI Search vector store.",
     "skus": [
         "consumption"
     ],

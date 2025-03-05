@@ -1,7 +1,7 @@
 {
     "id": "get-sales-order-status-sap-teams-bapi",
     "title": "SAP: Get sales order status by ID in bulk using BAPI",
-    "description": "This workflow template triggers when a new sales order status message is added to a Microsoft Teams channel. The workflow gets the SAP sales order status from Teams channels. The template uses SAP's standard BAPI 'BAPI_SALESORDER_GETSTATUS'. For more information, see [Connect to SAP from Standard logic apps using BAPI and RFC](https://go.microsoft.com/fwlink/?linkid=2282035).",
+    "summary": "This workflow template triggers when a new sales order status message is added to a Microsoft Teams channel. The workflow gets the SAP sales order status from Teams channels. The template uses SAP's standard BAPI 'BAPI_SALESORDER_GETSTATUS'. For more information, see [Connect to SAP from Standard logic apps using BAPI and RFC](https://go.microsoft.com/fwlink/?linkid=2282035).",
     "skus": [
         "standard"
     ],

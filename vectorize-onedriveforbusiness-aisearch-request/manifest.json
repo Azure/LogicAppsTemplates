@@ -1,7 +1,7 @@
 {
     "id": "vectorize-onedriveforbusiness-aisearch-request",
     "title": "Vectorize files on request from OneDrive for Business to AI Search",
-    "description": "This workflow template triggers when the Request trigger receives a request and vectorizes files from a Microsoft OneDrive for Business folder and writes them to the Azure AI Search vector store.",
+    "summary": "This workflow template triggers when the Request trigger receives a request and vectorizes files from a Microsoft OneDrive for Business folder and writes them to the Azure AI Search vector store.",
     "skus": [
         "consumption"
     ],

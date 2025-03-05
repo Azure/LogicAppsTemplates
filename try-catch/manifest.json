@@ -1,7 +1,7 @@
 {
     "id": "try-catch",
     "title": "Try-Catch: Handle exceptions with the Scope action",
-    "description": "This workflow template uses the 'Scope' action and Try-Catch pattern for exception handling.",
+    "summary": "This workflow template uses the 'Scope' action and Try-Catch pattern for exception handling.",
     "skus": [
         "consumption",
         "standard"

@@ -1,7 +1,7 @@
 {
     "id": "ingest-index-ai-one-drive-schedule-rag",
     "title": "Document Ingestion at a schedule from OneDrive to AI Search",
-    "description": "The workflow does an initial ingestion of all files in the folder and then subsequently reads new or updated files at the configured schedule. The files are processed and indexed using Azure OpenAI and Azure AI Search.",
+    "summary": "The workflow does an initial ingestion of all files in the folder and then subsequently reads new or updated files at the configured schedule. The files are processed and indexed using Azure OpenAI and Azure AI Search.",
     "skus": [
         "standard"
     ],

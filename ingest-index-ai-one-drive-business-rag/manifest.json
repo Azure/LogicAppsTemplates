@@ -1,7 +1,7 @@
 {
     "id": "ingest-index-ai-one-drive-business-rag",
     "title": "OneDrive for Business: Ingest and index files using Azure OpenAI and Azure AI Search - RAG pattern",
-    "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when a file is added OneDrive for Business. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
+    "summary": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when a file is added OneDrive for Business. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
     "skus": [
         "standard"
     ],

@@ -1,7 +1,7 @@
 {
     "id": "ingest-index-ai-azure-files-rag",
     "title": "Azure Files: Ingest and index documents using Azure OpenAI and Azure AI Search - RAG pattern",
-    "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template reads a file from Azure Files. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
+    "summary": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template reads a file from Azure Files. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
     "skus": [
         "standard"
     ],

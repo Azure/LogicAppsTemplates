@@ -1,7 +1,7 @@
 {
     "id": "send-alerts-business-process-tracking",
     "title": "Azure Business Process Tracking: Send alert",
-    "description": "This workflow template lets you detect failed stages in Azure Business Process Tracking so that you can notify key business stakeholders using Microsoft Teams. The workflow queries the specified database in an Azure Data Explorer instance and returns any records that contain a failed stage status. For more information, see [Create business process](https://go.microsoft.com/fwlink/?linkid=2282030).",
+    "summary": "This workflow template lets you detect failed stages in Azure Business Process Tracking so that you can notify key business stakeholders using Microsoft Teams. The workflow queries the specified database in an Azure Data Explorer instance and returns any records that contain a failed stage status. For more information, see [Create business process](https://go.microsoft.com/fwlink/?linkid=2282030).",
     "artifacts": [
         {
             "type": "map",

@@ -1,7 +1,7 @@
 {
     "id": "analyze-images-ai-rag",
     "title": "Images: Interact with Azure OpenAI GPT-4 vision model to analyze image content - RAG pattern",
-    "description": "This workflow uses Azure Open AI connector to analyze the image content, and provides response to specific questions, based on that image.",
+    "summary": "This workflow uses Azure Open AI connector to analyze the image content, and provides response to specific questions, based on that image.",
     "skus": [
         "standard"
     ],

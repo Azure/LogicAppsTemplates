@@ -1,7 +1,7 @@
 {
     "id": "chat-with-documents-ai",
     "title": "RAG - Chat with your documents",
-    "description": "This is a retrieval workflow (based on RAG) and takes in prompt and System Message and returns answer to the prompt.",
+    "summary": "This is a retrieval workflow (based on RAG) and takes in prompt and System Message and returns answer to the prompt.",
     "skus": [
         "standard"
     ],

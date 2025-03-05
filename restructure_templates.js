@@ -38,8 +38,7 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
     const updatedTemplateManifest = {
         id: folderName,
         title: manifestFile.title,
-        description: manifestFile.description,
-        // detailsDescription: manifestFile.detailsDescription, // will fall under workflow manifest
+        summary: manifestFile.description,
         artifacts: (nonWorkflowArtifacts?.length > 0) ? nonWorkflowArtifacts : undefined,
         skus: manifestFile.skus ?? ["standard"],
         workflows: {
@@ -67,8 +66,8 @@ const restructureSingleWorkflow = (folderName, manifestFile) => {
     const workflowManifest = {
         id: "default",
         title: manifestFile.title,
-        description: manifestFile.description,
-        detailsDescription: manifestFile.detailsDescription,
+        summary: manifestFile.description,
+        description: manifestFile.detailsDescription,
         prerequisites: manifestFile.prerequisites,
         kinds: (manifestFile.kinds?.length > 0) ? manifestFile.kinds : undefined,
         artifacts: [workflowArtifact],
@@ -108,8 +107,8 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
     const updatedTemplateManifest = {
         id: folderName,
         title: templateManifest.title,
-        description: templateManifest.description,
-        detailsDescription: templateManifest.detailsDescription,
+        summary: templateManifest.description,
+        description: templateManifest.detailsDescription,
         artifacts: (templateManifest.artifacts?.length > 0) ? templateManifest.artifacts : undefined,
         skus: ["standard"],
         workflows: templateManifest.workflows,
@@ -135,8 +134,8 @@ const restructureMultiWorkflow = (folderName, templateManifest) => {
         const updatedWorkflowManifest = {
             id: workflowFolder,
             title: workflowManifest.title,
-            description: workflowManifest.description,
-            detailsDescription: workflowManifest.detailsDescription,
+            summary: workflowManifest.description,
+            description: workflowManifest.detailsDescription,
             prerequisites: workflowManifest.prerequisites,
             kinds: (workflowManifest.kinds?.length > 0) ? workflowManifest.kinds : undefined,
             artifacts: workflowManifest.artifacts,

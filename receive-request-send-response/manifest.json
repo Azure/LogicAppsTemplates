@@ -1,7 +1,7 @@
 {
     "id": "receive-request-send-response",
     "title": "Request-Response: Receive and respond to messages over HTTP or HTTPS",
-    "description": "This workflow template triggers when a message or request arrives over HTTP or HTTPS and returns a response after any other actions that you might want to add for the workflow to run.",
+    "summary": "This workflow template triggers when a message or request arrives over HTTP or HTTPS and returns a response after any other actions that you might want to add for the workflow to run.",
     "skus": [
         "consumption",
         "standard"

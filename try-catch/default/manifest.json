@@ -1,8 +1,8 @@
 {
     "id": "default",
     "title": "Try-Catch: Handle exceptions with the Scope action",
-    "description": "This workflow template uses the 'Scope' action and Try-Catch pattern for exception handling.",
-    "detailsDescription": "This workflow runs the specified actions that you add to represent business logic. If any errors occur, the workflow uses the 'Scope' action to catch and process those errors, which then terminates the workflow with a detailed error message. Learn more about [exception handling in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2226310).",
+    "summary": "This workflow template uses the 'Scope' action and Try-Catch pattern for exception handling.",
+    "description": "This workflow runs the specified actions that you add to represent business logic. If any errors occur, the workflow uses the 'Scope' action to catch and process those errors, which then terminates the workflow with a detailed error message. Learn more about [exception handling in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2226310).",
     "kinds": [
         "stateful",
         "stateless"

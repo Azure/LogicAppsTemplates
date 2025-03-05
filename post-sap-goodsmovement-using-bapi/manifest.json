@@ -1,7 +1,7 @@
 {
     "id": "post-sap-goodsmovement-using-bapi",
     "title": "SAP BAPI: Create SAP GoodsMovement using BAPI_GOODSMVT_CREATE",
-    "description": "Create a goods movement in SAP using the BAPI_GOODSMVT_CREATE function module. The input is assumed to be a RFC XML document provided by a HTTP POST to the logic app. This template executes a RFC Call BAPI_GOODSMVT_CREATE on the SAP system. An example xml document can be found at [Sample XML](https://github.com/Azure/LogicAppTemplates/post-sap-goodsmovement-using-bapi/sampleXML.xml) together with a [http test file](https://github.com/Azure/LogicAppTemplates/post-sap-goodsmovement-using-bapi/httpTestFile.http)",
+    "summary": "Create a goods movement in SAP using the BAPI_GOODSMVT_CREATE function module. The input is assumed to be a RFC XML document provided by a HTTP POST to the logic app. This template executes a RFC Call BAPI_GOODSMVT_CREATE on the SAP system. An example xml document can be found at [Sample XML](https://github.com/Azure/LogicAppTemplates/post-sap-goodsmovement-using-bapi/sampleXML.xml) together with a [http test file](https://github.com/Azure/LogicAppTemplates/post-sap-goodsmovement-using-bapi/httpTestFile.http)",
     "skus": [
         "standard"
     ],

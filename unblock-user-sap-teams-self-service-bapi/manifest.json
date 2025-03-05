@@ -1,7 +1,7 @@
 {
     "id": "unblock-user-sap-teams-self-service-bapi",
     "title": "SAP: Enable self-service user unblock from Microsoft Teams using BAPI",
-    "description": "This workflow template triggers on a recurring schedule, enables SAP self-service user unblock from Teams channels, and uses SAP's standard BAPI 'BAPI_USER_UNLOCK'. For more information, see [Connect to SAP from Standard logic apps using BAPI and RFC](https://go.microsoft.com/fwlink/?linkid=2282035).",
+    "summary": "This workflow template triggers on a recurring schedule, enables SAP self-service user unblock from Teams channels, and uses SAP's standard BAPI 'BAPI_USER_UNLOCK'. For more information, see [Connect to SAP from Standard logic apps using BAPI and RFC](https://go.microsoft.com/fwlink/?linkid=2282035).",
     "skus": [
         "standard"
     ],

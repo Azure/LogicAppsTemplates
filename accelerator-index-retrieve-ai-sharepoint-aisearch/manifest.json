@@ -1,8 +1,8 @@
 {
     "id": "accelerator-index-retrieve-ai-sharepoint-aisearch",
     "title": "RAG - Index documents from SharePoint to AI Search, retrieve and reason with Azure OpenAI LLMs",
-    "description": "This workflow is for Retrieval Augmented Generation (RAG) pattern for data indexing and retrieval. The source of documents is SharePoint and the vector store is AI Search",
-    "detailsDescription": "This workflow is for Retrieval Augmented Generation (RAG) pattern for data indexing and retrieval. This has two workflows - \n- The indexing workflow reads documents from SharePoint whenever a new file is added or updated. The workflow then parses, chunks, generates embeddings, and loads those embeddings into AI Search vector store. \n- The retrieval workflow uses the AI Search connector to retrieve vectors and then uses Azure OpenAI LLMs to reason on the data.",
+    "summary": "This workflow is for Retrieval Augmented Generation (RAG) pattern for data indexing and retrieval. The source of documents is SharePoint and the vector store is AI Search",
+    "description": "This workflow is for Retrieval Augmented Generation (RAG) pattern for data indexing and retrieval. This has two workflows - \n- The indexing workflow reads documents from SharePoint whenever a new file is added or updated. The workflow then parses, chunks, generates embeddings, and loads those embeddings into AI Search vector store. \n- The retrieval workflow uses the AI Search connector to retrieve vectors and then uses Azure OpenAI LLMs to reason on the data.",
     "skus": [
         "standard"
     ],

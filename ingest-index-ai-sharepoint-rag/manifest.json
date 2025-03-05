@@ -1,7 +1,7 @@
 {
     "id": "ingest-index-ai-sharepoint-rag",
     "title": "SharePoint Online: Ingest and index files using Azure OpenAI and Azure AI Search - RAG pattern",
-    "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when a file is added to SharePoint Online. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
+    "summary": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when a file is added to SharePoint Online. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
     "skus": [
         "standard"
     ],

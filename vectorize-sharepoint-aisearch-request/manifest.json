@@ -1,7 +1,7 @@
 {
     "id": "vectorize-sharepoint-aisearch-request",
     "title": "Vectorize files on request from SharePoint Online to AI Search",
-    "description": "This workflow template triggers when the Request trigger receives a request, vectorizes files from a Microsoft SharePoint Online library, and writes the files to the Azure AI Search vector store.",
+    "summary": "This workflow template triggers when the Request trigger receives a request, vectorizes files from a Microsoft SharePoint Online library, and writes the files to the Azure AI Search vector store.",
     "skus": [
         "consumption"
     ],

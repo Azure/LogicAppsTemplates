@@ -1,7 +1,7 @@
 {
     "id": "ingest-index-ai-azure-files-recurrence-rag",
     "title": "Azure File: Ingest and index documents at a schedule using Azure OpenAI and Azure AI Search - RAG pattern",
-    "description": "This workflow runs at configured schedule, reads new or updated files from Azure File storage. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
+    "summary": "This workflow runs at configured schedule, reads new or updated files from Azure File storage. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
     "skus": [
         "standard"
     ],

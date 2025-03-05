@@ -1,7 +1,7 @@
 {
     "id": "analyze-documents-ai-docintelligence",
     "title": "Document Intelligence: Analyze complex documents using Document Intelligence and Azure OpenAI",
-    "description": "This workflow uses Forms Recognizer connector to covert complex documents into markdown and Azure Open AI connector to analyze the image content, and provides response to specific questions, based on that image.",
+    "summary": "This workflow uses Forms Recognizer connector to covert complex documents into markdown and Azure Open AI connector to analyze the image content, and provides response to specific questions, based on that image.",
     "skus": [
         "standard"
     ],

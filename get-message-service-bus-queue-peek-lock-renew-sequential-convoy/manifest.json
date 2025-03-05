@@ -1,7 +1,7 @@
 {
     "id": "get-message-service-bus-queue-peek-lock-renew-sequential-convoy",
     "title": "Azure Service Bus: Process related messages from a session-enabled queue for the same workflow instance - Sequential convoy pattern",
-    "description": "This workflow template triggers when a message is available in a Service Bus session-enabled queue. The execution engine creates a workflow instance for each session in the queue. Each workflow instance then sequentially processes related messages from each session.",
+    "summary": "This workflow template triggers when a message is available in a Service Bus session-enabled queue. The execution engine creates a workflow instance for each session in the queue. Each workflow instance then sequentially processes related messages from each session.",
     "skus": [
         "standard"
     ],
