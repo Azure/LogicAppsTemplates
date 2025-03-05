@@ -31,9 +31,9 @@ const templateManifestSchema = z.object({
     ),
     featuredConnectors: z.array(
         z.object({
-            id: z.string().regex(/^(\/.*|connectionProviders.*)$/, {
-                message: 'Connections "id" field must start with a forward slash or with "connectionProviders" (builtin connectors)'
-            }),
+            id: z.string().regex(/^(\/.*|[^/]+)$/, {
+                message: 'Connections "id" field must start with a forward slash or not contain any slashes at all (builtin operationId)'
+            }),            
             kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom'), z.literal('builtin')])
         })
     ),
