@@ -1,0 +1,72 @@
+{
+    "id": "default",
+    "title": "SAP: Synch sales orders to Azure Blob Storage using OData",
+    "summary": "This workflow template triggers on a recurring schedule and supports processing downstream SAP transactional data in Azure. The workflow uses the publicly available SAP [S/4HANA public cloud sandbox](https://go.microsoft.com/fwlink/?linkid=2282241), and produces CSV. When you use this template, use the URL and authentication scheme for your own SAP system. For more information, see [Get started with SAP and Microsoft integration scenarios](https://go.microsoft.com/fwlink/?linkid=2282033).",
+    "prerequisites": "To access a private SAP system on Azure, use [virtual network integration](https://go.microsoft.com/fwlink/?linkid=2282334). For an on-premises SAP system, change the SAP connector's OData setup to use the [on-premises data gateway](https://go.microsoft.com/fwlink/?linkid=2282414).",
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "snapshot-light",
+        "dark": "snapshot-dark"
+    },
+    "parameters": [
+        {
+            "name": "odataTopDefault_#workflowname#",
+            "displayName": "OData top default",
+            "type": "Int",
+            "default": "50",
+            "description": "The OData $top batch size.",
+            "required": true
+        },
+        {
+            "name": "loopLimit_#workflowname#",
+            "displayName": "Loop limit",
+            "type": "Int",
+            "default": "71",
+            "description": "The maximum number of loops to use when requesting data from SAP through OData.",
+            "required": true
+        },
+        {
+            "name": "odata-api-key_#workflowname#",
+            "displayName": "OData API key",
+            "type": "String",
+            "default": "The SAP API Business Hub key for the OData API.",
+            "description": "Get your API key from the [SAP API Business Hub](https://go.microsoft.com/fwlink/?linkid=2282241).",
+            "required": true
+        },
+        {
+            "name": "azure-container-name_#workflowname#",
+            "displayName": "Azure Storage container name",
+            "type": "String",
+            "default": "sap-sales-orders",
+            "description": "The name of the Azure Storage account container to store the data extracted from SAP.",
+            "required": true
+        },
+        {
+            "name": "azure-blob-name_#workflowname#",
+            "displayName": "Azure Storage blob name",
+            "type": "String",
+            "default": "sales-orders.csv",
+            "description": "The name of the blob in an Azure storage account container to store the data extracted from SAP in CSV format.",
+            "required": true
+        }
+    ],
+    "connections": {
+        "AzureBlob_#workflowname#": {
+            "connectorId": "/serviceProviders/AzureBlob",
+            "kind": "inapp"
+        },
+        "sapodata_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sapodata",
+            "kind": "shared"
+        }
+    }
+}
