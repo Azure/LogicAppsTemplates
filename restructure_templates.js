@@ -11,11 +11,23 @@ const getNormWorkflowName = (workflowName) => {
         .replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
 };
 
+const connectorIdForBuiltInOperations = {
+    chunktext: "connectionProviders/dataOperationNew",
+    scope: "connectionProviders/control",
+    xslt: "connectionProviders/xmlOperations",
+    recurrence: "connectionProviders/schedule",
+    request: "connectionProviders/request",
+}
+
 const featuredOperationsToConnectors = (featuredOperations) => {
     return featuredOperations?.map((featuredOperation) => {
-        const operationId = featuredOperation.type.toLowerCase();
+        const connectorIdForOperation = connectorIdForBuiltInOperations[featuredOperation.type.toLowerCase()];
+        if (!connectorIdForOperation) {
+            console.error('Connector Id is unknown for this operation :', featuredOperation.type);
+            return;
+        }
         return {
-            id: operationId,
+            id: connectorIdForOperation,
             kind: "builtin",
         };
     }) ?? [];
