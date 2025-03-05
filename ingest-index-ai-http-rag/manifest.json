@@ -1,86 +1,36 @@
 {
+    "id": "ingest-index-ai-http-rag",
     "title": "HTTP: Ingest and index documents using Azure OpenAI and Azure AI Search - RAG pattern",
-    "description": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when an HTTP request is received. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
-    "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo).",
-    "tags": [
-        "RAG-Document-Ingestion"
-    ],
+    "summary": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template triggers when an HTTP request is received. The workflow processes and indexes the document using Azure OpenAI and Azure AI Search.",
     "skus": [
         "standard"
     ],
-    "kinds": [
-        "stateful",
-        "stateless"
+    "workflows": {
+        "default": {
+            "name": "Ingest_Index_Ai_Http_Rag"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "connectionProviders/dataOperationNew",
+            "kind": "builtin"
+        },
+        {
+            "id": "/serviceProviders/azureaisearch",
+            "kind": "inapp"
+        },
+        {
+            "id": "/serviceProviders/openai",
+            "kind": "inapp"
+        }
     ],
-    "detailsDescription": "Based on the retrieval-augmented generation (RAG) pattern, this workflow template processes and indexes a document using Azure OpenAI and Azure AI Search. The workflow triggers when an HTTP request is received. The workflow gets the document, parses the content, and chunks the text based on token size. The workflow then processes each chunk to generate embeddings through an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search. Finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis. This template is built on AI building blocks in Azure Logic Apps, and includes the Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built-in actions for document parsing and chunking. [Learn more](https://learn.microsoft.com/azure/logic-apps/connectors/azure-ai)",
     "details": {
         "By": "Microsoft",
         "Type": "Workflow",
         "Trigger": "Request",
         "Category": "AI,RAG"
     },
-    "artifacts": [
-        {
-            "type": "workflow",
-            "file": "workflow.json"
-        }
-    ],
-    "images": {
-        "light": "workflow-light",
-        "dark": "workflow-dark"
-    },
-    "parameters": [
-        {
-            "name": "AISearch_Index_Name_#workflowname#",
-            "displayName": "AI Search index name",
-            "type": "String",
-            "description": "Provide the index name to use for mapping OpenAI embeddings.",
-            "required": true
-        },
-        {
-            "name": "AISearch_Schema_DocumentName_#workflowname#",
-            "displayName": "AI Search schema document name",
-            "type": "String",
-            "description": "Provide the document name for the content to vectorize and store in the Azure AI Search vector store.",
-            "required": true
-        },
-        {
-            "name": "AISearch_Schema_ID_#workflowname#",
-            "displayName": "AI Search schema ID",
-            "type": "String",
-            "description": "Provide the string to use as a prefix for the vector embeddings.",
-            "required": true
-        },
-        {
-            "name": "HTTP_Endpoint_For_Document_#workflowname#",
-            "displayName": "HTTP endpoint URL for document",
-            "type": "String",
-            "description": "Provide the URL for the HTTP endpoint from where to get your document.",
-            "required": true
-        },
-        {
-            "name": "OpenAI_TextEmbedding_Deployment_Identifier_#workflowname#",
-            "displayName": "OpenAI text embedding deployment identifier",
-            "type": "String",
-            "description": "Provide the Azure OpenAI deployment model to generate embeddings.",
-            "required": true
-        }
-        
-    ],
-    "connections": {
-        "AISearch_#workflowname#": {
-            "connectorId": "/serviceProviders/azureaisearch",
-            "kind": "inapp"
-        },
-        "OpenAI_#workflowname#": {
-            "connectorId": "/serviceProviders/openai",
-            "kind": "inapp"
-        }
-    },
-    "featuredOperations": [
-        {
-            "type": "ChunkText"
-        }
+    "tags": [
+        "RAG-Document-Ingestion"
     ]
-
 }
