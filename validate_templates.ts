@@ -34,7 +34,7 @@ const templateManifestSchema = z.object({
             id: z.string().regex(/^(\/.*|connectionProviders.*)$/, {
                 message: 'Connections "id" field must start with a forward slash or with "connectionProviders" (builtin connectors)'
             }),
-            kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom'), z.literal('builtin')])
+            kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('builtin')])
         })
     ),
     details: z.object({
@@ -93,7 +93,7 @@ const workflowManifestSchema = z.object({
             connectorId: z.string().regex(/^\/.*/, {
                 message: 'Connections "connectorId" field must start with a forward slash'
             }),
-            kind: z.union([z.literal('inapp'), z.literal('shared'), z.literal('custom')]),
+            kind: z.union([z.literal('inapp'), z.literal('shared')]),
         })),    
 });
 
