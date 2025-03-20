@@ -1,7 +1,7 @@
 {
     "id": "default",
-    "title": "Vectorize files on a schedule from Sharepoint Online to AI Search",
-    "summary": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from a Microsoft SharePoint Online library, and writes the files to the AI Search vector store.",
+    "title": "Vectorize files on a schedule from OneDrive for Business to AI Search",
+    "summary": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from OneDrive for Business, and writes the files to the AI Search vector store.",
     "description": "This workflow template processes and indexes a document using Azure OpenAI and Azure AI Search. The workflow uses the scheduled-based Recurrence trigger, which you can set up to run using a specific interval and frequency. The workflow gets the document, parses the content, and chunks the text based on token size. The workflow then processes each chunk to generate embeddings through an OpenAI deployment. The text chunks and their embeddings are mapped to a schema suitable for Azure AI Search. Finally, the documents are indexed in Azure AI Search for efficient retrieval and analysis. This template is built on AI building blocks in Azure Logic Apps, and includes the Azure OpenAI connector, Azure AI Search connector, and more. The template also uses built-in actions for document parsing and chunking. For more information, see [Connect to Azure AI services from workflows in Azure Logic Apps](https://go.microsoft.com/fwlink/?linkid=2304933).",
     "prerequisites": "Before you use this template, you need to configure an Azure OpenAI instance with an embedding model. You also need to configure an AI Search instance as your vector store along with an index and the appropriate schema. The index schema is based on the [Azure AI Search indexer default schema](https://go.microsoft.com/fwlink/?linkid=2305401).",
     "artifacts": [
