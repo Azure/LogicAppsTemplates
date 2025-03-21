@@ -5,11 +5,14 @@
         "Sliding_Window": {
             "recurrence": {
                 "interval": 20,
-                "frequency": "Minute"
+                "frequency": "Minute",
+                 "startTime": "@parameters('StartTime_#workflowname#')"
             },
             "evaluatedRecurrence": {
                 "interval": 20,
-                "frequency": "Minute"
+                "frequency": "Minute",
+                 "startTime": "@parameters('StartTime_#workflowname#')"
+                
             },
             "type": "SlidingWindow"
         }
@@ -235,20 +238,24 @@
     "outputs": {},
     "parameters": {
         "AISearchIndexName_#workflowname#": {
-            "defaultValue": "indexer1-divya",
+            "defaultValue": "",
             "type": "String"
         },
         "SharepointSiteAddress_#workflowname#": {
-            "defaultValue": "https://microsoft.sharepoint.com/teams/LogicApps",
+            "defaultValue": "",
             "type": "String"
         },
         "SharepointLibraryName_#workflowname#": {
-            "defaultValue": "Divya-Test",
+            "defaultValue": "",
             "type": "String"
         },
         "OpenAIModel_#workflowname#": {
-            "defaultValue": "text-embedding",
+            "defaultValue": "",
             "type": "String"
+        },
+        "StartTime_#workflowname#": {
+                "defaultValue": "",
+                "type": "String"
         },
         "$connections": {
             "type": "Object",

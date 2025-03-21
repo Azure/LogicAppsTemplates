@@ -1,7 +1,7 @@
 {
     "id": "vectorize-onedriveforbusiness-aisearch-schedule",
-    "title": "Vectorize files on a schedule from Sharepoint Online to AI Search",
-    "summary": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from a Microsoft SharePoint Online library, and writes the files to the AI Search vector store.",
+    "title": "Vectorize files on a schedule from OneDrive for Business to AI Search",
+    "summary": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from OneDrive for Business, and writes the files to the AI Search vector store.",
     "skus": [
         "consumption"
     ],
