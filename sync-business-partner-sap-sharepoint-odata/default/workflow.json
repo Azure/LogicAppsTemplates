@@ -34,7 +34,7 @@
                                 }
                             },
                             "method": "post",
-                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://microsofteur.sharepoint.com/teams/',parameters('sharepoint-site-name_#workflowname#')))}/files",
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('sharepoint-site-url_#workflowname#')))}/files",
                             "queries": {
                                 "folderPath": "@parameters('sharepoint-folder-path_#workflowname#')",
                                 "name": "@parameters('sharepoint-file-name_#workflowname#')",

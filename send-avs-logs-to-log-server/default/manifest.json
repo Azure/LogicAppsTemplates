@@ -37,7 +37,7 @@
     ],
     "connections": {
         "eventhubs_#workflowname#": {
-            "connectorId": "/subscriptions/#subscription#/resourceGroups/#resourceGroup#/providers/Microsoft.Web/connections/eventhubs",
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/eventhubs",
             "kind": "shared"
         }
     }

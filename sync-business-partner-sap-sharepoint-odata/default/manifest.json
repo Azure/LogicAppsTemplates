@@ -43,12 +43,18 @@
             "required": true
         },
         {
-            "name": "sharepoint-site-name_#workflowname#",
-            "displayName": "SharePoint site name",
+            "name": "sharepoint-site-url_#workflowname#",
+            "displayName": "SharePoint site url",
             "type": "String",
             "default": "",
             "description": "The name for the SharePoint Online site, which appears in the URL after the following path: 'https://microsoft.sharepoint.com/teams/'.",
-            "required": true
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Create_or_Replace_file",
+                "connection": "sharepointonline_#workflowname#"
+            }
         },
         {
             "name": "sharepoint-folder-path_#workflowname#",
@@ -56,7 +62,13 @@
             "type": "String",
             "default": "/sap/extracts",
             "description": "The name for the SharePoint Online folder that stores SAP business partners.",
-            "required": true
+            "required": true,
+            "dynamicData": {
+                "type": "picker",
+                "workflow": "default",
+                "operation": "Create_or_Replace_file",
+                "connection": "sharepointonline_#workflowname#"
+            }
         },
         {
             "name": "sharepoint-file-name_#workflowname#",
