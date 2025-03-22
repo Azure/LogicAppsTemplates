@@ -13,7 +13,7 @@
     },
     "featuredConnectors": [
         {
-            "id": "/subscriptions/#subscription#/resourceGroups/#resourceGroup#/providers/Microsoft.Web/connections/eventhubs",
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/eventhubs",
             "kind": "shared"
         }
     ],
