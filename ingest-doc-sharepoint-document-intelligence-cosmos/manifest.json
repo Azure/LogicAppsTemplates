@@ -1,0 +1,46 @@
+{
+    "id": "ingest-doc-sharepoint-document-intelligence-cosmos",
+    "title": "Ingest and vectorize documents from Microsoft SharePoint into Azure Cosmos DB for NoSQL - RAG pattern",
+    "summary": "To support search and retrieval purposes for the retrieval-augmented generation (RAG) pattern, this workflow reads documents and images, using OCR powered by Azure Document Intelligence, from Microsoft SharePoint, chunks the text, creates vector embeddings, formats the resulting data into a JSON document, and inserts that content into Azure Cosmos DB for NoSQL.",
+    "skus": [
+        "standard"
+    ],
+    "workflows": {
+        "default": {
+            "name": "ingest-doc-sharepoint-document-intelligence-cosmos"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
+            "kind": "shared"
+        },
+        {
+            "id": "/serviceProviders/AzureCosmosDB",
+            "kind": "inapp"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/formrecognizer",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI,RAG"
+    },
+    "tags": [
+        "RAG-Document-Ingestion",
+        "vector-search",
+        "Azure-Cosmos-DB",
+        "Microsoft-SharePoint",
+        "Azure-OpenAI",
+        "Azure-Document-Intelligence",
+        "Azure-Form-Recognizer"
+    ]
+}
