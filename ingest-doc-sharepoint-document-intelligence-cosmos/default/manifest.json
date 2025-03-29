@@ -77,19 +77,19 @@
         }
     ],
     "connections": {
-        "aoai-connection": {
+        "aoai-connection_#workflowname#": {
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"
         },
-        "sharepointonline": {
+        "sharepointonline_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
             "kind": "shared"
         },
-        "cosmosdb-connection": {
+        "cosmosdb-connection_#workflowname#": {
             "connectorId": "/serviceProviders/AzureCosmosDB",
             "kind": "inapp"
         },
-        "formrecognizer": {
+        "formrecognizer_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/formrecognizer",
             "kind": "shared"
         }

@@ -77,11 +77,11 @@
         }
     ],
     "connections": {
-        "aoai-connection": {
+        "aoai-connection_#workflowname#": {
             "connectorId": "/serviceProviders/openai",
             "kind": "inapp"
         },
-        "sharepointonline": {
+        "sharepointonline_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
             "kind": "shared"
         },
