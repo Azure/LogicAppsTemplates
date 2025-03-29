@@ -4,6 +4,11 @@
     "summary": "To support search and retrieval purposes for the retrieval-augmented generation (RAG) pattern, this workflow reads documents, such as PDFs, text files, Markdown, etc. from Microsoft SharePoint, chunks the text, creates vector embeddings, formats the resulting data into a JSON document, and inserts that content into Azure Cosmos DB for NoSQL.",
     "description": "",
     "prerequisites": "Before you use this template, you need to configure an Azure Open AI instance with an embedding model. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo). You also need to [create an Azure Cosmos DB database](https://learn.microsoft.com/azure/cosmos-db/nosql/quickstart-dotnet), and create a connection by using the keys and endpoint. Also, get more familiar with [Vector Search in Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/nosql/vector-search).",
+    "workflows": {
+        "default": {
+            "name": "ingest-document-sharepoint-openai-cosmos"
+        }
+    },
     "kinds": [
         "stateful",
         "stateless"

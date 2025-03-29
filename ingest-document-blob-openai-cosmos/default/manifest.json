@@ -8,6 +8,11 @@
         "stateful",
         "stateless"
     ],
+    "workflows": {
+        "default": {
+            "name": "ingest-document-blob-openai-cosmos"
+        }
+    },
     "artifacts": [
         {
             "type": "workflow",

@@ -8,6 +8,11 @@
         "stateful",
         "stateless"
     ],
+    "workflows": {
+        "default": {
+            "name": "ingest-doc-blob-document-intelligence-cosmos"
+        }
+    },
     "artifacts": [
         {
             "type": "workflow",

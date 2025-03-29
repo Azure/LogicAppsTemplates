@@ -8,6 +8,11 @@
         "stateful",
         "stateless"
     ],
+    "workflows": {
+        "default": {
+            "name": "ingest-doc-sharepoint-document-intelligence-cosmos"
+        }
+    },
     "artifacts": [
         {
             "type": "workflow",
