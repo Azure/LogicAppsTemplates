@@ -39,6 +39,13 @@
             "required": true
         },
         {
+            "name": "CosmosDB_Account_#workflowname#",
+            "displayName": "Cosmos DB Account",
+            "type": "String",
+            "description": "Provide the name for the Azure Cosmos DB Account.",
+            "required": true
+        },
+        {
             "name": "CosmosDB_Database_#workflowname#",
             "displayName": "Cosmos DB name",
             "type": "String",

@@ -112,7 +112,7 @@
                             },
                             "method": "post",
                             "body": "@items('For_each')",
-                            "path": "/v2/cosmosdb/@{encodeURIComponent('vector-search-prod')}/dbs/@{encodeURIComponent(parameters('CosmosDB_Database_#workflowname#'))}/colls/@{encodeURIComponent(parameters('CosmosDB_Collection_#workflowname#'))}/docs"
+                            "path": "/v2/cosmosdb/@{encodeURIComponent(parameters('CosmosDB_Account_#workflowname#'))}/dbs/@{encodeURIComponent(parameters('CosmosDB_Database_#workflowname#'))}/colls/@{encodeURIComponent(parameters('CosmosDB_Collection_#workflowname#'))}/docs"
                         }
                     }
                 },
