@@ -69,7 +69,7 @@
                         "blobName": "@triggerBody()?['name']"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
+                        "connectionName": "blob-connection_#workflowname#",
                         "operationId": "readBlob",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
