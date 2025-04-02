@@ -32,7 +32,7 @@
             "required": true
         },
         {
-            "name": "Blob_Path",
+            "name": "Blob_Path_#workflowname#",
             "displayName": "Blob Storage documents path_#workflowname#",
             "type": "String",
             "description": "Provide the path to the documents in Blob Storage.",
