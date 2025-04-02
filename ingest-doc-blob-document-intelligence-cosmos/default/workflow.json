@@ -133,7 +133,7 @@
                         "path": "@parameters('Blob_Path_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "AzureBlob",
+                        "connectionName": "blob-connection_#workflowname#",
                         "operationId": "whenABlobIsAddedOrModified",
                         "serviceProviderId": "/serviceProviders/AzureBlob"
                     }
