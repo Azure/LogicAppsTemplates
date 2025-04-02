@@ -25,7 +25,7 @@
     },
     "parameters": [
         {
-            "name": "OpenAI_TextEmbedding_Deployment",
+            "name": "OpenAI_TextEmbedding_Deployment_#workflowname#",
             "displayName": "OpenAI text embedding deployment identifier",
             "type": "String",
             "description": "Provide the deployment model for Azure OpenAI.",
@@ -33,34 +33,34 @@
         },
         {
             "name": "Blob_Path",
-            "displayName": "Blob Storage documents path",
+            "displayName": "Blob Storage documents path_#workflowname#",
             "type": "String",
             "description": "Provide the path to the documents in Blob Storage.",
             "required": true
         },
         {
-            "name": "CosmosDB_Database",
+            "name": "CosmosDB_Database_#workflowname#",
             "displayName": "Cosmos DB name",
             "type": "String",
             "description": "Provide the name for the Azure Cosmos DB database.",
             "required": true
         },
         {
-            "name": "CosmosDB_Collection",
+            "name": "CosmosDB_Collection_#workflowname#",
             "displayName": "Cosmos DB collection name",
             "type": "String",
             "description": "Provide the name for the Azure Cosmos DB collection.",
             "required": true
         },
         {
-            "name": "CosmosDB_Vector_Path",
+            "name": "CosmosDB_Vector_Path_#workflowname#",
             "displayName": "Vector embeddings path or property",
             "type": "String",
             "description": "Provide the path or property for the vector embeddings in the Cosmos DB data items.",
             "required": true
         },
         {
-            "name": "CosmosDB_Text_Path",
+            "name": "CosmosDB_Text_Path_#workflowname#",
             "displayName": "Property with the document text in data items",
             "type": "String",
             "description": "Provide the property that contains the document text in the Cosmos DB data items.",

@@ -25,56 +25,56 @@
     },
     "parameters": [
         {
-            "name": "OpenAI_TextEmbedding_Deployment",
+            "name": "OpenAI_TextEmbedding_Deployment_#workflowname#",
             "displayName": "OpenAI text embedding deployment identifier",
             "type": "String",
             "description": "Provide the deployment model for Azure OpenAI.",
             "required": true
         },
         {
-            "name": "Sharepoint_Library_Name",
+            "name": "Sharepoint_Library_Name_#workflowname#",
             "displayName": "SharePoint Library Name",
             "type": "String",
             "description": "Provide the name of the SharePoint Library.",
             "required": true
         },
         {
-            "name": "Sharepoint_Site_Address",
+            "name": "Sharepoint_Site_Address_#workflowname#",
             "displayName": "SharePoint Site address",
             "type": "String",
             "description": "Provide the address of the SharePoint Site.",
             "required": true
         },
         {
-            "name": "SharePoint_Folder_Path",
+            "name": "SharePoint_Folder_Path_#workflowname#",
             "displayName": "SharePoint folder path",
             "type": "String",
             "description": "Provide the name of the SharePoint Library.",
             "required": true
         },
         {
-            "name": "CosmosDB_Database",
+            "name": "CosmosDB_Database_#workflowname#",
             "displayName": "Azure Cosmos DB name",
             "type": "String",
             "description": "Provide the name for the Azure Cosmos DB database.",
             "required": true
         },
         {
-            "name": "CosmosDB_Collection",
+            "name": "CosmosDB_Collection_#workflowname#",
             "displayName": "Cosmos DB collection name",
             "type": "String",
             "description": "Provide the name for the Azure Cosmos DB collection.",
             "required": true
         },
         {
-            "name": "CosmosDB_Vector_Path",
+            "name": "CosmosDB_Vector_Path_#workflowname#",
             "displayName": "Vector embeddings path or property",
             "type": "String",
             "description": "Provide the path or property for the vector embeddings in the Cosmos DB data items.",
             "required": true
         },
         {
-            "name": "CosmosDB_Text_Path",
+            "name": "CosmosDB_Text_Path_#workflowname#",
             "displayName": "Property with the document text in data items",
             "type": "String",
             "description": "Provide the property that contains the document text in the Cosmos DB data items.",
