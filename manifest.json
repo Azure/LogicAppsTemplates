@@ -34,6 +34,7 @@
     "vectorize-onedriveforbusiness-aisearch-schedule",
     "vectorize-onedrive-aisearch-schedule",
     "vectorize-sharepoint-aisearch-request",
-    "vectorize-sharepoint-aisearch-schedule"
+    "vectorize-sharepoint-aisearch-schedule",
+    "vectorize-azurefile-aisearch-request"
 
 ]
