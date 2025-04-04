@@ -1,0 +1,108 @@
+{
+    "id": "default",
+    "title": "Document ingestion from SharePoint using Azure Document Intelligence OCR into Azure Cosmos DB for RAG",
+    "summary": "To support search and retrieval purposes for the retrieval-augmented generation (RAG) pattern, this workflow reads documents and images, using OCR powered by Azure Document Intelligence, from Microsoft SharePoint, chunks the text, creates vector embeddings, formats the resulting data into a JSON document, and inserts that content into Azure Cosmos DB for NoSQL.",
+    "description": "",
+    "prerequisites": "Before you use this template, you need to configure an Azure Open AI instance with an embedding model. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo). You need to [create an Azure Document Intelligence resource](https://learn.microsoft.com/azure/ai-services/document-intelligence/overview). You also need to [create an Azure Cosmos DB database](https://learn.microsoft.com/azure/cosmos-db/nosql/quickstart-dotnet), and create a connection by using the keys and endpoint. Also, get more familiar with [Vector Search in Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/nosql/vector-search).",
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "workflows": {
+        "default": {
+            "name": "ingest-doc-sharepoint-document-intelligence-cosmos"
+        }
+    },
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "OpenAI_TextEmbedding_Deployment_#workflowname#",
+            "displayName": "OpenAI text embedding deployment identifier",
+            "type": "String",
+            "description": "Provide the deployment model for Azure OpenAI.",
+            "required": true
+        },
+        {
+            "name": "Sharepoint_Library_Name_#workflowname#",
+            "displayName": "SharePoint Library Name",
+            "type": "String",
+            "description": "Provide the name of the SharePoint Library.",
+            "required": true
+        },
+        {
+            "name": "Sharepoint_Site_Address_#workflowname#",
+            "displayName": "SharePoint Site address",
+            "type": "String",
+            "description": "Provide the address of the SharePoint Site.",
+            "required": true
+        },
+        {
+            "name": "SharePoint_Folder_Path_#workflowname#",
+            "displayName": "SharePoint folder path",
+            "type": "String",
+            "description": "Provide the name of the SharePoint Library.",
+            "required": true
+        },        {
+            "name": "CosmosDB_Account_#workflowname#",
+            "displayName": "Cosmos DB Account",
+            "type": "String",
+            "description": "Provide the name for the Azure Cosmos DB Account.",
+            "required": true
+        },
+        {
+            "name": "CosmosDB_Database_#workflowname#",
+            "displayName": "Azure Cosmos DB name",
+            "type": "String",
+            "description": "Provide the name for the Azure Cosmos DB database.",
+            "required": true
+        },
+        {
+            "name": "CosmosDB_Collection_#workflowname#",
+            "displayName": "Cosmos DB collection name",
+            "type": "String",
+            "description": "Provide the name for the Azure Cosmos DB collection.",
+            "required": true
+        },
+        {
+            "name": "CosmosDB_Vector_Path_#workflowname#",
+            "displayName": "Vector embeddings path or property",
+            "type": "String",
+            "description": "Provide the path or property for the vector embeddings in the Cosmos DB data items.",
+            "required": true
+        },
+        {
+            "name": "CosmosDB_Text_Path_#workflowname#",
+            "displayName": "Property with the document text in data items",
+            "type": "String",
+            "description": "Provide the property that contains the document text in the Cosmos DB data items.",
+            "required": true
+        }
+    ],
+    "connections": {
+        "aoai-connection_#workflowname#": {
+            "connectorId": "/serviceProviders/openai",
+            "kind": "inapp"
+        },
+        "sharepointonline_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sharepointonline",
+            "kind": "shared"
+        },
+        "cosmosdb-connection_#workflowname#": {
+            "connectorId": "/serviceProviders/AzureCosmosDB",
+            "kind": "inapp"
+        },
+        "formrecognizer_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/formrecognizer",
+            "kind": "shared"
+        }
+    }
+}

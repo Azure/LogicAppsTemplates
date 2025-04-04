@@ -50,7 +50,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "containerName": "@parameters('Blob_Path_pdf_ingestion_#workflowname#')",
+                        "containerName": "@parameters('Blob_Path_#workflowname#')",
                         "blobName": "@triggerBody()?['name']"
                     },
                     "serviceProviderConfiguration": {
@@ -66,9 +66,9 @@
                 "inputs": {
                     "from": "@range(0, length(body('Chunk_text')['value']))\r\n",
                     "select": {
-                        "@{parameters('CosmosDB_textpath_#workflowname#')}": "@body('Chunk_text')['value'][item()]",
+                        "@{parameters('CosmosDB_Text_Path_#workflowname#')}": "@body('Chunk_text')['value'][item()]",
                         "documentName": "@triggerBody()?['name']",
-                        "@{parameters('CosmosDB_vectorpath_#workflowname#')}": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                        "@{parameters('CosmosDB_Vector_Path_#workflowname#')}": "@body('Get_multiple_embeddings')['embeddings'][item()]",
                         "sourceFile": "@triggerBody()?['name']",
                         "fileType": "@slice(triggerBody()?['name'],-3)",
                         "id": "@guid()",
@@ -86,8 +86,8 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "databaseId": "@parameters('CosmosDB_database_#workflowname#')",
-                        "containerId": "@parameters('CosmosDB_collection_#workflowname#')",
+                        "databaseId": "@parameters('CosmosDB_Database_#workflowname#')",
+                        "containerId": "@parameters('CosmosDB_Collection_#workflowname#')",
                         "items": "@body('Select_embeddings_and_map_to_CosmosDB')",
                         "isUpsert": true
                     },
@@ -111,7 +111,7 @@
                 "type": "ServiceProvider",
                 "inputs": {
                     "parameters": {
-                        "path": "@parameters('Blob_Path_pdf_ingestion_#workflowname#')"
+                        "path": "@parameters('Blob_Path_#workflowname#')"
                     },
                     "serviceProviderConfiguration": {
                         "connectionName": "blob-connection_#workflowname#",
