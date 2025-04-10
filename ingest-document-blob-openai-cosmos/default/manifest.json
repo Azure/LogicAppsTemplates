@@ -77,8 +77,8 @@
             "kind": "inapp"
         },
         "cosmosdb-connection_#workflowname#": {
-            "connectorId": "/serviceProviders/AzureCosmosDB",
-            "kind": "inapp"
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/documentdb",
+            "kind": "shared"
         }
     }
 }
