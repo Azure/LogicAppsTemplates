@@ -1,7 +1,7 @@
 {
     "id": "vectorize-amazons3-aisearch-schedule",
-    "title": "Vectorize files on a schedule from Azure File to AI Search",
-    "summary": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from a Azure File folder, and writes them to the Azure AI Search vector store.",
+    "title": "Vectorize files on a schedule from Amazon S3 to AI Search",
+    "summary": "his workflow template runs using the schedule-based Recurrence trigger, vectorizes objects from  Amazon S3 bucket, and writes them to the Azure AI Search vector store.",
     "skus": [
         "consumption"
     ],
