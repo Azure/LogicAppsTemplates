@@ -1,0 +1,265 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "Sliding_Window": {
+            "recurrence": {
+                "interval": 20,
+                "frequency": "Minute",
+                "startTime": "@parameters('StartTime_#workflowname#')"
+            },
+            "evaluatedRecurrence": {
+                "interval": 20,
+                "frequency": "Minute",
+                "startTime": ""
+            },
+            "type": "SlidingWindow"
+        }
+    },
+    "actions": {
+        "Is_this_first_run": {
+            "actions": {
+                "Pick_all_files_for_indexing": {
+                    "type": "SetVariable",
+                    "inputs": {
+                        "name": "FileList",
+                        "value": "@body('List_S3_objects')?['value']"
+                    }
+                }
+            },
+            "runAfter": {
+                "List_S3_objects": [
+                    "Succeeded"
+                ]
+            },
+            "else": {
+                "actions": {
+                    "Pick_only_new_or_updated_files": {
+                        "runAfter": {
+                            "Filter_list_and_pick_files_added_or_updated_in_the_time_window": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FileList",
+                            "value": "@body('Filter_list_and_pick_files_added_or_updated_in_the_time_window')"
+                        }
+                    },
+                    "Filter_list_and_pick_files_added_or_updated_in_the_time_window": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@body('List_S3_objects')?['value']",
+                            "where": "@greater(item()?['lastChangedTime'],triggerOutputs()['windowStartTime'])"
+                        }
+                    }
+                }
+            },
+            "expression": {
+                "and": [
+                    {
+                        "equals": [
+                            "@triggerOutputs()['sequenceNumber']",
+                            0
+                        ]
+                    }
+                ]
+            },
+            "type": "If"
+        },
+        "Initialize_variable_-_FileList": {
+            "runAfter": {},
+            "type": "InitializeVariable",
+            "inputs": {
+                "variables": [
+                    {
+                        "name": "FileList",
+                        "type": "array"
+                    }
+                ]
+            }
+        },
+        "For_each_item_in_the_S3_object": {
+            "foreach": "@variables('FileList')",
+            "actions": {
+                "Get_S3_object_content": {
+                    "type": "ApiConnection",
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "name": "@parameters('$connections')['amazons3_#workflowname#']['connectionId']"
+                            }
+                        },
+                        "method": "get",
+                        "path": "/buckets/objects/content",
+                        "queries": {
+                            "bucketName": "@parameters('BucketName_#workflowname#')",
+                            "objectKey": "@items('For_each_item_in_the_S3_object')?['key']"
+                        }
+                    }
+                },
+                "Is_this_a_folder": {
+                    "actions": {
+                        "This_is_a_folder": {
+                            "type": "Compose",
+                            "inputs": "Folder"
+                        }
+                    },
+                    "runAfter": {
+                        "Get_S3_object_content": [
+                            "Succeeded"
+                        ]
+                    },
+                    "else": {
+                        "actions": {
+                            "Parse_a_document": {
+                                "type": "ParseDocument",
+                                "inputs": {
+                                    "content": "@body('Get_S3_object_content')"
+                                }
+                            },
+                            "Chunk_text": {
+                                "runAfter": {
+                                    "Parse_a_document": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "ChunkText",
+                                "inputs": {
+                                    "chunkingStrategy": "TokenSize",
+                                    "text": "@body('Parse_a_document')?['text']",
+                                    "encodingModel": "cl100k_base",
+                                    "tokenSize": 5000,
+                                    "pageOverlapLength": 0
+                                }
+                            },
+                            "Get_multiple_embeddings": {
+                                "runAfter": {
+                                    "Chunk_text": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "name": "@parameters('$connections')['azureopenai_#workflowname#']['connectionId']"
+                                        }
+                                    },
+                                    "method": "post",
+                                    "body": {
+                                        "input": "@body('Chunk_text')?['value']"
+                                    },
+                                    "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel_#workflowname#'))}/multipleEmbeddings",
+                                    "queries": {
+                                        "api-version": "2023-05-15"
+                                    }
+                                }
+                            },
+                            "Select_embeddings_and_map_to_Index": {
+                                "runAfter": {
+                                    "Get_multiple_embeddings": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "Select",
+                                "inputs": {
+                                    "from": "@range(0, length(body('Chunk_text')['value']))",
+                                    "select": {
+                                        "chunk": "@body('Chunk_text')['value'][item()]",
+                                        "title": "@items('For_each_item_in_the_S3_object')?['key']",
+                                        "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                                        "parent_id": "@items('For_each_item_in_the_S3_object')?['key']",
+                                        "chunk_id": "@replace(concat(substring(items('For_each_item_in_the_S3_object')?['key'], 0, indexOf(items('For_each_item_in_the_S3_object')?['key'], '.')), item()), '/', '_')"
+                                    }
+                                }
+                            },
+                            "Index_multiple_documents": {
+                                "runAfter": {
+                                    "Select_embeddings_and_map_to_Index": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "name": "@parameters('$connections')['azureaisearch_#workflowname#']['connectionId']"
+                                        }
+                                    },
+                                    "method": "post",
+                                    "body": "@body('Select_embeddings_and_map_to_Index')",
+                                    "path": "/indexDocuments",
+                                    "queries": {
+                                        "indexName": "@parameters('AISearchIndexName_#workflowname#')"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "expression": {
+                        "and": [
+                            {
+                                "equals": [
+                                    "@item()?['size']",
+                                    0
+                                ]
+                            }
+                        ]
+                    },
+                    "type": "If"
+                }
+            },
+            "runAfter": {
+                "Is_this_first_run": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Foreach"
+        },
+        "List_S3_objects": {
+            "runAfter": {
+                "Initialize_variable_-_FileList": [
+                    "Succeeded"
+                ]
+            },
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['amazons3_#workflowname#']['connectionId']"
+                    }
+                },
+                "method": "get",
+                "path": "/buckets/objects",
+                "queries": {
+                    "bucketName": "@parameters('BucketName_#workflowname#')",
+                    "maxObjectCount": 100
+                }
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "BucketName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "AISearchIndexName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "OpenAIModel_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "StartTime_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}
