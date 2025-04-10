@@ -95,7 +95,7 @@
                             "title": "@items('For_each')?['DisplayName']",
                             "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
                             "parent_id": "@items('For_each')?['Path']",
-                            "chunk_id": "@concat(items('For_each')?['NameNoExt'], item())"
+                            "chunk_id": "@{concat(substring(items('For_Each')?['DisplayName'], 0, indexOf(items('For_Each')?['DisplayName'], '.')), item())}"
                         }
                     }
                 },
