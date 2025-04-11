@@ -1,0 +1,173 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http"
+        }
+    },
+    "actions": {
+        "For_each": {
+            "foreach": "@body('Filter_only_files')",
+            "actions": {
+                "Parse_a_document": {
+                    "runAfter": {
+                        "Get_file_content": [
+                            "Succeeded"
+                        ]
+                    },
+                    "type": "ParseDocument",
+                    "inputs": {
+                        "content": "@body('Get_file_content')"
+                    }
+                },
+                "Chunk_text": {
+                    "runAfter": {
+                        "Parse_a_document": [
+                            "Succeeded"
+                        ]
+                    },
+                    "type": "ChunkText",
+                    "inputs": {
+                        "chunkingStrategy": "TokenSize",
+                        "text": "@body('Parse_a_document')?['text']",
+                        "encodingModel": "cl100k_base",
+                        "tokenSize": 5000,
+                        "pageOverlapLength": 0
+                    }
+                },
+                "Get_multiple_embeddings": {
+                    "runAfter": {
+                        "Chunk_text": [
+                            "Succeeded"
+                        ]
+                    },
+                    "type": "ApiConnection",
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "name": "@parameters('$connections')['azureopenai_#workflowname#']['connectionId']"
+                            }
+                        },
+                        "method": "post",
+                        "body": {
+                            "input": "@body('Chunk_text')?['value']"
+                        },
+                        "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel_#workflowname#'))}/multipleEmbeddings",
+                        "queries": {
+                            "api-version": "2023-05-15"
+                        }
+                    }
+                },
+                "Index_multiple_documents": {
+                    "runAfter": {
+                        "Select_embeddings_and_map_to_Index": [
+                            "Succeeded"
+                        ]
+                    },
+                    "type": "ApiConnection",
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "name": "@parameters('$connections')['azureaisearch_#workflowname#']['connectionId']"
+                            }
+                        },
+                        "method": "post",
+                        "body": "@body('Select_embeddings_and_map_to_Index')",
+                        "path": "/indexDocuments",
+                        "queries": {
+                            "indexName": "@parameters('AISearchIndexName_#workflowname#')"
+                        }
+                    }
+                },
+                "Get_file_content": {
+                    "type": "ApiConnection",
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "name": "@parameters('$connections')['dropbox_#workflowname#']['connectionId']"
+                            }
+                        },
+                        "method": "get",
+                        "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent(items('For_each')['Id']))}/content",
+                        "queries": {
+                            "inferContentType": true
+                        }
+                    }
+                },
+                "Select_embeddings_and_map_to_Index": {
+                    "runAfter": {
+                        "Get_multiple_embeddings": [
+                            "Succeeded"
+                        ]
+                    },
+                    "type": "Select",
+                    "inputs": {
+                        "from": "@range(0, length(body('Chunk_text')['value']))",
+                        "select": {
+                            "chunk": "@body('Chunk_text')['value'][item()]",
+                            "title": "@items('For_each')?['DisplayName']",
+                            "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                            "parent_id": "@items('For_each')?['Path']",
+                            "chunk_id": "@concat(substring(items('For_Each')?['DisplayName'], 0, indexOf(items('For_Each')?['DisplayName'], '.')), item())"
+                        }
+                    }
+                }
+            },
+            "runAfter": {
+                "Filter_only_files": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Foreach"
+        },
+        "List_files_in_folder": {
+            "runAfter": {},
+            "metadata": {
+                "6e202211-2856-4d17-9ded-5beb8b8626b0": "/"
+            },
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['dropbox_#workflowname#']['connectionId']"
+                    }
+                },
+                "method": "get",
+                "path": "/datasets/default/folders/@{encodeURIComponent(encodeURIComponent(parameters('FolderName_#workflowname#')))}"
+            }
+        },
+        "Filter_only_files": {
+            "runAfter": {
+                "List_files_in_folder": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Query",
+            "inputs": {
+                "from": "@body('List_files_in_folder')",
+                "where": "@equals(item()?['IsFolder'],false)"
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "FolderName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "AISearchIndexName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "OpenAIModel_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}
