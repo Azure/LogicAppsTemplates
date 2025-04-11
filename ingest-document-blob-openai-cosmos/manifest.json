@@ -20,8 +20,8 @@
             "kind": "inapp"
         },
         {
-            "id": "/serviceProviders/AzureCosmosDB",
-            "kind": "inapp"
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/documentdb",
+            "kind": "shared"
         }
     ],
     "details": {
