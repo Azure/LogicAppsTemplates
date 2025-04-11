@@ -2,24 +2,33 @@
     "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
     "contentVersion": "1.0.0.0",
     "triggers": {
-        "When_a_HTTP_request_is_received": {
-            "type": "Request",
-            "kind": "Http"
+        "Sliding_Window": {
+            "recurrence": {
+                "interval": 20,
+                "frequency": "Minute",
+                "startTime": "@parameters('StartTime_#workflowname#')"
+            },
+            "evaluatedRecurrence": {
+                "interval": 20,
+                "frequency": "Minute",
+                "startTime": ""
+            },
+            "type": "SlidingWindow"
         }
     },
     "actions": {
         "For_each": {
-            "foreach": "@body('List_files')?['value']",
+            "foreach": "@body('Filter_only_files')",
             "actions": {
                 "Parse_a_document": {
                     "runAfter": {
-                        "Get_file_content_using_path": [
+                        "Get_file_content": [
                             "Succeeded"
                         ]
                     },
                     "type": "ParseDocument",
                     "inputs": {
-                        "content": "@body('Get_file_content_using_path')"
+                        "content": "@body('Get_file_content')"
                     }
                 },
                 "Chunk_text": {
@@ -81,6 +90,21 @@
                         }
                     }
                 },
+                "Get_file_content": {
+                    "type": "ApiConnection",
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "name": "@parameters('$connections')['dropbox_#workflowname#']['connectionId']"
+                            }
+                        },
+                        "method": "get",
+                        "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent(items('For_each')['Id']))}/content",
+                        "queries": {
+                            "inferContentType": true
+                        }
+                    }
+                },
                 "Select_embeddings_and_map_to_Index": {
                     "runAfter": {
                         "Get_multiple_embeddings": [
@@ -95,54 +119,111 @@
                             "title": "@items('For_each')?['DisplayName']",
                             "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
                             "parent_id": "@items('For_each')?['Path']",
-                            "chunk_id": "@{concat(substring(items('For_Each')?['DisplayName'], 0, indexOf(items('For_Each')?['DisplayName'], '.')), item())}"
-                        }
-                    }
-                },
-                "Get_file_content_using_path": {
-                    "type": "ApiConnection",
-                    "inputs": {
-                        "host": {
-                            "connection": {
-                                "name": "@parameters('$connections')['azurefile_#workflowname#']['connectionId']"
-                            }
-                        },
-                        "method": "get",
-                        "path": "/datasets/default/GetFileContentByPath",
-                        "queries": {
-                            "path": "@item()?['Path']",
-                            "inferContentType": true,
-                            "queryParametersSingleEncoded": true
+                            "chunk_id": "@concat(substring(items('For_Each')?['DisplayName'], 0, indexOf(items('For_Each')?['DisplayName'], '.')), item())"
                         }
                     }
                 }
             },
             "runAfter": {
-                "List_files": [
+                "Is_this_first_run": [
                     "Succeeded"
                 ]
             },
             "type": "Foreach"
         },
-        "List_files": {
-            "runAfter": {},
+        "List_files_in_folder": {
+            "runAfter": {
+                "Initialize_variable_-_FileList": [
+                    "Succeeded"
+                ]
+            },
             "metadata": {
-                
+                "6e202211-2856-4d17-9ded-5beb8b8626b0": "/"
             },
             "type": "ApiConnection",
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['azurefile_#workflowname#']['connectionId']"
+                        "name": "@parameters('$connections')['dropbox_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
-                "path": "/datasets/default/foldersV2/@{encodeURIComponent(encodeURIComponent(parameters('FolderName_#workflowname#')))}",
-                "queries": {
-                    "nextPageMarker": "",
-                    "useFlatListing": false
-                }
+                "path": "/datasets/default/folders/@{encodeURIComponent(encodeURIComponent(parameters('FolderName_#workflowname#')))}"
             }
+        },
+        "Filter_only_files": {
+            "runAfter": {
+                "List_files_in_folder": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Query",
+            "inputs": {
+                "from": "@body('List_files_in_folder')",
+                "where": "@equals(item()?['IsFolder'],false)"
+            }
+        },
+        "Initialize_variable_-_FileList": {
+            "runAfter": {},
+            "type": "InitializeVariable",
+            "inputs": {
+                "variables": [
+                    {
+                        "name": "FileList",
+                        "type": "array"
+                    }
+                ]
+            }
+        },
+        "Is_this_first_run": {
+            "actions": {
+                "Pick_all_files_for_indexing": {
+                    "type": "SetVariable",
+                    "inputs": {
+                        "name": "FileList",
+                        "value": "@body('Filter_only_files')"
+                    }
+                }
+            },
+            "runAfter": {
+                "Filter_only_files": [
+                    "Succeeded"
+                ]
+            },
+            "else": {
+                "actions": {
+                    "Pick_only_new_or_updated_files": {
+                        "runAfter": {
+                            "Filter_list_and_pick_files_added_or_updated_in_the_time_window": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FileList",
+                            "value": "@body('Filter_list_and_pick_files_added_or_updated_in_the_time_window')"
+                        }
+                    },
+                    "Filter_list_and_pick_files_added_or_updated_in_the_time_window": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@body('Filter_only_files')",
+                            "where": "@greater(item()?['LastModified'],triggerOutputs()['windowStartTime'])"
+                        }
+                    }
+                }
+            },
+            "expression": {
+                "and": [
+                    {
+                        "equals": [
+                            "@triggerOutputs()?['sequenceNumber']",
+                            0
+                        ]
+                    }
+                ]
+            },
+            "type": "If"
         }
     },
     "outputs": {},
@@ -156,6 +237,10 @@
             "type": "String"
         },
         "OpenAIModel_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "StartTime_#workflowname#": {
             "defaultValue": "",
             "type": "String"
         },

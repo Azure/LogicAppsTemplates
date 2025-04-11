@@ -9,17 +9,17 @@
     },
     "actions": {
         "For_each": {
-            "foreach": "@body('List_files')?['value']",
+            "foreach": "@body('Filter_only_files')",
             "actions": {
                 "Parse_a_document": {
                     "runAfter": {
-                        "Get_file_content_using_path": [
+                        "Get_file_content": [
                             "Succeeded"
                         ]
                     },
                     "type": "ParseDocument",
                     "inputs": {
-                        "content": "@body('Get_file_content_using_path')"
+                        "content": "@body('Get_file_content')"
                     }
                 },
                 "Chunk_text": {
@@ -81,6 +81,21 @@
                         }
                     }
                 },
+                "Get_file_content": {
+                    "type": "ApiConnection",
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "name": "@parameters('$connections')['dropbox_#workflowname#']['connectionId']"
+                            }
+                        },
+                        "method": "get",
+                        "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent(items('For_each')['Id']))}/content",
+                        "queries": {
+                            "inferContentType": true
+                        }
+                    }
+                },
                 "Select_embeddings_and_map_to_Index": {
                     "runAfter": {
                         "Get_multiple_embeddings": [
@@ -95,53 +110,44 @@
                             "title": "@items('For_each')?['DisplayName']",
                             "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
                             "parent_id": "@items('For_each')?['Path']",
-                            "chunk_id": "@{concat(substring(items('For_Each')?['DisplayName'], 0, indexOf(items('For_Each')?['DisplayName'], '.')), item())}"
-                        }
-                    }
-                },
-                "Get_file_content_using_path": {
-                    "type": "ApiConnection",
-                    "inputs": {
-                        "host": {
-                            "connection": {
-                                "name": "@parameters('$connections')['azurefile_#workflowname#']['connectionId']"
-                            }
-                        },
-                        "method": "get",
-                        "path": "/datasets/default/GetFileContentByPath",
-                        "queries": {
-                            "path": "@item()?['Path']",
-                            "inferContentType": true,
-                            "queryParametersSingleEncoded": true
+                            "chunk_id": "@concat(substring(items('For_Each')?['DisplayName'], 0, indexOf(items('For_Each')?['DisplayName'], '.')), item())"
                         }
                     }
                 }
             },
             "runAfter": {
-                "List_files": [
+                "Filter_only_files": [
                     "Succeeded"
                 ]
             },
             "type": "Foreach"
         },
-        "List_files": {
+        "List_files_in_folder": {
             "runAfter": {},
             "metadata": {
-                
+                "6e202211-2856-4d17-9ded-5beb8b8626b0": "/"
             },
             "type": "ApiConnection",
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['azurefile_#workflowname#']['connectionId']"
+                        "name": "@parameters('$connections')['dropbox_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
-                "path": "/datasets/default/foldersV2/@{encodeURIComponent(encodeURIComponent(parameters('FolderName_#workflowname#')))}",
-                "queries": {
-                    "nextPageMarker": "",
-                    "useFlatListing": false
-                }
+                "path": "/datasets/default/folders/@{encodeURIComponent(encodeURIComponent(parameters('FolderName_#workflowname#')))}"
+            }
+        },
+        "Filter_only_files": {
+            "runAfter": {
+                "List_files_in_folder": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Query",
+            "inputs": {
+                "from": "@body('List_files_in_folder')",
+                "where": "@equals(item()?['IsFolder'],false)"
             }
         }
     },

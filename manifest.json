@@ -39,6 +39,10 @@
     "vectorize-sharepoint-aisearch-request",
     "vectorize-sharepoint-aisearch-schedule",
     "vectorize-azurefile-aisearch-request",
-    "vectorize-azurefile-aisearch-schedule"
+    "vectorize-azurefile-aisearch-schedule",
+    "vectorize-amazons3-aisearch-request",
+    "vectorize-amazons3-aisearch-schedule",
+    "vectorize-dropbox-aisearch-request",
+    "vectorize-dropbox-aisearch-schedule"
 
 ]
