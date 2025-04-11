@@ -144,7 +144,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['dropbox']['connectionId']"
+                        "name": "@parameters('$connections')['dropbox_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
