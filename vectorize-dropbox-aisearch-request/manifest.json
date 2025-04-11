@@ -1,5 +1,5 @@
 {
-    "id": "vectorize-azurefile-aisearch-request",
+    "id": "vectorize-dropbox-aisearch-request",
     "title": "Vectorize files on request from Dropbox to AI Search",
     "summary": "This workflow template triggers when the Request trigger receives a request and vectorizes files from a Dropbox folder and writes them to the Azure AI Search vector store.",
     "skus": [
