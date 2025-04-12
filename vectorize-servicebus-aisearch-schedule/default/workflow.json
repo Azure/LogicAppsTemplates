@@ -1,0 +1,197 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "Sliding_Window": {
+            "type": "SlidingWindow",
+            "recurrence": {
+                "interval": 10,
+                "frequency": "Minute",
+                "startTime": "@parameters('StartTime_#workflowname#')"
+            }
+        }
+    },
+    "actions": {
+        "For_each_message": {
+            "type": "Foreach",
+            "foreach": "@body('Get_messages_from_a_topic_subscription_(peek-lock)')",
+            "actions": {
+                "Complete_the_message_in_a_topic_subscription": {
+                    "type": "ApiConnection",
+                    "inputs": {
+                        "host": {
+                            "connection": {
+                                "name": "@parameters('$connections')['servicebus_#workflowname#']['connectionId']"
+                            }
+                        },
+                        "method": "delete",
+                        "path": "/@{encodeURIComponent(encodeURIComponent(parameters('TopicName_#workflowname#')))}/subscriptions/@{encodeURIComponent(parameters('TopicSubscriptionName_#workflowname#'))}/messages/complete",
+                        "queries": {
+                            "lockToken": "@item()?['LockToken']",
+                            "subscriptionType": "Main",
+                            "sessionId": ""
+                        }
+                    },
+                    "runAfter": {
+                        "Message_has_content": [
+                            "Succeeded"
+                        ]
+                    }
+                },
+                "Message_has_content": {
+                    "type": "If",
+                    "expression": {
+                        "and": [
+                            {
+                                "not": {
+                                    "equals": [
+                                        "@item()?['ContentData']",
+                                        ""
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "actions": {
+                        "Parse_a_document": {
+                            "type": "ParseDocument",
+                            "inputs": {
+                                "content": "@item()?['ContentData']"
+                            }
+                        },
+                        "Chunk_text": {
+                            "type": "ChunkText",
+                            "inputs": {
+                                "chunkingStrategy": "TokenSize",
+                                "text": "@body('Parse_a_document')?['text']",
+                                "encodingModel": "cl100k_base",
+                                "tokenSize": 5000,
+                                "pageOverlapLength": 0
+                            },
+                            "runAfter": {
+                                "Parse_a_document": [
+                                    "Succeeded"
+                                ]
+                            }
+                        },
+                        "Get_multiple_embeddings": {
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureopenai_#workflowname#']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "body": {
+                                    "input": "@body('Chunk_text')?['value']"
+                                },
+                                "path": "/deployments/@{encodeURIComponent(parameters('OpenAIModel_#workflowname#'))}/multipleEmbeddings",
+                                "queries": {
+                                    "api-version": "2023-05-15"
+                                }
+                            },
+                            "runAfter": {
+                                "Chunk_text": [
+                                    "Succeeded"
+                                ]
+                            }
+                        },
+                        "Select_embeddings_and_map_to_Index": {
+                            "type": "Select",
+                            "inputs": {
+                                "from": "@range(0, length(body('Chunk_text')['value']))",
+                                "select": {
+                                    "chunk": "@body('Chunk_text')['value'][item()]",
+                                    "title": "@item()?['MessageId']",
+                                    "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
+                                    "parent_id": "@item()?['SessionId']",
+                                    "chunk_id": "@concat(items('For_each_message')?['NameNoExt'], item())"
+                                }
+                            },
+                            "runAfter": {
+                                "Get_multiple_embeddings": [
+                                    "Succeeded"
+                                ]
+                            }
+                        },
+                        "Index_multiple_documents": {
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureaisearch_#workflowname#']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "body": "@body('Select_embeddings_and_map_to_Index')",
+                                "path": "/indexDocuments",
+                                "queries": {
+                                    "indexName": "@parameters('AISearchIndexName_#workflowname#')"
+                                }
+                            },
+                            "runAfter": {
+                                "Select_embeddings_and_map_to_Index": [
+                                    "Succeeded"
+                                ]
+                            }
+                        }
+                    },
+                    "else": {
+                        "actions": {}
+                    }
+                }
+            },
+            "runAfter": {
+                "Get_messages_from_a_topic_subscription_(peek-lock)": [
+                    "Succeeded"
+                ]
+            }
+        },
+        "Get_messages_from_a_topic_subscription_(peek-lock)": {
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['servicebus_#workflowname#']['connectionId']"
+                    }
+                },
+                "method": "get",
+                "path": "/@{encodeURIComponent(encodeURIComponent(parameters('TopicName_#workflowname#')))}/subscriptions/@{encodeURIComponent(parameters('TopicSubscriptionName_#workflowname#'))}/messages/batch/peek",
+                "queries": {
+                    "subscriptionType": "Main",
+                    "sessionId": "",
+                    "maxMessageCount": 20
+                }
+            },
+            "runAfter": {}
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "AISearchIndexName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "OpenAIModel_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "StartTime_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "TopicName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "TopicSubscriptionName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}

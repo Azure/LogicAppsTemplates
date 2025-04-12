@@ -43,6 +43,6 @@
     "vectorize-amazons3-aisearch-request",
     "vectorize-amazons3-aisearch-schedule",
     "vectorize-dropbox-aisearch-request",
-    "vectorize-dropbox-aisearch-schedule"
-
+    "vectorize-dropbox-aisearch-schedule",
+    "vectorize-servicebus-aisearch-schedule"
 ]
