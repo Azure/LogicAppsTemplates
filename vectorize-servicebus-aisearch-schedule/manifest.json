@@ -1,0 +1,40 @@
+{
+    "id": "vectorize-servicebus-aisearch-schedule",
+    "title": "Vectorize messages on a schedule from Service Bus to AI Search",
+    "summary": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes messages from a Service Bus topic, and writes them to the Azure AI Search vector store.",
+    "skus": [
+        "consumption"
+    ],
+    "workflows": {
+        "default": {
+            "name": "Vectorize_ServiceBus_AISearch_Schedule"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "connectionProviders/dataOperationNew",
+            "kind": "builtin"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureaisearch",
+            "kind": "shared"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/azureopenai",
+            "kind": "shared"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/servicebus",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI,RAG"
+    },
+    "tags": [
+        "RAG-Document-Ingestion"
+    ]
+}

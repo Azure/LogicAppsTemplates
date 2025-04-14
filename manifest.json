@@ -47,6 +47,6 @@
     "vectorize-sftp-aisearch-schedule",
     "vectorize-sftp-aisearch-request",
     "vectorize-azurequeue-aisearch-schedule",
-    "vectorize-azurequeue-aisearch-request"
-
+    "vectorize-azurequeue-aisearch-request",
+    "vectorize-servicebus-aisearch-schedule"
 ]
