@@ -183,7 +183,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['azurequeues_#workflowname#']['connectionId']"
+                        "name": "@parameters('$connections')['azurequeue_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
