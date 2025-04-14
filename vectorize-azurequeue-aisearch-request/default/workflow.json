@@ -118,4 +118,28 @@
                 }
             }
         }
+    },
+    "outputs": {},
+    "parameters": {
+        "QueueName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "AISearchIndexName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "OpenAIModel_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "StorageAccountName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
     }
+}
