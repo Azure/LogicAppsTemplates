@@ -1,5 +1,5 @@
 {
-    "id": "vectorize-sftpwithssh-aisearch-request",
+    "id": "vectorize-sftp-aisearch-request",
     "title": "Vectorize files on request from SFTP to AI Search",
     "summary": "This workflow template triggers when the Request trigger receives a request and vectorizes files from a SFTP folder and writes them to the Azure AI Search vector store.",
     "skus": [

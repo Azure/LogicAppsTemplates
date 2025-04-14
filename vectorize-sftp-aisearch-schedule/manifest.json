@@ -1,5 +1,5 @@
 {
-    "id": "vectorize-SFTP-aisearch-schedule",
+    "id": "vectorize-sftp-aisearch-schedule",
     "title": "Vectorize files on a schedule from SFTP to AI Search",
     "summary": "This workflow template runs using the schedule-based Recurrence trigger, vectorizes files from a SFTP folder, and writes them to the Azure AI Search vector store.",
     "skus": [
