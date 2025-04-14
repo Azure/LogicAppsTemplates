@@ -206,7 +206,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['sftpwithssh']['connectionId']"
+                        "name": "@parameters('$connections')['sftp_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "get",
