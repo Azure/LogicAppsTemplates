@@ -44,5 +44,9 @@
     "vectorize-amazons3-aisearch-schedule",
     "vectorize-dropbox-aisearch-request",
     "vectorize-dropbox-aisearch-schedule",
+    "vectorize-sftp-aisearch-schedule",
+    "vectorize-sftp-aisearch-request",
+    "vectorize-azurequeue-aisearch-schedule",
+    "vectorize-azurequeue-aisearch-request",
     "vectorize-servicebus-aisearch-schedule"
 ]
