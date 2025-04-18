@@ -103,10 +103,10 @@
                                 "from": "@range(0, length(body('Chunk_text')['value']))",
                                 "select": {
                                     "chunk": "@body('Chunk_text')['value'][item()]",
-                                    "title": "@item()?['MessageId']",
+                                    "title": "@items('For_each_message')?['MessageId']",
                                     "text_vector": "@body('Get_multiple_embeddings')['embeddings'][item()]",
-                                    "parent_id": "@item()?['SessionId']",
-                                    "chunk_id": "@concat(items('For_each_message')?['NameNoExt'], item())"
+                                    "parent_id": "@items('For_each_message')?['SessionId']",
+                                    "chunk_id": "@concat(items('For_each_message')?['MessageId'], item())"
                                 }
                             },
                             "runAfter": {
