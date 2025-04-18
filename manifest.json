@@ -48,5 +48,6 @@
     "vectorize-sftp-aisearch-request",
     "vectorize-azurequeue-aisearch-schedule",
     "vectorize-azurequeue-aisearch-request",
-    "vectorize-servicebus-aisearch-schedule"
+    "vectorize-servicebus-aisearch-schedule",
+    "tool-send-email-outlook"
 ]
