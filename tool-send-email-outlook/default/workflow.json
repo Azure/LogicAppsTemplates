@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "email_to": {
+                            "type": "string"
+                        },
+                        "email_subject": {
+                            "type": "string"
+                        },
+                        "email_body": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "description": "Send email using Outlook account"
+        }
+    },
+    "actions": {
+        "Send_an_email_": {
+            "runAfter": {},
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['office365']['connectionId']"
+                    }
+                },
+                "method": "post",
+                "body": {
+                    "To": "@triggerBody()?['email_to']",
+                    "Subject": "@triggerBody()?['email_subject']",
+                    "Body": "<p class=\"editor-paragraph\">@{triggerBody()?['email_body']}</p>",
+                    "Importance": "Normal"
+                },
+                "path": "/v2/Mail"
+            }
+        },
+        "Response": {
+            "runAfter": {
+                "Send_an_email_": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "statusCode": 200
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}

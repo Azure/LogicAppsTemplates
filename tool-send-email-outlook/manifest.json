@@ -1,0 +1,33 @@
+{
+    "id": "tool-send-email-outlook",
+    "title": "Send Email using Outlook",
+    "summary": "Send an email using Outlook with the specified subject and body.",  
+    "description": "This workflow sends an email using Outlook with the specified subject and body. It is designed to be triggered by an HTTP request and to send email via Outlook account.",   
+    "skus": [
+        "consumption"
+    ],
+    "workflows": {
+        "default": {
+            "name": "Send-email-outlook"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "connectionProviders/request",
+            "kind": "builtin"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/office365",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI"
+    },
+    "tags": [
+        "Tools"
+    ]
+}
