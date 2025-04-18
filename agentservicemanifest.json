@@ -1,4 +1,5 @@
 [
     "tool-send-email-outlook",
-    "tool-get-weather-msn"
+    "tool-get-weather-msn",
+    "tool-post-message-teams"
 ]

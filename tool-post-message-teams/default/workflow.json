@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "teams_message": {
+                            "description": "Message to be posted in the Teams Channel",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "description": "Send message on a Teams Channel"
+        }
+    },
+    "actions": {
+        "Response": {
+            "runAfter": {
+                "Post_message_in_a_chat_or_channel": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "statusCode": 200,
+                "body": "@body('Post_message_in_a_chat_or_channel')"
+            }
+        },
+        "Post_message_in_a_chat_or_channel": {
+            "runAfter": {},
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['teams_#workflowname#']['connectionId']"
+                    }
+                },
+                "method": "post",
+                "body": {
+                    "recipient": {
+                        "groupId": "@parameters('Team_#workflowname#')",
+                        "channelId": "@parameters('Channel_#workflowname#')"
+                    },
+                    "messageBody": "<p class=\"editor-paragraph\">@{triggerBody()?['teams_message']}</p>"
+                },
+                "path": "/beta/teams/conversation/message/poster/Flow bot/location/@{encodeURIComponent('Channel')}"
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "Team_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "Channel_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}
