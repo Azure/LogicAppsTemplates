@@ -51,5 +51,6 @@
     "vectorize-servicebus-aisearch-schedule",
     "tool-send-email-outlook",
     "tool-get-weather-msn",
-    "tool-post-message-teams"
+    "tool-post-message-teams",
+    "tool-post-adaptive-card-teams"
 ]
