@@ -18,7 +18,7 @@
         
     ],
     "connections": {
-        "outlook_#workflowname#": {
+        "office365_#workflowname#": {
             "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/office365",
             "kind": "shared"
         }

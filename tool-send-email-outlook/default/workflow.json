@@ -31,7 +31,7 @@
             "inputs": {
                 "host": {
                     "connection": {
-                        "name": "@parameters('$connections')['office365']['connectionId']"
+                        "name": "@parameters('$connections')['office365_#workflowname#']['connectionId']"
                     }
                 },
                 "method": "post",
