@@ -49,5 +49,6 @@
     "vectorize-azurequeue-aisearch-schedule",
     "vectorize-azurequeue-aisearch-request",
     "vectorize-servicebus-aisearch-schedule",
-    "tool-send-email-outlook"
+    "tool-send-email-outlook",
+    "tool-get-weather-msn"
 ]
