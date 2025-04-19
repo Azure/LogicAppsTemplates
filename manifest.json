@@ -53,5 +53,6 @@
     "tool-get-weather-msn",
     "tool-post-message-teams",
     "tool-post-adaptive-card-teams",
-    "tool-get-rows-dataverse"
+    "tool-get-rows-dataverse",
+    "tool-get-rows-sql"
 ]
