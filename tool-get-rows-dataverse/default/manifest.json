@@ -1,0 +1,51 @@
+{
+    "id": "default",
+    "title": "Get rows from dataverse table",
+    "summary": "Get rows from dataverse table",
+    "description": "This workflow gets rows from dataverse table. It is designed to be triggered by an HTTP request, get rows from the dataverse table and return the response back to the caller.",
+    "prerequisites": "",
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "Environment_#workflowname#",
+            "displayName": "Microsoft Dataverse environment",
+            "type": "String",
+            "description": "Provide the Microsoft Dataverse environment ",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "List_rows",
+                "connection": "commondataservice_#workflowname#"
+            }
+        },
+        {
+            "name": "TableName_#workflowname#",
+            "displayName": "Dataverse table name",
+            "type": "String",
+            "description": "Provide the Dataverse table name from where you want read records",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "List_rows",
+                "connection": "commondataservice_#workflowname#"
+            }
+        }
+    ],
+    "connections": {
+        "commondataservice_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/commondataservice",
+            "kind": "shared"
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "id": "tool-get-rows-sql",
+    "title": "Get rows from SQL table",
+    "summary": "Get rows from SQL table",  
+    "description": "This workflow gets rows from SQL table. It is designed to be triggered by an HTTP request, get rows from the SQL table and return the response back to the caller. ",   
+    "skus": [
+        "consumption"
+    ],
+    "workflows": {
+        "default": {
+            "name": "Get-rows-SQL"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "connectionProviders/request",
+            "kind": "builtin"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sql",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI"
+    },
+    "tags": [
+        "Tools"
+    ]
+}

@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "location": {
+                            "type": "string",
+                            "description": "Location for the weather"
+                        }
+                    }
+                }
+            },
+            "description": "Get Weather forecast for today for a given Location"
+        }
+    },
+    "actions": {
+        "Response": {
+            "runAfter": {
+                "Get_forecast_for_today": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "statusCode": 200,
+                "body": "@body('Get_forecast_for_today')"
+            }
+        },
+        "Get_forecast_for_today": {
+            "runAfter": {},
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['msnweather_#workflowname#']['connectionId']"
+                    }
+                },
+                "method": "get",
+                "path": "/forecast/today/@{encodeURIComponent(triggerBody()?['location'])}",
+                "queries": {
+                    "units": "I"
+                }
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}

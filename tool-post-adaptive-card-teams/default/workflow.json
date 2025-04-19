@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "ai_summary": {
+                            "description": "Provide all the details human reviewer needs to consider to make a decision",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "description": "Send message on Teams for Human Review and wait for response"
+        }
+    },
+    "actions": {
+        "Response": {
+            "runAfter": {
+                "Post_adaptive_card_and_wait_for_a_response": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "statusCode": 200,
+                "body": "@body('Post_adaptive_card_and_wait_for_a_response')"
+            }
+        },
+        "Post_adaptive_card_and_wait_for_a_response": {
+            "runAfter": {},
+            "type": "ApiConnectionWebhook",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['teams_#workflowname#']['connectionId']"
+                    }
+                },
+                "body": {
+                    "notificationUrl": "@listCallbackUrl()",
+                    "body": {
+                        "messageBody": "{\n    \"type\": \"AdaptiveCard\",\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.2\",\n    \"body\": [\n        {\n            \"type\": \"Container\",\n            \"items\": [\n                {\n                    \"type\": \"TextBlock\",\n                    \"text\": \"The following item went through AI agents and needs additional review. Here is AI summary and relevant details - \",\n                    \"wrap\": true,\n \"weight\": \"bolder\",\n                            \"size\": \"medium\",\n                            \"style\": \"heading\"\n                },\n               {\n                    \"type\": \"TextBlock\",\n                    \"text\": \"@{triggerBody()?['ai_summary']}\",\n                    \"wrap\": true\n                },\n              \n            ]\n        },\n        {\n            \"type\":\"TextBlock\",\n \"id\": \"moreText\",\n \"text\": \"More Info\",\n \"isVisible\": false\n },\n {\n \"type\": \"ActionSet\",\n \"separator\": true,\n \"actions\": [\n {\n \"type\": \"Action.OpenUrl\",\n \"title\": \"View Details\",\n \"url\": \"https://adaptivecards.io/\"\n }\n ],\n \"spacing\": \"ExtraLarge\"\n },\n {\n \"type\":  \"ActionSet\",\n            \"actions\": [\n                {\n                    \"type\": \"Action.Submit\",\n                    \"title\": \"Approve\",\n                    \"style\": \"positive\"\n                }\n            ]\n        }\n    ],\n    \"actions\": [\n        {\n            \"type\": \"Action.Submit\",\n            \"title\": \"Reject\",\n            \"style\": \"destructive\"\n        }\n    ]\n}",
+                        "updateMessage": "Thanks for your response!",
+                        "recipient": {
+                            "groupId": "@parameters('Team_#workflowname#')",
+                            "channelId": "@parameters('Channel_#workflowname#')"
+                        }
+                    }
+                },
+                "path": "/v1.0/teams/conversation/gatherinput/poster/Flow bot/location/@{encodeURIComponent('Channel')}/$subscriptions"
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "Team_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "Channel_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}
