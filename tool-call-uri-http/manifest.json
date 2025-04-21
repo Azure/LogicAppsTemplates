@@ -18,7 +18,7 @@
         },
         {
             "id": "connectionProviders/Http",
-            "kind": "shared"
+            "kind": "builtin"
         }
     ],
     "details": {
