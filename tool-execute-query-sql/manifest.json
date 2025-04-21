@@ -1,0 +1,33 @@
+{
+    "id": "tool-execute-query-sql",
+    "title": "Execute SQL query on a database",
+    "summary": "Execute SQL query on any table in a database",  
+    "description": "This workflow executed a query on a given table in a database. It is designed to be triggered by an HTTP request, run the query provided in the request and return the results back as a response. ",   
+    "skus": [
+        "consumption"
+    ],
+    "workflows": {
+        "default": {
+            "name": "Execute-query-SQL"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "connectionProviders/request",
+            "kind": "builtin"
+        },
+        {
+            "id": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sql",
+            "kind": "shared"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Request",
+        "Category": "AI"
+    },
+    "tags": [
+        "Tools"
+    ]
+}
