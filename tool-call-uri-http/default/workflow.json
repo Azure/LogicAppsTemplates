@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "HTTP_URI": {
+                            "description": "URI for HTTP Request",
+                            "type": "string"
+                        },
+                        "HTTP_request_content": {
+                            "description": "Content or Body of the HTTP Request",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "description": "Use this to call any REST endpoint using HTTP request. Provide the URI to call as well as the content or the body of the request"
+        }
+    },
+    "actions": {
+        "Response": {
+            "runAfter": {
+                "HTTP": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "statusCode": 200,
+                "body": "@body('HTTP')"
+            }
+        },
+        "HTTP": {
+            "runAfter": {},
+            "type": "Http",
+            "inputs": {
+                "uri": "@triggerBody()?['HTTP_URI']",
+                "method": "@parameters('Method_#workflowname#')",
+                "body": "@triggerBody()?['HTTP_request_content']"
+            },
+            "runtimeConfiguration": {
+                "contentTransfer": {
+                    "transferMode": "Chunked"
+                }
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "Method_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}

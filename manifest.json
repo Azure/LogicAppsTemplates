@@ -55,5 +55,6 @@
     "tool-post-adaptive-card-teams",
     "tool-get-rows-dataverse",
     "tool-get-rows-sql",
-    "tool-execute-query-sql"
+    "tool-execute-query-sql",
+    "tool-call-uri-http"
 ]
