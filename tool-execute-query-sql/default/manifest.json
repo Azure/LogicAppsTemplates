@@ -2,8 +2,7 @@
     "id": "default",
     "title": "Execute SQL query on a database",
     "summary": "Execute SQL query on any table in a database",
-    "description": "his workflow executed a query on a given table in a database. It is designed to be triggered by an HTTP request, run the query provided in the request and return the results back as a response. ",
-    "prerequisites": "",
+    "description": "his workflow executed a query on a given table in a database. It is designed to be triggered by an HTTP request, run the query provided in the request and return the results back as a response.",
     "artifacts": [
         {
             "type": "workflow",

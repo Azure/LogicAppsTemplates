@@ -3,7 +3,6 @@
     "title": "Get rows from SQL table",
     "summary": "Get rows from SQL table",
     "description": "This workflow gets rows from SQL table. It is designed to be triggered by an HTTP request, get rows from the SQL table and return the response back to the caller.",
-    "prerequisites": "",
     "artifacts": [
         {
             "type": "workflow",

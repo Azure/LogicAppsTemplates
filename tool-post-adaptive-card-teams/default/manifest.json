@@ -3,7 +3,6 @@
     "title": "Post adaptive card on a Teams channel and wait for a response",
     "summary": "Post adaptive card on a Teams channel and wait for a response",
     "description": "This workflow posts an adaptive card on a Teams channel and waits for response. It is designed to be triggered by an HTTP request and to post an adaptive card on a given channel on Microsoft Teams. This adaptive card action is based on webhook and waits until a response is received.",
-    "prerequisites": "",
     "artifacts": [
         {
             "type": "workflow",

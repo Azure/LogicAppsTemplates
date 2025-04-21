@@ -3,7 +3,6 @@
     "title": "Send Email using Outlook",
     "summary": "Send an email using Outlook with the specified subject and body.",
     "description": "This workflow sends an email using Outlook with the specified subject and body. It is designed to be triggered by an HTTP request and to send email via Outlook account.",
-    "prerequisites": "",
     "artifacts": [
         {
             "type": "workflow",

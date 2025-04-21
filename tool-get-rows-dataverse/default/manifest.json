@@ -3,7 +3,6 @@
     "title": "Get rows from dataverse table",
     "summary": "Get rows from dataverse table",
     "description": "This workflow gets rows from dataverse table. It is designed to be triggered by an HTTP request, get rows from the dataverse table and return the response back to the caller.",
-    "prerequisites": "",
     "artifacts": [
         {
             "type": "workflow",

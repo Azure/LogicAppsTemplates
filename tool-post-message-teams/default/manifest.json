@@ -3,7 +3,6 @@
     "title": "Post message on a Teams channel",
     "summary": "Post message on a Teams channel",
     "description": "This workflow posts message on a Teams channel. It is designed to be triggered by an HTTP request and to post a message on a given channel on Microsoft Teams.",
-    "prerequisites": "",
     "artifacts": [
         {
             "type": "workflow",

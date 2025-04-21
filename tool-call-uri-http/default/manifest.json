@@ -3,7 +3,6 @@
     "title": "Call external HTTP or HTTPS endpoints",
     "summary": "Call external HTTP or HTTPS endpoints",
     "description": "This workflow sends outbound requests to endpoints on other services or systems over HTTP or HTTPS. It is designed to be triggered by an HTTP request and to call external HTTP/S endpoints.",
-    "prerequisites": "",
     "artifacts": [
         {
             "type": "workflow",

@@ -3,7 +3,6 @@
     "title": "Get Weather forecase for today via MSN Weather",
     "summary": "Get the weather forecast for today using MSN Weather API.",
     "description": "This workflow retrieves the weather forecast for today using the MSN Weather API. It is designed to be triggered by an HTTP request and to provide weather information.",
-    "prerequisites": "",
     "artifacts": [
         {
             "type": "workflow",
