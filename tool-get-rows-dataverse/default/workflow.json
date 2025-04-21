@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+        "When_a_HTTP_request_is_received": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "email_to": {
+                            "type": "string"
+                        },
+                        "email_subject": {
+                            "type": "string"
+                        },
+                        "email_body": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "description": "Get records from Dataverse table"
+        }
+    },
+    "actions": {
+        "Response": {
+            "runAfter": {
+                "List_rows": [
+                    "Succeeded"
+                ]
+            },
+            "type": "Response",
+            "kind": "Http",
+            "inputs": {
+                "statusCode": 200
+            }
+        },
+        "List_rows": {
+            "runAfter": {},
+            "type": "ApiConnection",
+            "inputs": {
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['commondataservice_#workflowname#']['connectionId']"
+                    }
+                },
+                "method": "get",
+                "headers": {
+                    "prefer": "odata.include-annotations=*",
+                    "accept": "application/json;odata.metadata=full",
+                    "organization": "@parameters('Environment_#workflowname#')"
+                },
+                "path": "/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(parameters('TableName_#workflowname#')))}"
+            }
+        }
+    },
+    "outputs": {},
+    "parameters": {
+        "Environment_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "TableName_#workflowname#": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "$connections": {
+            "type": "Object",
+            "defaultValue": {}
+        }
+    }
+}

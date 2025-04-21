@@ -1,0 +1,50 @@
+{
+    "id": "default",
+    "title": "Post message on a Teams channel",
+    "summary": "Post message on a Teams channel",
+    "description": "This workflow posts message on a Teams channel. It is designed to be triggered by an HTTP request and to post a message on a given channel on Microsoft Teams.",
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "Team_#workflowname#",
+            "displayName": "Microsoft Teams Team name",
+            "type": "String",
+            "description": "Provide the Team name where you want to post the message",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Post_message_in_a_chat_or_channel",
+                "connection": "teams_#workflowname#"
+            }
+        },
+        {
+            "name": "Channel_#workflowname#",
+            "displayName": "Microsoft Teams channel name",
+            "type": "String",
+            "description": "Provide the Teams channle name where you want to post the message",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Post_message_in_a_chat_or_channel",
+                "connection": "teams_#workflowname#"
+            }
+        }
+    ],
+    "connections": {
+        "teams_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",
+            "kind": "shared"
+        }
+    }
+}

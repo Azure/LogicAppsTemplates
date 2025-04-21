@@ -1,0 +1,63 @@
+{
+    "id": "default",
+    "title": "Get rows from SQL table",
+    "summary": "Get rows from SQL table",
+    "description": "This workflow gets rows from SQL table. It is designed to be triggered by an HTTP request, get rows from the SQL table and return the response back to the caller.",
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "ServerName_#workflowname#",
+            "displayName": "SQL Server name",
+            "type": "String",
+            "description": "Provide the full SQL Server name ",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Get_rows",
+                "connection": "sql_#workflowname#"
+            }
+        },
+        {
+            "name": "DatabaseName_#workflowname#",
+            "displayName": "SQL Server database name",
+            "type": "String",
+            "description": "Provide the SQL database name from where you want read records",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Get_rows",
+                "connection": "sql_#workflowname#"
+            }
+        },
+        {
+            "name": "TableName_#workflowname#",
+            "displayName": "SQL Server table name",
+            "type": "String",
+            "description": "Provide the SQL table name from where you want read records",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Get_rows",
+                "connection": "sql_#workflowname#"
+            }
+        }
+    ],
+    "connections": {
+        "sql_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/sql",
+            "kind": "shared"
+        }
+    }
+}

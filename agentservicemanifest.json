@@ -1,12 +1,10 @@
 [
-    "ingest-index-ai-blob-storage-rag",
-    "receive-request-send-response",
-    "sync-business-partner-sap-sharepoint-odata",
-    "try-catch",
-    "vectorize-onedriveforbusiness-aisearch-request",
-    "vectorize-onedrive-aisearch-request",
-    "vectorize-onedriveforbusiness-aisearch-schedule",
-    "vectorize-onedrive-aisearch-schedule",
-    "vectorize-sharepoint-aisearch-request",
-    "vectorize-sharepoint-aisearch-schedule"
+    "tool-send-email-outlook",
+    "tool-get-weather-msn",
+    "tool-post-message-teams",
+    "tool-post-adaptive-card-teams",
+    "tool-get-rows-dataverse",
+    "tool-get-rows-sql",
+    "tool-execute-query-sql",
+    "tool-call-uri-http"
 ]

@@ -1,0 +1,25 @@
+{
+    "id": "default",
+    "title": "Send Email using Outlook",
+    "summary": "Send an email using Outlook with the specified subject and body.",
+    "description": "This workflow sends an email using Outlook with the specified subject and body. It is designed to be triggered by an HTTP request and to send email via Outlook account.",
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        
+    ],
+    "connections": {
+        "office365_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/office365",
+            "kind": "shared"
+        }
+    }
+}

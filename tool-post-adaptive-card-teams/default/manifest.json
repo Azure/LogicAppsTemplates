@@ -1,0 +1,50 @@
+{
+    "id": "default",
+    "title": "Post adaptive card on a Teams channel and wait for a response",
+    "summary": "Post adaptive card on a Teams channel and wait for a response",
+    "description": "This workflow posts an adaptive card on a Teams channel and waits for response. It is designed to be triggered by an HTTP request and to post an adaptive card on a given channel on Microsoft Teams. This adaptive card action is based on webhook and waits until a response is received.",
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "Team_#workflowname#",
+            "displayName": "Microsoft Teams Team name",
+            "type": "String",
+            "description": "Provide the Team name where you want to post the message",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Post_adaptive_card_and_wait_for_a_response",
+                "connection": "teams_#workflowname#"
+            }
+        },
+        {
+            "name": "Channel_#workflowname#",
+            "displayName": "Microsoft Teams channel name",
+            "type": "String",
+            "description": "Provide the Teams channle name where you want to post the message",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "Post_adaptive_card_and_wait_for_a_response",
+                "connection": "teams_#workflowname#"
+            }
+        }
+    ],
+    "connections": {
+        "teams_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/providers/Microsoft.Web/locations/#location#/managedApis/teams",
+            "kind": "shared"
+        }
+    }
+}

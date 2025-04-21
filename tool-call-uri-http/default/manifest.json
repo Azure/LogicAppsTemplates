@@ -1,0 +1,33 @@
+{
+    "id": "default",
+    "title": "Call external HTTP or HTTPS endpoints",
+    "summary": "Call external HTTP or HTTPS endpoints",
+    "description": "This workflow sends outbound requests to endpoints on other services or systems over HTTP or HTTPS. It is designed to be triggered by an HTTP request and to call external HTTP/S endpoints.",
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "workflow-light",
+        "dark": "workflow-dark"
+    },
+    "parameters": [
+        {
+            "name": "Method_#workflowname#",
+            "displayName": "HTTP Method for the endpoint",
+            "type": "String",
+            "description": "Provide the HTTP method for the endpoint ",
+            "required": true,
+            "dynamicData": {
+                "type": "list",
+                "workflow": "default",
+                "operation": "HTTP",
+                "connection": ""
+            }
+        }
+    ],
+    "connections": {
+    }
+}
