@@ -49,6 +49,14 @@
                                         ""
                                     ]
                                 }
+                            },
+                            {
+                                "not": {
+                                    "equals": [
+                                        "@item()?['ContentData']",
+                                        null
+                                    ]
+                                }
                             }
                         ]
                     },
