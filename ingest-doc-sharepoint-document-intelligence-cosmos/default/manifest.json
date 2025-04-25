@@ -1,7 +1,7 @@
 {
     "id": "default",
     "title": "Document ingestion from SharePoint using Azure Document Intelligence OCR into Azure Cosmos DB",
-    "summary": "To support search and retrieval purposes for the retrieval-augmented generation (RAG) pattern, this workflow reads documents and images, using OCR powered by Azure Document Intelligence, from Microsoft SharePoint, chunks the text, creates vector embeddings, formats the resulting data into a JSON document, and inserts that content into Azure Cosmos DB for NoSQL.",
+    "summary": "To support search and retrieval purposes for the retrieval-augmented generation (RAG) pattern, this workflow reads documents and images, using OCR powered by Azure Document Intelligence, from Microsoft SharePoint, chunks the text, creates vector embeddings, formats the resulting data into a JSON document, and inserts that content into Azure Cosmos DB for NoSQL. Please send any feedback or questions to CDB4AI@Microsoft.com.",
     "description": "",
     "prerequisites": "Before you use this template, you need to configure an Azure Open AI instance with an embedding model. For more detailed prerequisites, see the [Azure Logic Apps project sample on GitHub - Create a Chat with Your Data](https://github.com/Azure/logicapps/tree/master/LogicApps-AI-RAG-Demo). You need to [create an Azure Document Intelligence resource](https://learn.microsoft.com/azure/ai-services/document-intelligence/overview). You also need to [create an Azure Cosmos DB database](https://learn.microsoft.com/azure/cosmos-db/nosql/quickstart-dotnet), and create a connection by using the keys and endpoint. Also, get more familiar with [Vector Search in Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/nosql/vector-search).",
     "kinds": [

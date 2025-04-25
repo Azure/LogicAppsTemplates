@@ -1,7 +1,7 @@
 {
     "id": "ingest-document-sharepoint-openai-cosmos",
     "title": "Document ingestion from SharePoint into Azure Cosmos DB",
-    "summary": "To support search and retrieval purposes for the retrieval-augmented generation (RAG) pattern, this workflow reads documents, such as PDFs, text files, Markdown, etc. from Microsoft SharePoint, chunks the text, creates vector embeddings, formats the resulting data into a JSON document, and inserts that content into Azure Cosmos DB for NoSQL.",
+    "summary": "To support search and retrieval purposes for the retrieval-augmented generation (RAG) pattern, this workflow reads documents, such as PDFs, text files, Markdown, etc. from Microsoft SharePoint, chunks the text, creates vector embeddings, formats the resulting data into a JSON document, and inserts that content into Azure Cosmos DB for NoSQL. Please send any feedback or questions to CDB4AI@Microsoft.com.",
     "skus": [
         "standard"
     ],
