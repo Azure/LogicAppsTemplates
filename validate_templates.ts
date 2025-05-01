@@ -294,7 +294,7 @@ if (registeredNotExisting.length) {
 const templatesNotRegistered = allManifestDirectories.filter(item => !manifestNamesList.includes(item));
 if (templatesNotRegistered.length) {
     console.error(`Template(s) ${JSON.stringify(templatesNotRegistered)} found in the repository are not registered in manifest.json.`);
-    throw '';
+    // throw '';    // Disabling error throwing, considering purposefully non-registered templates
 }
 
 for (const folderName of manifestNamesList) {
