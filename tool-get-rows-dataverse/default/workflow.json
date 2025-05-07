@@ -9,15 +9,6 @@
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "email_to": {
-                            "type": "string"
-                        },
-                        "email_subject": {
-                            "type": "string"
-                        },
-                        "email_body": {
-                            "type": "string"
-                        }
                     }
                 }
             },

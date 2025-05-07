@@ -23,7 +23,7 @@
             "dynamicData": {
                 "type": "list",
                 "workflow": "default",
-                "operation": "Get_rows",
+                "operation": "Execute_a_SQL_query",
                 "connection": "sql_#workflowname#"
             }
         },
@@ -36,7 +36,7 @@
             "dynamicData": {
                 "type": "list",
                 "workflow": "default",
-                "operation": "Get_rows",
+                "operation": "Execute_a_SQL_query",
                 "connection": "sql_#workflowname#"
             }
         }
