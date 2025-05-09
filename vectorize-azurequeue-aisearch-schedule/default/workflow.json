@@ -97,8 +97,8 @@
                         "chunkingStrategy": "TokenSize",
                         "text": "@body('Parse_a_document')?['text']",
                         "encodingModel": "cl100k_base",
-                        "tokenSize": 512,
-                        "pageOverlapLength": 100
+                        "tokenSize": 5000,
+                        "pageOverlapLength": 0
                     }
                 },
                 "Get_multiple_embeddings": {
