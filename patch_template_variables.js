@@ -112,9 +112,13 @@ const updateConnections = async (manifest, workflow) => {
     if (name.endsWith(workflowSuffix)) {
       const oldName = name?.split(workflowSuffix)?.[0];
       workflow = workflow.replaceAll(`"${oldName}"`, `"${name}"`);
+      // Note: Account for consumption workflow @parameters('$connections')['<name>']
+      workflow = workflow.replaceAll(`'${oldName}'`, `'${name}'`);
     } else {
       const newName = `${name}${workflowSuffix}`;
       workflow = workflow.replaceAll(`"${name}"`, `"${newName}"`);
+      // Note: Account for consumption workflow @parameters('$connections')['<name>']
+      workflow = workflow.replaceAll(`'${name}'`, `'${newName}'`);
       updatedConnections[newName] = connection;
       delete updatedConnections[name];
     }
