@@ -1,0 +1,27 @@
+{
+    "id": "default",
+    "title": "Common Error Logging for Logic Apps",
+    "summary": "This workflow use Send Data action of Log Analytics connector to log errors using standard custom schema.",
+    "description": "This workflow use Send Data action of Log Analytics connector to log errors using standard custom schema. You can pass your own application values to log error to common log table.",
+    "prerequisites": "",
+    "kinds": [
+        "stateful",
+        "stateless"
+    ],
+    "artifacts": [
+        {
+            "type": "workflow",
+            "file": "workflow.json"
+        }
+    ],
+    "images": {
+        "light": "CommonErrorLog-light",
+        "dark": "CommonErrorLog-dark"
+    },
+    "connections": {
+        "azureloganalyticsdatacollector_#workflowname#": {
+            "connectorId": "/subscriptions/#subscription#/resourceGroups/#resourcegroup#/providers/Microsoft.Web/connections/azureloganalyticsdatacollector",
+            "kind": "shared"
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Try_Scope": {
+                "type": "Scope",
+                "actions": {},
+                "runAfter": {}
+            },
+            "Catch_Scope": {
+                "type": "Scope",
+                "actions": {
+                    "Send_Data": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "azureloganalyticsdatacollector"
+                                }
+                            },
+                            "method": "post",
+                            "body": "{\n\"ActivityID\":\"guid\"\n\"WorkflowRuntimeID\":\"\"\n\"LogicAppName\":\"\"\n\"WorkflowName\":\"\"\n\"StartTime\":utcNow()\n\"EndTime\":utcNow()\n\"ErrorDescription\":\"abcerror\"\n}",
+                            "headers": {
+                                "Log-Type": "CommonErrorLog"
+                            },
+                            "path": "/api/logs"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Try_Scope": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http"
+            }
+        }
+    },
+    "kind": "Stateful"
+}

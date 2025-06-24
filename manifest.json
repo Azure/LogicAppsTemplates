@@ -54,5 +54,6 @@
     "tool-get-rows-dataverse",
     "tool-get-rows-sql",
     "tool-execute-query-sql",
-    "tool-call-uri-http"
+    "tool-call-uri-http",
+    "common-error-log-analytics-krits"
 ]
