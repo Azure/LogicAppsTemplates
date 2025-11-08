@@ -1,0 +1,431 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+            "ServiceBusQueueName": {
+                "type": "string",
+                "defaultValue": "insbcorrelation",
+                "metadata": {
+                    "description": "Name of the Azure Service Bus queue to monitor for incoming messages"
+                }
+            },
+            "MaxBatchSize": {
+                "type": "int",
+                "defaultValue": 10,
+                "metadata": {
+                    "description": "Maximum number of messages to retrieve and process in a single batch (1-100)"
+                }
+            },
+            "FlatFileSchemaName": {
+                "type": "string",
+                "defaultValue": "Invoice.xsd",
+                "metadata": {
+                    "description": "Name of the flat file schema (XSD) to use for message decoding"
+                }
+            },
+            "DefaultCorrelationId": {
+                "type": "string",
+                "defaultValue": "NO_CORRELATION_ID",
+                "metadata": {
+                    "description": "Default value to use when a message does not have a CorrelationId"
+                }
+            },
+            "ServiceBusConnectionName": {
+                "type": "string",
+                "defaultValue": "serviceBus",
+                "metadata": {
+                    "description": "Name of the Azure Service Bus connection defined in connections.json"
+                }
+            },
+            "EnableSequentialProcessing": {
+                "type": "bool",
+                "defaultValue": true,
+                "metadata": {
+                    "description": "When true, processes messages sequentially (concurrency=1); when false, allows parallel processing"
+                }
+            },
+            "ResponseStatusCode": {
+                "type": "int",
+                "defaultValue": 200,
+                "metadata": {
+                    "description": "HTTP status code for successful response"
+                }
+            },
+            "ResponseContentType": {
+                "type": "string",
+                "defaultValue": "application/json",
+                "metadata": {
+                    "description": "Content-Type header for the HTTP response"
+                }
+            }
+        },
+        "actions": {
+            "Process_Batch_Messages": {
+                "type": "Foreach",
+                "foreach": "@triggerBody()",
+                "actions": {
+                    "Process_Message_Scope": {
+                        "type": "Scope",
+                        "actions": {
+                            "Get_CorrelationId": {
+                                "type": "Compose",
+                                "inputs": "@coalesce(items('Process_Batch_Messages')?['correlationId'], parameters('DefaultCorrelationId'))",
+                                "metadata": {
+                                    "description": "Extract CorrelationId from Azure Service Bus message properties. Falls back to DefaultCorrelationId if not present"
+                                }
+                            },
+                            "Decode_Flat_File": {
+                                "type": "FlatFileDecoding",
+                                "inputs": {
+                                    "content": "@items('Process_Batch_Messages')?['contentData']",
+                                    "schema": {
+                                        "source": "LogicApp",
+                                        "name": "@parameters('FlatFileSchemaName')"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Get_CorrelationId": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Decode flat file message content using the configured XSD schema. Converts positional text format to XML"
+                                }
+                            },
+                            "Get_Current_Group": {
+                                "type": "Compose",
+                                "inputs": "@if(contains(variables('CorrelationGroups'), outputs('Get_CorrelationId')), variables('CorrelationGroups')[outputs('Get_CorrelationId')], json('[]'))",
+                                "runAfter": {
+                                    "Decode_Flat_File": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Retrieve existing messages for current CorrelationId from dictionary. Returns empty array if this is the first message for this CorrelationId"
+                                }
+                            },
+                            "Append_To_Group": {
+                                "type": "Compose",
+                                "inputs": "@union(outputs('Get_Current_Group'), array(body('Decode_Flat_File')))",
+                                "runAfter": {
+                                    "Get_Current_Group": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Append newly decoded message to existing messages array for this CorrelationId using union operation"
+                                }
+                            },
+                            "Build_Updated_Groups": {
+                                "type": "Compose",
+                                "inputs": "@setProperty(variables('CorrelationGroups'), outputs('Get_CorrelationId'), outputs('Append_To_Group'))",
+                                "runAfter": {
+                                    "Append_To_Group": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Build updated CorrelationGroups dictionary with new message array for current CorrelationId using setProperty function"
+                                }
+                            },
+                            "Update_CorrelationGroups": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "CorrelationGroups",
+                                    "value": "@outputs('Build_Updated_Groups')"
+                                },
+                                "runAfter": {
+                                    "Build_Updated_Groups": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Update CorrelationGroups variable with new dictionary containing the appended message"
+                                }
+                            },
+                            "Check_If_New_CorrelationId": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "not": {
+                                                "contains": [
+                                                    "@variables('ProcessedCorrelationIds')",
+                                                    "@outputs('Get_CorrelationId')"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Add_To_ProcessedIds": {
+                                        "type": "AppendToArrayVariable",
+                                        "inputs": {
+                                            "name": "ProcessedCorrelationIds",
+                                            "value": "@outputs('Get_CorrelationId')"
+                                        },
+                                        "metadata": {
+                                            "description": "Add CorrelationId to tracking array to preserve order of first occurrence"
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "actions": {}
+                                },
+                                "runAfter": {
+                                    "Update_CorrelationGroups": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Check if this is the first message with this CorrelationId in current batch. If new, add to ProcessedCorrelationIds tracking array"
+                                }
+                            }
+                        }
+                    },
+                    "Handle_Scope_Error": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@result('Process_Message_Scope')[0]['status']",
+                                        "Failed"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Log_Error": {
+                                "type": "Compose",
+                                "inputs": {
+                                    "ErrorType": "MessageProcessingFailed",
+                                    "CorrelationId": "@coalesce(items('Process_Batch_Messages')?['correlationId'], 'UNKNOWN')",
+                                    "MessageId": "@items('Process_Batch_Messages')?['messageId']",
+                                    "ErrorDetails": "@result('Process_Message_Scope')[0]",
+                                    "Timestamp": "@utcNow()"
+                                },
+                                "metadata": {
+                                    "description": "Compose error log entry with message details and scope failure information for troubleshooting"
+                                }
+                            }
+                        },
+                        "else": {
+                            "actions": {}
+                        },
+                        "runAfter": {
+                            "Process_Message_Scope": [
+                                "SUCCEEDED",
+                                "FAILED",
+                                "SKIPPED",
+                                "TIMEDOUT"
+                            ]
+                        },
+                        "metadata": {
+                            "description": "Error handler for Process_Message_Scope. Captures failures from FlatFileDecoding or other processing steps. Workflow continues processing remaining messages"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_ProcessedCorrelationIds": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "repetitions": 1
+                    }
+                },
+                "metadata": {
+                    "description": "Iterate through all messages in batch. Process each message: extract CorrelationId, decode flat file, and group by CorrelationId. Sequential processing (concurrency=1) ensures correct order"
+                }
+            },
+            "Build_Aggregated_Messages_Scope": {
+                "type": "Scope",
+                "actions": {
+                    "Build_Aggregated_Messages": {
+                        "type": "Foreach",
+                        "foreach": "@variables('ProcessedCorrelationIds')",
+                        "actions": {
+                            "Get_Messages_For_CorrelationId": {
+                                "type": "Compose",
+                                "inputs": "@variables('CorrelationGroups')[items('Build_Aggregated_Messages')]",
+                                "metadata": {
+                                    "description": "Retrieve all messages for current CorrelationId from CorrelationGroups dictionary"
+                                }
+                            },
+                            "Build_Result_Object": {
+                                "type": "Compose",
+                                "inputs": {
+                                    "CorrelationId": "@items('Build_Aggregated_Messages')",
+                                    "MessageCount": "@length(outputs('Get_Messages_For_CorrelationId'))",
+                                    "Messages": "@outputs('Get_Messages_For_CorrelationId')"
+                                },
+                                "runAfter": {
+                                    "Get_Messages_For_CorrelationId": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Build result object containing CorrelationId, count of messages, and array of decoded message bodies"
+                                }
+                            },
+                            "Append_To_Results": {
+                                "type": "AppendToArrayVariable",
+                                "inputs": {
+                                    "name": "AggregatedResults",
+                                    "value": "@outputs('Build_Result_Object')"
+                                },
+                                "runAfter": {
+                                    "Build_Result_Object": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "metadata": {
+                                    "description": "Add aggregated result object to final results array"
+                                }
+                            }
+                        },
+                        "runtimeConfiguration": {
+                            "concurrency": {
+                                "repetitions": 1
+                            }
+                        },
+                        "metadata": {
+                            "description": "Build final aggregated results array. Iterates through ProcessedCorrelationIds (preserving order) and creates result objects with message groups"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Process_Batch_Messages": [
+                        "SUCCEEDED",
+                        "FAILED"
+                    ]
+                },
+                "metadata": {
+                    "description": "Scope for aggregation process with error handling support"
+                }
+            },
+            "Handle_Aggregation_Error": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@result('Build_Aggregated_Messages_Scope')[0]['status']",
+                                "Failed"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Log_Aggregation_Error": {
+                        "type": "Compose",
+                        "inputs": {
+                            "ErrorType": "AggregationFailed",
+                            "ErrorDetails": "@result('Build_Aggregated_Messages_Scope')[0]",
+                            "ProcessedCorrelationIds": "@variables('ProcessedCorrelationIds')",
+                            "PartialResults": "@variables('AggregatedResults')",
+                            "Timestamp": "@utcNow()"
+                        },
+                        "metadata": {
+                            "description": "Log aggregation error with context including partial results and correlation IDs"
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "Build_Aggregated_Messages_Scope": [
+                        "SUCCEEDED",
+                        "FAILED",
+                        "SKIPPED",
+                        "TIMEDOUT"
+                    ]
+                },
+                "metadata": {
+                    "description": "Error handler for aggregation scope. Logs errors but allows workflow to continue and return response"
+                }
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": "@parameters('ResponseStatusCode')",
+                    "headers": {
+                        "Content-Type": "@parameters('ResponseContentType')"
+                    },
+                    "body": {
+                        "ProcessedBatchSize": "@length(triggerBody())",
+                        "UniqueCorrelationIds": "@length(variables('AggregatedResults'))",
+                        "AggregatedMessages": "@variables('AggregatedResults')",
+                        "ProcessingTimestamp": "@utcNow()",
+                        "Configuration": {
+                            "QueueName": "@parameters('ServiceBusQueueName')",
+                            "MaxBatchSize": "@parameters('MaxBatchSize')",
+                            "SchemaName": "@parameters('FlatFileSchemaName')",
+                            "SequentialProcessing": "@parameters('EnableSequentialProcessing')"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Handle_Aggregation_Error": [
+                        "SUCCEEDED",
+                        "FAILED",
+                        "SKIPPED"
+                    ]
+                },
+                "metadata": {
+                    "description": "Return HTTP response with aggregated results. Includes batch statistics, grouped messages by CorrelationId, processing timestamp, and configuration details"
+                }
+            },
+            "Initialize_ProcessedCorrelationIds": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CorrelationGroups",
+                            "type": "object",
+                            "value": {}
+                        },
+                        {
+                            "name": "AggregatedResults",
+                            "type": "array",
+                            "value": []
+                        },
+                        {
+                            "name": "ProcessedCorrelationIds",
+                            "type": "array",
+                            "value": []
+                        }
+                    ]
+                },
+                "runAfter": {}
+            }
+        },
+        "outputs": {},
+        "triggers": {
+            "When_messages_are_available_in_a_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "@parameters('ServiceBusQueueName')",
+                        "isSessionsEnabled": false,
+                        "maxMessageCount": "@parameters('MaxBatchSize')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "serviceBus",
+                        "operationId": "peekLockQueueMessagesV2",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "metadata": {
+                    "description": "Built-in Azure Service Bus trigger (ServiceProvider). Retrieves batch of messages using peek-lock from non-session queue. Uses peekLockQueueMessagesV2 for better performance in Azure Logic Apps Standard"
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}
