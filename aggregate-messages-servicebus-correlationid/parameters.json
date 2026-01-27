@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ServiceBusQueueName_#workflowname#": {
+            "value": "insbcorrelation"
+        },
+        "MaxBatchSize_#workflowname#": {
+            "value": 10
+        },
+        "FlatFileSchemaName_#workflowname#": {
+            "value": "Invoice.xsd"
+        },
+        "DefaultCorrelationId_#workflowname#": {
+            "value": "NO_CORRELATION_ID"
+        },
+        "ServiceBusConnectionName_#workflowname#": {
+            "value": "serviceBus"
+        },
+        "EnableSequentialProcessing_#workflowname#": {
+            "value": true
+        },
+        "ResponseStatusCode_#workflowname#": {
+            "value": 200
+        },
+        "ResponseContentType_#workflowname#": {
+            "value": "application/json"
+        }
+    }
+}
