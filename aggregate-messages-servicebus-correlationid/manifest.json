@@ -1,7 +1,26 @@
 {
+    "id": "aggregate-messages-servicebus-correlationid",
     "title": "Aggregate messages from Azure Service Bus by CorrelationId",
-    "description": "Aggregates messages from an Azure Service Bus queue by grouping them using the CorrelationId property. Designed to replicate BizTalk Server Aggregator pattern in Azure Logic Apps Standard. Processes messages in batches, decodes flat file content using an XSD schema, and returns aggregated results.",
-    "prerequisites": "**Azure Service Bus**: You need an Azure Service Bus namespace with a non-session queue configured. **Flat file schema**: You need an XSD schema uploaded to the logic app's Artifacts/Schemas folder for message decoding (supports BizTalk flat file schemas). **Connection**: You need to configure an Azure Service Bus connection in your logic app. For more information, see [Azure Service Bus connector overview](https://learn.microsoft.com/connectors/servicebus/).",
+    "summary": "Aggregates messages from an Azure Service Bus queue by grouping them using the CorrelationId property. Designed to replicate BizTalk Server Aggregator pattern in Azure Logic Apps Standard. Processes messages in batches, decodes flat file content using an XSD schema, and returns aggregated results.",
+    "skus": [
+        "standard"
+    ],
+    "workflows": {
+        "default": {
+            "name": "Aggregate_Messages_Servicebus_Correlationid"
+        }
+    },
+    "featuredConnectors": [
+        {
+            "id": "/serviceProviders/serviceBus",
+            "kind": "inapp"
+        }
+    ],
+    "details": {
+        "By": "Microsoft",
+        "Type": "Workflow",
+        "Trigger": "Event"
+    },
     "tags": [
         "Azure Service Bus",
         "Aggregator",
@@ -11,112 +30,5 @@
         "Message Grouping",
         "Integration Pattern",
         "BizTalk Migration"
-    ],
-    "skus": [
-        "standard"
-    ],
-    "kinds": [
-        "stateful"
-    ],
-    "detailsDescription": "This workflow template implements the Aggregator enterprise integration pattern for Azure Logic Apps Standard, designed to facilitate migration from BizTalk Server to Azure. It retrieves messages from an Azure Service Bus queue in batches, decodes flat file content using XSD schemas (compatible with BizTalk flat file schemas), and groups messages by their CorrelationId property. The template uses built-in Service Bus operations for optimal performance and includes comprehensive error handling, making it ideal for organizations modernizing their BizTalk Server integration solutions.",
-    "details": [
-        {
-            "name": "By",
-            "value": "Microsoft"
-        },
-        {
-            "name": "Type",
-            "value": "Workflow"
-        },
-        {
-            "name": "Trigger",
-            "value": "Azure Service Bus - When messages are available"
-        }
-    ],
-    "artifacts": [
-        {
-            "type": "workflow",
-            "file": "workflow.json"
-        },
-        {
-            "type": "workflow",
-            "file": "parameters.json"
-        }
-    ],
-    "images": {
-        "light": "workflow-light",
-        "dark": "workflow-dark"
-    },
-    "parameters": [
-        {
-            "name": "ServiceBusQueueName_#workflowname#",
-            "displayName": "Azure Service Bus queue name",
-            "type": "String",
-            "default": "your-queue-name",
-            "description": "The name of the Azure Service Bus queue to monitor for incoming messages. This queue must exist in your Service Bus namespace and should have sessions disabled.",
-            "required": true
-        },
-        {
-            "name": "MaxBatchSize_#workflowname#",
-            "displayName": "Maximum batch size",
-            "type": "Int",
-            "default": "10",
-            "description": "The maximum number of messages to retrieve and process in a single batch. Valid range is 1-100. Adjust this value based on your message size and throughput requirements.",
-            "required": true
-        },
-        {
-            "name": "FlatFileSchemaName_#workflowname#",
-            "displayName": "Flat file schema name",
-            "type": "String",
-            "default": "Invoice.xsd",
-            "description": "The name of the flat file schema (XSD) to use for decoding message content. This schema must be uploaded to your logic app's Artifacts/Schemas folder before deployment.",
-            "required": true
-        },
-        {
-            "name": "DefaultCorrelationId_#workflowname#",
-            "displayName": "Default CorrelationId",
-            "type": "String",
-            "default": "NO_CORRELATION_ID",
-            "description": "The fallback value to use when a message does not have a CorrelationId property. Messages with this value will be grouped together.",
-            "required": false
-        },
-        {
-            "name": "ServiceBusConnectionName_#workflowname#",
-            "displayName": "Azure Service Bus connection name",
-            "type": "String",
-            "default": "serviceBus",
-            "description": "The name of the Azure Service Bus connection reference in your logic app's connections.json file. This connection provides authentication credentials for accessing the Service Bus namespace.",
-            "required": true
-        },
-        {
-            "name": "EnableSequentialProcessing_#workflowname#",
-            "displayName": "Enable sequential processing",
-            "type": "Bool",
-            "default": "true",
-            "description": "When set to true, processes messages sequentially (concurrency=1) to ensure order. When set to false, allows parallel processing for higher throughput. Use true for scenarios requiring strict message ordering.",
-            "required": false
-        },
-        {
-            "name": "ResponseStatusCode_#workflowname#",
-            "displayName": "HTTP response status code",
-            "type": "Int",
-            "default": "200",
-            "description": "The HTTP status code to return in the response for successful processing. Standard value is 200 (OK).",
-            "required": false
-        },
-        {
-            "name": "ResponseContentType_#workflowname#",
-            "displayName": "HTTP response content type",
-            "type": "String",
-            "default": "application/json",
-            "description": "The Content-Type header value for the HTTP response. Use 'application/json' for JSON-formatted responses.",
-            "required": false
-        }
-    ],
-    "connections": [
-        {
-            "connectorId": "serviceBus_#workflowname#",
-            "kind": "inapp"
-        }
     ]
 }
